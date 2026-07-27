@@ -1,0 +1,199 @@
+{
+  "schema_version": "1.0",
+  "bundle_version": "1.0.0",
+  "name": "graph-engineering-architectures",
+  "scope": "Bounded static dependency graphs and their adjacent execution, runtime, state, and verification contracts.",
+  "upstream": {
+    "repository": "https://github.com/Mark393295827/third-brain-v7-skills",
+    "commit": "9cf925c16510c6efe9bf44968fbfa27340a3337b",
+    "extracted_on": "2026-07-27",
+    "license": "MIT"
+  },
+  "architectures": [
+    {
+      "id": "graph-engineering",
+      "role": "core",
+      "path": "skills/graph-engineering",
+      "owns": [
+        "bounded static DAG topology",
+        "typed dependency edges",
+        "explicit join semantics",
+        "single-writer constraints",
+        "node-local recovery",
+        "graph terminal evidence"
+      ],
+      "excludes": [
+        "dynamic graph expansion",
+        "cycles",
+        "runtime-kernel implementation",
+        "worker-process ownership"
+      ]
+    },
+    {
+      "id": "loop-engineering",
+      "role": "adjacent",
+      "path": "skills/loop-engineering",
+      "owns": [
+        "temporal repetition",
+        "finite retry and stop rules",
+        "loop-local state"
+      ],
+      "excludes": [
+        "dependency topology",
+        "cross-node joins"
+      ]
+    },
+    {
+      "id": "agentic-engineering",
+      "role": "selector",
+      "path": "skills/agentic-engineering",
+      "owns": [
+        "workflow autonomy",
+        "macro-action boundaries",
+        "architecture selection"
+      ],
+      "excludes": [
+        "graph scheduling",
+        "process IPC"
+      ]
+    },
+    {
+      "id": "agent-teams-command",
+      "role": "adjacent",
+      "path": "skills/agent-teams-command",
+      "owns": [
+        "process ownership",
+        "IPC",
+        "worktree isolation",
+        "serial integration",
+        "worker cleanup"
+      ],
+      "excludes": [
+        "one worker per graph node",
+        "graph-schema ownership"
+      ]
+    },
+    {
+      "id": "harness-engineering",
+      "role": "runtime",
+      "path": "skills/harness-engineering",
+      "owns": [
+        "scheduler",
+        "permissions",
+        "leases",
+        "tool dispatch",
+        "observability",
+        "runtime recovery"
+      ],
+      "excludes": [
+        "dependency meaning",
+        "join semantics"
+      ]
+    },
+    {
+      "id": "context-manager",
+      "role": "state",
+      "path": "skills/context-manager",
+      "owns": [
+        "context budgets",
+        "checkpoints",
+        "edge-payload retrieval",
+        "lossless handoff"
+      ],
+      "excludes": [
+        "graph topology",
+        "terminal acceptance policy"
+      ]
+    },
+    {
+      "id": "verify-before-claim",
+      "role": "verification",
+      "path": "skills/verify-before-claim",
+      "owns": [
+        "fresh evidence",
+        "claim-to-proof mapping",
+        "terminal acceptance"
+      ],
+      "excludes": [
+        "graph execution",
+        "self-certified completion"
+      ]
+    },
+    {
+      "id": "ooda-core",
+      "role": "reference-implementation",
+      "path": "core/ooda",
+      "owns": [
+        "bounded node-local observe-orient-decide-act adaptation"
+      ],
+      "excludes": [
+        "dependency graph topology",
+        "cross-node scheduling"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "agentic-engineering",
+      "to": "graph-engineering",
+      "type": "admits-when-measurable"
+    },
+    {
+      "from": "graph-engineering",
+      "to": "loop-engineering",
+      "type": "may-contain-bounded-loop-node"
+    },
+    {
+      "from": "graph-engineering",
+      "to": "agent-teams-command",
+      "type": "delegates-agent-process-ownership"
+    },
+    {
+      "from": "graph-engineering",
+      "to": "harness-engineering",
+      "type": "executed-by-runtime"
+    },
+    {
+      "from": "graph-engineering",
+      "to": "context-manager",
+      "type": "persists-state-through"
+    },
+    {
+      "from": "graph-engineering",
+      "to": "verify-before-claim",
+      "type": "evidence-gated-by"
+    },
+    {
+      "from": "loop-engineering",
+      "to": "ooda-core",
+      "type": "illustrated-by-runtime"
+    }
+  ],
+  "supporting_assets": [
+    {
+      "id": "graph-experiment",
+      "path": "experiments/graph-engineering",
+      "purpose": "Bounded Loop-vs-Graph admission and recovery evidence."
+    },
+    {
+      "id": "graph-validator-tests",
+      "path": "tools/test_validate_graph_contract.py",
+      "purpose": "Strict graph-contract regression coverage."
+    },
+    {
+      "id": "loop-validator-tests",
+      "path": "tools/test_validate_loop_contract.py",
+      "purpose": "Boundary regression coverage for node-local loops."
+    },
+    {
+      "id": "agent-skill-contract",
+      "path": "docs/agent-skills-standard.md",
+      "purpose": "Shared execution-contract and failure-protocol standard."
+    },
+    {
+      "id": "agent-skill-template",
+      "path": "docs/skill-template.md",
+      "purpose": "Template for compatible architecture skills."
+    }
+  ]
+}

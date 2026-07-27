@@ -1,0 +1,66 @@
+name: Architecture quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.13"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run architecture and validator tests
+        run: python -m unittest discover -s tools -p "test_*.py" -v
+
+      - name: Run Graph experiment tests
+        run: python -m unittest discover -s experiments/graph-engineering/tests -p "test_*.py" -v
+
+      - name: Validate strict Graph example
+        run: >-
+          python skills/graph-engineering/scripts/validate_graph_contract.py
+          skills/graph-engineering/references/diamond-graph-example.json
+          --strict
+
+      - name: Validate strict Loop example
+        run: >-
+          python skills/loop-engineering/scripts/validate_loop_contract.py
+          skills/loop-engineering/references/ci-repair-loop-example.md
+          --strict
+
+      - name: Check diff whitespace
+        run: git diff --check
+
+  ooda:
+    name: OODA runtime example
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Run OODA integration check
+        run: node core/ooda/ooda_loop.test.js

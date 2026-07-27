@@ -1,0 +1,105 @@
+# Graph Engineering Architectures
+
+A standalone architecture bundle extracted from
+[Third Brain V7 Skills](https://github.com/Mark393295827/third-brain-v7-skills).
+It focuses on bounded static dependency graphs and the adjacent contracts
+required to run them without blurring ownership.
+
+Graph Engineering owns dependency width: typed edges, explicit joins,
+deterministic readiness, single-writer constraints, durable graph state, and
+node-local recovery. It does not own temporal repetition, worker processes, or
+the runtime kernel.
+
+## Architecture Map
+
+```mermaid
+flowchart LR
+    A["Agentic Engineering<br/>workflow selection"] -->|admits| G["Graph Engineering<br/>static dependency DAG"]
+    G -->|bounded loop node| L["Loop Engineering<br/>temporal depth"]
+    G -->|agent or team node| T["Agent Teams Command<br/>process ownership and IPC"]
+    G -->|executed by| H["Harness Engineering<br/>scheduler, permissions, observability"]
+    G -->|persists through| C["Context Manager<br/>state and context transfer"]
+    G -->|evidence gate| V["Verify Before Claim<br/>terminal proof"]
+    L -->|runtime example| O["OODA Core<br/>node-local adaptation"]
+```
+
+The machine-readable source of truth is
+[`architecture-manifest.json`](architecture-manifest.json).
+
+## Included Architectures
+
+| Layer | Owns | Path |
+|---|---|---|
+| Graph Engineering | Static DAG topology, typed edges and joins, node-local recovery | `skills/graph-engineering/` |
+| Loop Engineering | Bounded repetition through time inside a node | `skills/loop-engineering/` |
+| Agentic Engineering | Workflow autonomy and architecture selection | `skills/agentic-engineering/` |
+| Agent Teams Command | Process ownership, IPC, isolation, integration, cleanup | `skills/agent-teams-command/` |
+| Harness Engineering | Scheduler, permissions, leases, tools, observability | `skills/harness-engineering/` |
+| Context Manager | Durable context, checkpointing, edge-payload discipline | `skills/context-manager/` |
+| Verify Before Claim | Node, join, and terminal evidence gates | `skills/verify-before-claim/` |
+| OODA Core | A bounded node-local decision-loop implementation | `core/ooda/` |
+
+The bundle also includes the strict Graph and Loop validators, unit tests,
+static fixtures, benchmark code, and historical experiment receipts.
+
+## Quick Start
+
+Validate the strict diamond contract:
+
+```powershell
+python skills/graph-engineering/scripts/validate_graph_contract.py `
+  skills/graph-engineering/references/diamond-graph-example.json --strict
+```
+
+Run all Python checks:
+
+```powershell
+python -m unittest discover -s tools -p "test_*.py" -v
+python -m unittest discover -s experiments/graph-engineering/tests -p "test_*.py" -v
+```
+
+Run the bounded Loop-vs-Graph experiment:
+
+```powershell
+python experiments/graph-engineering/benchmark.py
+```
+
+Run the OODA implementation check:
+
+```powershell
+node core/ooda/ooda_loop.test.js
+```
+
+## Admission Rule
+
+Use Graph Engineering only when at least one measurable benefit exceeds
+scheduler and review overhead:
+
+1. Independent branches shorten the critical path.
+2. Maker and checker require separate ownership or context.
+3. Node-local recovery avoids replaying verified work.
+4. Typed joins materially improve failure localization.
+
+Otherwise, keep the workflow one-shot or use Loop Engineering. V7.1 supports
+bounded static DAGs only. Dynamic expansion and cyclic graphs are explicitly
+out of scope.
+
+## Documentation
+
+- [`docs/architecture-boundaries.md`](docs/architecture-boundaries.md) defines
+  the MECE ownership model and routing rules.
+- [`docs/adoption-guide.md`](docs/adoption-guide.md) provides a staged rollout.
+- [`docs/extraction-inventory.md`](docs/extraction-inventory.md) records what
+  was copied and what was intentionally excluded.
+- [`docs/upstream-provenance.md`](docs/upstream-provenance.md) records source,
+  commit, licensing, and update policy.
+
+## Provenance
+
+This repository was extracted from upstream commit
+`9cf925c16510c6efe9bf44968fbfa27340a3337b` on 2026-07-27. Copied assets retain
+their upstream paths so examples and tests remain directly traceable.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
