@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.1",
-  "bundle_version": "1.1.0",
+  "schema_version": "1.3",
+  "bundle_version": "1.3.0",
   "name": "graph-engineering-architectures",
   "scope": "Bounded static dependency graphs and their adjacent execution, runtime, state, and verification contracts.",
   "upstream": {
@@ -82,6 +82,9 @@
         "permissions",
         "leases",
         "tool dispatch",
+        "runtime adapter discovery and probes",
+        "capability-route resolution",
+        "endpoint dispatch and readiness receipts",
         "observability",
         "runtime recovery"
       ],
@@ -149,6 +152,11 @@
       "type": "delegates-agent-process-ownership"
     },
     {
+      "from": "agent-teams-command",
+      "to": "harness-engineering",
+      "type": "routes-capabilities-through-runtime-adapters"
+    },
+    {
       "from": "graph-engineering",
       "to": "harness-engineering",
       "type": "executed-by-runtime"
@@ -203,26 +211,78 @@
       "canonical_contract": "blueprint/default-blueprint.json",
       "presentation_model": "blueprint/default-blueprint.json#blueprint.presentation",
       "interaction_model": "blueprint/model.js",
+      "beginner_block_catalog": "blueprint/model.js#getBlockCatalog",
+      "block_recipe_catalog": "blueprint/model.js#getBlockRecipes",
+      "atomic_block_compiler": "blueprint/model.js#applyBlockTransaction",
+      "history_sanitizer": "blueprint/model.js#restoreEditableSnapshot",
+      "runtime_validator": "tools/validate_mission_handoff.py",
+      "reference_layout": "blueprint/reference-diagram.css",
+      "reference_layout_source_sha256": "f0d638801feb9b07cb97667b2ae667cc247212233c2ae61563ce8741aca5be69",
+      "reference_assets": "blueprint/reference-assets",
+      "runtime_adapter_contract": "blueprint/default-blueprint.json#team_command.agent_roster",
+      "capability_routing_contract": "blueprint/default-blueprint.json#team_command.routing",
+      "ipc_contract": "blueprint/default-blueprint.json#team_command.ipc_contract",
       "tests": [
         "blueprint/model.test.js",
-        "tools/test_mission_blueprint.py"
+        "tools/test_mission_blueprint.py",
+        "tools/test_validate_mission_handoff.py"
       ],
       "provenance": "docs/blueprint-web-provenance.md",
-      "purpose": "Open the repository with a complete editable mission blueprint, then gate capability-based Agent Team handoff on a current human confirmation receipt.",
+      "purpose": "Open the repository with a source-aligned, beginner-first Blocks blueprint that compiles atomic edits into the one canonical Graph contract, preserves an Advanced editor for the same JSON, presents Claude, Antigravity, and Codex as replaceable runtime adapters, gates Agent Team allocation on a current human confirmation receipt, and leaves execution blocked on strict Graph/command validation plus Harness adapter readiness.",
       "owns": [
         "human-facing rendering",
         "local draft editing",
+        "beginner block commands compiled atomically into the canonical contract",
+        "bounded undo and redo with runtime authority reset",
         "safe JSON import and export",
         "structure confirmation interaction",
+        "runtime adapter declaration editing",
         "non-executing Agent Team handoff preparation"
       ],
       "excludes": [
+        "a second persisted block graph",
+        "silent graph-budget growth",
+        "partially created Graph workstreams or capability routes",
         "dependency semantics outside the canonical Graph contract",
         "temporal repetition",
         "worker-process execution",
         "runtime scheduling or permissions",
+        "adapter endpoint discovery, probing, or selection",
+        "adapter readiness evidence issuance",
+        "runtime validator execution or evidence issuance",
         "terminal completion certification"
       ]
+    },
+    {
+      "id": "mission-lego-block-compiler",
+      "role": "presentation-compiler",
+      "path": "blueprint/model.js",
+      "canonical_output": "blueprint/default-blueprint.json",
+      "finite_budget": "Each transaction contains 1 to 8 operations and every generated node has positive time, attempt, and tool-call limits.",
+      "objective_verifier": "The complete candidate must pass BlueprintModel.validateBlueprint and the strict Python Graph validator fixtures.",
+      "failure_status": "BLOCK_TRANSACTION_REJECTED",
+      "recovery_path": "Reject without mutation, keep the prior canonical draft, and use bounded authority-sanitized Undo or repair in Advanced mode.",
+      "durable_receipt": "blueprint.events[].receipt",
+      "purpose": "Compile a finite catalog of beginner block and recipe commands into candidate canonical DAGs, expose the required finite budget floor, reject invalid candidates atomically, and clear confirmation, handoff, route, and probe authority after semantic change.",
+      "owns": [
+        "transient beginner block drafts",
+        "atomic candidate compilation",
+        "finite budget-floor calculation",
+        "sanitized editable history snapshots"
+      ],
+      "excludes": [
+        "independent graph semantics",
+        "runtime graph expansion",
+        "worker recruitment",
+        "adapter selection",
+        "runtime readiness claims"
+      ]
+    },
+    {
+      "id": "mission-runtime-adapter-contract",
+      "role": "runtime-declaration",
+      "path": "blueprint/default-blueprint.json",
+      "purpose": "Declare the named adapter roster, capability-only route requests, canonical IPC envelope, finite budgets, and the Harness-owned readiness gate without storing credentials or binding Graph ownership to a vendor."
     }
   ]
 }

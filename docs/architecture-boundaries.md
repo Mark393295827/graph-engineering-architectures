@@ -13,11 +13,25 @@ their execution semantics. Node placement, color, preview arrows, and lifecycle
 labels are presentation. Only the canonical JSON declares dependencies,
 payloads, joins, budgets, owners, and recovery.
 
+The beginner Blocks workspace is a presentation compiler, not another graph
+authority. Its transient block commands must produce a complete candidate
+canonical contract, show any finite budget increase, and pass the same Graph
+and cross-contract checks before one atomic commit. Blocks and Advanced mode
+therefore cannot diverge. Undo, redo, import, and semantic edits all clear
+human confirmation, Agent Team handoff, adapter probes, and selected routes.
+
 Browser validation is drafting feedback, not fresh command evidence. A
-confirmation receipt unlocks Agent Team allocation for the matching structure
-hash, but it does not recruit workers. Agent execution, scheduling,
-permissions, retries, observability, and cleanup remain with Teams, Loop, and
-Harness according to the ownership table below.
+confirmation receipt unlocks Agent Team allocation for the matching Graph
+hash, but it does not recruit workers. The exported pack carries separately
+hash-bound Graph and Agent Team command contracts. A deterministic
+runtime-validation node must validate both; a later Harness-owned
+adapter-readiness node must probe the declared Claude, Antigravity, and Codex
+adapters, resolve capability routes, and prove workspace, permission, and IPC
+readiness before any Agent Team node becomes ready.
+
+The source-aligned feedback arrow is presentation of bounded temporal review,
+not a Graph cycle. Named adapter cards are runtime declarations, not durable
+owners. Browser state always treats them as `UNVERIFIED`.
 
 ## MECE Ownership
 
@@ -28,6 +42,7 @@ Harness according to the ownership table below.
 | What repeats until a finite stop? | Loop Engineering | Trigger, execute, verify, state |
 | Who owns an independent workstream? | Agent Teams Command | Process owner, IPC, isolation, integration |
 | Who dispatches tools and enforces permissions? | Harness Engineering | Scheduler, lease, permission, telemetry |
+| Which ready runtime adapter handles a capability request? | Harness Engineering | Probe receipt, route receipt, workspace and permission profile |
 | How does a long run survive compaction? | Context Manager | Checkpoint and payload locator |
 | What proves the result? | Verify Before Claim | Fresh evidence and terminal receipt |
 | When should autonomy use a graph? | Agentic Engineering | Admission and macro-action boundary |
@@ -55,8 +70,12 @@ Harness according to the ownership table below.
 - A Graph edge transports declared payloads, not private worker transcripts.
 - Agent Teams may implement selected `agent` or `agent-team` nodes. It must not
   create a teammate for every node by default.
-- Harness may schedule ready nodes, but it must not invent dependencies or join
-  semantics.
+- Harness may discover and probe adapters, resolve capability-compatible
+  runtime routes, and schedule ready nodes, but it must not invent
+  dependencies, workstream ownership, or join semantics.
+- Adapter IDs, provider-native events, endpoints, and credentials never become
+  Graph node or workstream fields. Adapters translate native events into the
+  canonical Agent Teams IPC envelope.
 - Verification must check node evidence, join evidence, terminal evidence, and
   checkpoint identity. Green nodes alone do not prove graph success.
 

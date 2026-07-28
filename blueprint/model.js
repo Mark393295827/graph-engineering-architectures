@@ -50,6 +50,124 @@
     'dependency',
     'next_action'
   ];
+  const REQUIRED_ADAPTER_IDS = ['claude', 'antigravity', 'codex'];
+  const REQUIRED_IPC_ENVELOPE_FIELDS = [
+    'message_id',
+    'run_id',
+    'message_type',
+    'task_id',
+    'workstream_id',
+    'graph_node_id',
+    'sender_owner',
+    'sender_adapter_id',
+    'recipient_owner',
+    'recipient_adapter_id',
+    'sequence',
+    'sent_at',
+    'state',
+    'artifact',
+    'evidence',
+    'decision',
+    'unknowns',
+    'dependency',
+    'next_action',
+    'contract_sha256',
+    'command_sha256',
+    'previous_message_sha256',
+    'message_sha256'
+  ];
+  const SECRET_FIELD_PATTERN = /(api.?key|access.?token|refresh.?token|password|client.?secret|credential)/i;
+  const MAX_BLUEPRINT_EVENTS = 100;
+  const LEGO_BLOCK_CATALOG = [
+    {
+      id: 'clarify',
+      id_prefix: 'clarify-block',
+      name: 'Clarify one unknown',
+      description: 'Turn one unclear assumption into a checked input before approval.',
+      lane: 'planning',
+      block_kind: 'step',
+      node_kind: 'deterministic',
+      owner_role: 'graph-owner',
+      label: 'Clarify one unknown',
+      summary: 'Resolve one important unknown and record the evidence before the mission is approved.',
+      verifier: 'The named unknown has an evidence-backed answer or an explicit blocker.',
+      timeout_seconds: 180,
+      max_attempts: 1,
+      tool_calls: 3,
+      cost_label: '+3 min · 3 tool calls'
+    },
+    {
+      id: 'approval',
+      id_prefix: 'approval-block',
+      name: 'Ask for approval',
+      description: 'Pause at a visible human decision before the main structure is confirmed.',
+      lane: 'planning',
+      block_kind: 'gate',
+      node_kind: 'human-gate',
+      owner_role: 'mission-owner',
+      label: 'Ask for approval',
+      summary: 'A named human reviews the prepared evidence and decides whether the mission may continue.',
+      verifier: 'A fresh approval or rejection decision names the reviewer and the reviewed contract.',
+      timeout_seconds: 300,
+      max_attempts: 1,
+      tool_calls: 1,
+      cost_label: '+5 min · 1 tool call'
+    },
+    {
+      id: 'bounded-loop',
+      id_prefix: 'bounded-loop-block',
+      name: 'Improve with a limit',
+      description: 'Repeat inside one block at most twice; never draw a graph cycle.',
+      lane: 'planning',
+      block_kind: 'loop',
+      node_kind: 'loop',
+      owner_role: 'graph-owner',
+      label: 'Improve with a limit',
+      summary: 'Try, check, and improve this planning artifact inside one bounded block.',
+      verifier: 'The result passes the named check or stops after two attempts with evidence.',
+      timeout_seconds: 240,
+      max_attempts: 2,
+      tool_calls: 4,
+      cost_label: '+4 min · 2 attempts'
+    },
+    {
+      id: 'final-check',
+      id_prefix: 'final-check-block',
+      name: 'Check the result',
+      description: 'Add one objective evidence check immediately before delivery.',
+      lane: 'evidence',
+      block_kind: 'check',
+      node_kind: 'deterministic',
+      owner_role: 'verification-owner',
+      label: 'Check the result',
+      summary: 'Verify one additional success condition before the final completion decision.',
+      verifier: 'The named success condition has a fresh, reproducible evidence receipt.',
+      timeout_seconds: 180,
+      max_attempts: 1,
+      tool_calls: 3,
+      cost_label: '+3 min · 3 tool calls'
+    }
+  ];
+  const LEGO_RECIPES = [
+    {
+      id: 'clear-and-check',
+      name: 'Clarify, then check',
+      description: 'Resolve an unknown before approval and add a final evidence check.',
+      block_types: ['clarify', 'final-check']
+    },
+    {
+      id: 'approval-path',
+      name: 'Add an approval path',
+      description: 'Insert a visible human decision and an additional final check.',
+      block_types: ['approval', 'final-check']
+    },
+    {
+      id: 'bounded-improvement',
+      name: 'Improve safely',
+      description: 'Add one finite improvement loop and a final evidence check.',
+      block_types: ['bounded-loop', 'final-check']
+    }
+  ];
 
   function isObject(value) {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -68,6 +186,18 @@
       && (allowEmpty || value.length > 0)
       && value.every(isNonEmptyString)
       && new Set(value).size === value.length;
+  }
+
+  function containsSecretField(value) {
+    if (Array.isArray(value)) {
+      return value.some(containsSecretField);
+    }
+    if (!isObject(value)) {
+      return false;
+    }
+    return Object.keys(value).some((key) => (
+      SECRET_FIELD_PATTERN.test(key) || containsSecretField(value[key])
+    ));
   }
 
   function deepClone(value) {
@@ -138,27 +268,122 @@
     return deepClone(value);
   }
 
-  function prepareImportedBlueprint(value) {
-    const candidate = deepClone(value);
+  function discardRuntimeAuthority(candidate) {
     if (!isObject(candidate.blueprint)) {
       candidate.blueprint = {};
     }
     candidate.blueprint.confirmation = null;
     candidate.blueprint.status = 'DRAFT';
     candidate.blueprint.updated_at = null;
+    if (isObject(candidate.team_command)) {
+      candidate.team_command.status = 'LOCKED_UNTIL_CONFIRMATION';
+      candidate.team_command.handoff = null;
+      const adapters = candidate.team_command.agent_roster?.adapters;
+      if (Array.isArray(adapters)) {
+        adapters.forEach((adapter) => {
+          adapter.runtime_state = {
+            status: 'UNVERIFIED',
+            probe_receipt: null
+          };
+        });
+      }
+      if (isObject(candidate.team_command.routing)) {
+        candidate.team_command.routing.resolution = {
+          status: 'PENDING_HARNESS_PROBE',
+          selected_routes: [],
+          receipt: null
+        };
+      }
+    }
+    return candidate;
+  }
+
+  function resetRuntimeAuthority(value, eventType, detail) {
+    const candidate = discardRuntimeAuthority(deepClone(value));
     if (!Array.isArray(candidate.blueprint.events)) {
       candidate.blueprint.events = [];
     }
     candidate.blueprint.events.push({
-      type: 'IMPORTED',
+      type: eventType || 'RUNTIME_AUTHORITY_RESET',
       at: new Date().toISOString(),
-      detail: 'Imported state requires local validation and confirmation.'
+      detail: detail || 'A fresh local confirmation and Harness readiness evidence are required.'
     });
-    if (isObject(candidate.team_command)) {
-      candidate.team_command.status = 'LOCKED_UNTIL_CONFIRMATION';
-      candidate.team_command.handoff = null;
+    if (candidate.blueprint.events.length > MAX_BLUEPRINT_EVENTS) {
+      candidate.blueprint.events.splice(
+        0,
+        candidate.blueprint.events.length - MAX_BLUEPRINT_EVENTS
+      );
     }
     return candidate;
+  }
+
+  function prepareImportedBlueprint(value) {
+    return resetRuntimeAuthority(
+      value,
+      'IMPORTED',
+      'Imported state requires local validation and confirmation.'
+    );
+  }
+
+  function restoreEditableSnapshot(value, detail) {
+    return resetRuntimeAuthority(
+      value,
+      'HISTORY_RESTORED',
+      detail || 'Undo or redo restored editable content; prior authority was discarded.'
+    );
+  }
+
+  function recoverEditableDraft(value) {
+    if (!isObject(value)) {
+      throw new Error('Stored draft must be a JSON object.');
+    }
+    const result = validateBlueprint(value);
+    if (!result.errors.length) {
+      return {
+        state: deepClone(value),
+        repair_mode: false,
+        issues: []
+      };
+    }
+    const requiredArrays = [
+      'non_goals',
+      'entry_nodes',
+      'terminal_nodes',
+      'nodes',
+      'edges',
+      'joins',
+      'stop_conditions'
+    ];
+    const requiredObjects = [
+      'budgets',
+      'permission_boundary',
+      'recovery',
+      'blueprint',
+      'team_command'
+    ];
+    const editableShape = requiredArrays.every((field) => Array.isArray(value[field]))
+      && requiredObjects.every((field) => isObject(value[field]))
+      && Array.isArray(value.blueprint.success_criteria)
+      && isObject(value.blueprint.presentation)
+      && Array.isArray(value.blueprint.events)
+      && Array.isArray(value.team_command.workstreams)
+      && isObject(value.team_command.integration)
+      && isObject(value.team_command.agent_roster)
+      && Array.isArray(value.team_command.agent_roster.adapters)
+      && isObject(value.team_command.routing)
+      && Array.isArray(value.team_command.routing.route_requests);
+    if (!editableShape) {
+      throw new Error('Stored draft is missing the minimum editable structure.');
+    }
+    return {
+      state: resetRuntimeAuthority(
+        value,
+        'INCOMPLETE_DRAFT_RECOVERED',
+        `Recovered an incomplete local draft with ${result.errors.length} issue(s).`
+      ),
+      repair_mode: true,
+      issues: deepClone(result.errors)
+    };
   }
 
   function stableStringify(value) {
@@ -302,6 +527,583 @@
     return sha256(stableStringify(structureProjection(state)));
   }
 
+  function commandProjection(state) {
+    const command = deepClone(state?.team_command || {});
+    delete command.status;
+    command.handoff = null;
+    return command;
+  }
+
+  function commandHash(state) {
+    return sha256(stableStringify(commandProjection(state)));
+  }
+
+  function getBlockCatalog() {
+    return deepClone(LEGO_BLOCK_CATALOG);
+  }
+
+  function getBlockRecipes() {
+    return deepClone(LEGO_RECIPES);
+  }
+
+  function uniqueContractId(prefix, nodes) {
+    const ids = new Set((nodes || []).map((node) => node.id));
+    let candidate = prefix;
+    let suffix = 2;
+    while (ids.has(candidate)) {
+      candidate = `${prefix}-${suffix}`;
+      suffix += 1;
+    }
+    return candidate;
+  }
+
+  function catalogDefinition(blockType) {
+    return LEGO_BLOCK_CATALOG.find((item) => item.id === blockType) || null;
+  }
+
+  function blockTypeForNode(node) {
+    if (!isObject(node) || !isNonEmptyString(node.id)) {
+      return null;
+    }
+    const marker = isObject(node.beginner_block) ? node.beginner_block : {};
+    const definition = LEGO_BLOCK_CATALOG.find((item) => (
+      marker.schema_version === '1.0'
+      && marker.type === item.id
+      && (node.id === item.id_prefix || node.id.startsWith(`${item.id_prefix}-`))
+    ));
+    return definition ? definition.id : null;
+  }
+
+  function createBlockDraft(blockType, contract, overrides) {
+    const definition = catalogDefinition(blockType);
+    if (!definition) {
+      throw new Error(`Unknown block type: ${blockType}.`);
+    }
+    const edits = isObject(overrides) ? overrides : {};
+    if (containsSecretField(edits) || [
+      'model',
+      'provider',
+      'vendor',
+      'adapter_id',
+      'runtime_adapter'
+    ].some((field) => field in edits)) {
+      throw new Error('Block drafts cannot contain credentials or runtime-vendor bindings.');
+    }
+    const allowedOverrides = new Set(['label', 'summary', 'verifier']);
+    Object.keys(edits).forEach((field) => {
+      if (!allowedOverrides.has(field)) {
+        throw new Error(`Unsupported beginner block override: ${field}.`);
+      }
+    });
+    const owner = definition.owner_role === 'mission-owner'
+      ? 'mission-owner'
+      : (definition.owner_role === 'verification-owner'
+        ? 'verification-owner'
+        : (contract?.owner || 'integration-owner'));
+    const id = uniqueContractId(definition.id_prefix, contract?.nodes || []);
+    return {
+      schema_version: '1.0',
+      block_type: definition.id,
+      block_kind: definition.block_kind,
+      lane: definition.lane,
+      id,
+      node: {
+        id,
+        beginner_block: {
+          schema_version: '1.0',
+          type: definition.id
+        },
+        kind: definition.node_kind,
+        owner,
+        inputs: [],
+        outputs: [],
+        reads: [],
+        writes: [],
+        verifier: isNonEmptyString(edits.verifier) ? edits.verifier.trim() : definition.verifier,
+        timeout_seconds: definition.timeout_seconds,
+        max_attempts: definition.max_attempts,
+        tool_calls: definition.tool_calls,
+        effect_class: 'read-only',
+        idempotency: 'For the same input contract hash, replace only this block receipt.',
+        compensation: '',
+        label: isNonEmptyString(edits.label) ? edits.label.trim() : definition.label,
+        summary: isNonEmptyString(edits.summary) ? edits.summary.trim() : definition.summary
+      }
+    };
+  }
+
+  function dependencyEdges(contract) {
+    return (contract?.edges || []).filter((edge) => DEPENDENCY_EDGE_TYPES.has(edge?.type));
+  }
+
+  function requiredBudgetFloor(contract) {
+    const nodes = Array.isArray(contract?.nodes) ? contract.nodes : [];
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+    const adjacency = new Map(nodes.map((node) => [node.id, new Set()]));
+    const indegree = new Map(nodes.map((node) => [node.id, 0]));
+    dependencyEdges(contract).forEach((edge) => {
+      if (!nodeMap.has(edge.from) || !nodeMap.has(edge.to)
+        || adjacency.get(edge.from).has(edge.to)) {
+        return;
+      }
+      adjacency.get(edge.from).add(edge.to);
+      indegree.set(edge.to, indegree.get(edge.to) + 1);
+    });
+    const longest = new Map(nodes.map((node) => [
+      node.id,
+      isPositiveInteger(node.timeout_seconds) ? node.timeout_seconds : 0
+    ]));
+    const ready = Array.from(indegree.entries())
+      .filter(([, degree]) => degree === 0)
+      .map(([id]) => id);
+    let visited = 0;
+    while (ready.length) {
+      const id = ready.shift();
+      visited += 1;
+      adjacency.get(id).forEach((target) => {
+        const targetTimeout = isPositiveInteger(nodeMap.get(target)?.timeout_seconds)
+          ? nodeMap.get(target).timeout_seconds
+          : 0;
+        longest.set(target, Math.max(
+          longest.get(target),
+          longest.get(id) + targetTimeout
+        ));
+        indegree.set(target, indegree.get(target) - 1);
+        if (indegree.get(target) === 0) {
+          ready.push(target);
+        }
+      });
+    }
+    return {
+      max_nodes: nodes.length,
+      max_attempts_per_node: Math.max(1, ...nodes.map(
+        (node) => isPositiveInteger(node.max_attempts) ? node.max_attempts : 1
+      )),
+      wall_time_seconds: visited === nodes.length
+        ? Math.max(1, ...Array.from(longest.values()))
+        : Number.POSITIVE_INFINITY,
+      tool_calls: nodes.reduce(
+        (total, node) => total + (isPositiveInteger(node.tool_calls) ? node.tool_calls : 0),
+        0
+      ),
+      max_open_workstreams: Array.isArray(contract?.team_command?.workstreams)
+        ? contract.team_command.workstreams.length
+        : 0
+    };
+  }
+
+  function applyBudgetFloor(candidate) {
+    const floor = requiredBudgetFloor(candidate);
+    if (!Number.isFinite(floor.wall_time_seconds)) {
+      return floor;
+    }
+    candidate.budgets.max_nodes = Math.max(
+      candidate.budgets.max_nodes,
+      floor.max_nodes
+    );
+    candidate.budgets.max_attempts_per_node = Math.max(
+      candidate.budgets.max_attempts_per_node,
+      floor.max_attempts_per_node
+    );
+    candidate.budgets.wall_time_seconds = Math.max(
+      candidate.budgets.wall_time_seconds,
+      floor.wall_time_seconds
+    );
+    candidate.budgets.tool_calls = Math.max(
+      candidate.budgets.tool_calls,
+      floor.tool_calls
+    );
+    if (isObject(candidate.team_command?.review_budget)) {
+      candidate.team_command.review_budget.max_open_workstreams = Math.max(
+        candidate.team_command.review_budget.max_open_workstreams,
+        floor.max_open_workstreams
+      );
+    }
+    return floor;
+  }
+
+  function insertBlockCandidate(candidate, blockType, overrides) {
+    const draft = createBlockDraft(blockType, candidate, overrides);
+    const targetId = draft.lane === 'planning'
+      ? candidate.team_command?.activation_gate
+      : candidate.terminal_nodes?.[0];
+    if (!isNonEmptyString(targetId)) {
+      throw new Error(`The ${draft.lane} insertion point is missing.`);
+    }
+    const incoming = dependencyEdges(candidate).filter((edge) => edge.to === targetId);
+    if (incoming.length !== 1) {
+      throw new Error(
+        `The ${draft.lane} lane needs exactly one visible incoming connection before a block can be inserted.`
+      );
+    }
+    const original = incoming[0];
+    if (isNonEmptyString(original.failure_route)) {
+      throw new Error('A connector with a failure route must be edited in Advanced mode.');
+    }
+    const source = candidate.nodes.find((node) => node.id === original.from);
+    const target = candidate.nodes.find((node) => node.id === original.to);
+    if (!source || !target) {
+      throw new Error('The block insertion connector has an unknown endpoint.');
+    }
+    if (SCHEMA_EDGE_TYPES.has(original.type)) {
+      if (!isNonEmptyString(original.payload_schema)
+        || !source.outputs.includes(original.payload_schema)
+        || !target.inputs.includes(original.payload_schema)) {
+        throw new Error('The block insertion connector does not have a compatible typed payload.');
+      }
+      draft.node.inputs = [original.payload_schema];
+      draft.node.outputs = [original.payload_schema];
+    }
+    let outgoingPayload = original.payload_schema;
+    let outgoingType = original.type;
+    if (blockType === 'approval' && SCHEMA_EDGE_TYPES.has(original.type)) {
+      outgoingPayload = `${draft.node.id.replace(/-/g, '_')}_approval_receipt`;
+      outgoingType = 'verification';
+      draft.node.outputs = [outgoingPayload];
+      draft.node.writes = [
+        `.agent-state/graph/artifacts/${draft.node.id}-approval.json`
+      ];
+      draft.node.effect_class = 'reversible';
+      draft.node.idempotency = 'Replace one approval receipt for the same reviewed contract hash.';
+      draft.node.compensation = 'Invalidate the approval receipt when the reviewed contract changes.';
+      const targetInputIndex = target.inputs.indexOf(original.payload_schema);
+      if (targetInputIndex < 0) {
+        throw new Error('The approval target does not consume the incoming contract.');
+      }
+      target.inputs[targetInputIndex] = outgoingPayload;
+    }
+    const firstEdge = {
+      ...deepClone(original),
+      to: draft.node.id
+    };
+    const secondEdge = {
+      ...deepClone(original),
+      from: draft.node.id,
+      type: outgoingType,
+      payload_schema: outgoingPayload,
+      condition: 'block verifier passed',
+      failure_route: ''
+    };
+    const edgeIndex = candidate.edges.indexOf(original);
+    candidate.edges.splice(edgeIndex, 1, firstEdge, secondEdge);
+    candidate.nodes.push(draft.node);
+    return draft;
+  }
+
+  function removeBlockCandidate(candidate, blockId) {
+    const node = candidate.nodes.find((item) => item.id === blockId);
+    const blockType = blockTypeForNode(node);
+    if (!node || !blockType) {
+      throw new Error('Only blocks added from the beginner palette can be removed here.');
+    }
+    if ((candidate.edges || []).some((edge) => edge.failure_route === blockId)) {
+      throw new Error('Remove the Advanced-mode failure route before removing this block.');
+    }
+    if ((candidate.joins || []).some((join) => (
+      join.target === blockId || join.inputs?.includes(blockId)
+    ))) {
+      throw new Error('A block participating in an explicit merge must be edited in Advanced mode.');
+    }
+    const incoming = dependencyEdges(candidate).filter((edge) => edge.to === blockId);
+    const outgoing = dependencyEdges(candidate).filter((edge) => edge.from === blockId);
+    const connected = (candidate.edges || []).filter((edge) => (
+      edge.from === blockId || edge.to === blockId
+    ));
+    if (incoming.length !== 1 || outgoing.length !== 1 || connected.length !== 2) {
+      throw new Error('This block is no longer a simple Lego connection; use Advanced mode.');
+    }
+    const before = incoming[0];
+    const after = outgoing[0];
+    if (isNonEmptyString(before.failure_route) || isNonEmptyString(after.failure_route)) {
+      throw new Error('A connector with a failure route must be edited in Advanced mode.');
+    }
+    if (blockType === 'approval') {
+      if (node.inputs?.[0] !== before.payload_schema
+        || node.outputs?.[0] !== after.payload_schema
+        || after.type !== 'verification') {
+        throw new Error('The approval receipt connector no longer matches; use Advanced mode.');
+      }
+      const target = candidate.nodes.find((item) => item.id === after.to);
+      const receiptIndex = target?.inputs?.indexOf(after.payload_schema) ?? -1;
+      if (receiptIndex < 0) {
+        throw new Error('The approval target no longer consumes its receipt; use Advanced mode.');
+      }
+      target.inputs[receiptIndex] = before.payload_schema;
+    } else if (before.type !== after.type || before.payload_schema !== after.payload_schema) {
+      throw new Error('The surrounding connectors no longer match; use Advanced mode.');
+    }
+    const replacement = {
+      ...deepClone(before),
+      to: after.to
+    };
+    const replacementIndex = Math.min(
+      candidate.edges.indexOf(before),
+      candidate.edges.indexOf(after)
+    );
+    candidate.edges = candidate.edges.filter((edge) => edge !== before && edge !== after);
+    candidate.edges.splice(replacementIndex, 0, replacement);
+    candidate.nodes = candidate.nodes.filter((item) => item.id !== blockId);
+    return { id: blockId, block_type: blockType };
+  }
+
+  function updateBlockCandidate(candidate, blockId, patch) {
+    if (!isNonEmptyString(blockId) || !isObject(patch)) {
+      throw new Error('A block update needs a block_id and patch object.');
+    }
+    if (containsSecretField(patch)) {
+      throw new Error('Block updates cannot contain credentials or secret fields.');
+    }
+    const allowedFields = new Set([
+      'label',
+      'summary',
+      'verifier',
+      'timeout_seconds',
+      'max_attempts',
+      'compensation'
+    ]);
+    const fields = Object.keys(patch);
+    if (!fields.length) {
+      throw new Error('A block update needs at least one editable field.');
+    }
+    fields.forEach((field) => {
+      if (!allowedFields.has(field)) {
+        throw new Error(`Unsupported beginner block field: ${field}.`);
+      }
+    });
+    const node = candidate.nodes.find((item) => item.id === blockId);
+    if (!node) {
+      throw new Error(`Unknown block: ${blockId}.`);
+    }
+    fields.forEach((field) => {
+      const value = patch[field];
+      if (['label', 'summary', 'verifier'].includes(field) && !isNonEmptyString(value)) {
+        throw new Error(`${field} must contain a plain-language value.`);
+      }
+      if (field === 'compensation' && typeof value !== 'string') {
+        throw new Error('compensation must be text.');
+      }
+      if (['timeout_seconds', 'max_attempts'].includes(field) && !isPositiveInteger(value)) {
+        throw new Error(`${field} must be a positive finite integer.`);
+      }
+      node[field] = typeof value === 'string' ? value.trim() : value;
+    });
+    return {
+      id: node.id,
+      block_type: blockTypeForNode(node) || 'canonical',
+      updated_fields: fields.slice().sort()
+    };
+  }
+
+  function normalizeBlockTransaction(transaction) {
+    if (!isObject(transaction) || transaction.schema_version !== '1.0') {
+      throw new Error('Block transaction schema_version must be 1.0.');
+    }
+    const operations = Array.isArray(transaction.operations) ? transaction.operations : [];
+    if (!operations.length || operations.length > 8) {
+      throw new Error('A block transaction needs between 1 and 8 operations.');
+    }
+    return operations;
+  }
+
+  function previewBlockTransaction(contract, transaction) {
+    const beforeHash = structureHash(contract);
+    const beforeCommandHash = commandHash(contract);
+    const baseline = validateBlueprint(contract);
+    if (baseline.errors.length) {
+      return {
+        ok: false,
+        status: 'BLOCK_TRANSACTION_REJECTED',
+        candidate: null,
+        errors: [
+          issue(
+            'block.base-invalid',
+            'Repair the current draft before adding Lego blocks.',
+            '$'
+          ),
+          ...baseline.errors
+        ],
+        warnings: baseline.warnings,
+        before_hash: beforeHash,
+        after_hash: beforeHash,
+        confirmation_will_reset: false,
+        next_action: 'Open the issue list and repair the current draft.'
+      };
+    }
+    const candidate = deepClone(contract);
+    const applied = [];
+    try {
+      normalizeBlockTransaction(transaction).forEach((operation) => {
+        if (!isObject(operation)) {
+          throw new Error('Every block operation must be an object.');
+        }
+        if (operation.op === 'insert-block') {
+          applied.push(insertBlockCandidate(
+            candidate,
+            operation.block_type,
+            operation.overrides
+          ));
+          return;
+        }
+        if (operation.op === 'remove-block') {
+          applied.push(removeBlockCandidate(candidate, operation.block_id));
+          return;
+        }
+        if (operation.op === 'update-block') {
+          applied.push(updateBlockCandidate(
+            candidate,
+            operation.block_id,
+            operation.patch
+          ));
+          return;
+        }
+        throw new Error(`Unsupported beginner block operation: ${operation.op}.`);
+      });
+    } catch (error) {
+      return {
+        ok: false,
+        status: 'BLOCK_TRANSACTION_REJECTED',
+        candidate: null,
+        errors: [issue('block.operation', error.message, 'block_transaction')],
+        warnings: [],
+        before_hash: beforeHash,
+        after_hash: beforeHash,
+        confirmation_will_reset: false,
+        next_action: 'No changes were made. Review the block action and try again.'
+      };
+    }
+    const beforeFloor = requiredBudgetFloor(contract);
+    const beforeBudgets = deepClone(contract.budgets || {});
+    const requiredFloor = applyBudgetFloor(candidate);
+    const result = validateBlueprint(candidate);
+    if (result.errors.length) {
+      return {
+        ok: false,
+        status: 'BLOCK_TRANSACTION_REJECTED',
+        candidate: null,
+        errors: result.errors,
+        warnings: result.warnings,
+        before_hash: beforeHash,
+        after_hash: beforeHash,
+        required_budget_floor: requiredFloor,
+        confirmation_will_reset: false,
+        next_action: 'No changes were made because the compiled graph was not valid.'
+      };
+    }
+    discardRuntimeAuthority(candidate);
+    return {
+      ok: true,
+      status: 'BLOCK_TRANSACTION_PREVIEW_VALID',
+      candidate,
+      errors: [],
+      warnings: result.warnings,
+      applied,
+      before_hash: beforeHash,
+      after_hash: structureHash(candidate),
+      before_command_hash: beforeCommandHash,
+      after_command_hash: commandHash(candidate),
+      required_budget_floor: requiredFloor,
+      required_work_delta: {
+        max_nodes: requiredFloor.max_nodes - beforeFloor.max_nodes,
+        wall_time_seconds: requiredFloor.wall_time_seconds - beforeFloor.wall_time_seconds,
+        tool_calls: requiredFloor.tool_calls - beforeFloor.tool_calls,
+        max_open_workstreams: requiredFloor.max_open_workstreams - beforeFloor.max_open_workstreams
+      },
+      budget_delta: {
+        max_nodes: Number(candidate.budgets?.max_nodes || 0)
+          - Number(beforeBudgets.max_nodes || 0),
+        wall_time_seconds: Number(candidate.budgets?.wall_time_seconds || 0)
+          - Number(beforeBudgets.wall_time_seconds || 0),
+        tool_calls: Number(candidate.budgets?.tool_calls || 0)
+          - Number(beforeBudgets.tool_calls || 0),
+        max_open_workstreams: Number(
+          candidate.team_command?.review_budget?.max_open_workstreams || 0
+        ) - Number(contract.team_command?.review_budget?.max_open_workstreams || 0)
+      },
+      confirmation_will_reset: Boolean(contract?.blueprint?.confirmation),
+      next_action: 'Apply the valid transaction, then review and confirm the new structure.'
+    };
+  }
+
+  function applyBlockTransaction(contract, transaction) {
+    const preview = previewBlockTransaction(contract, transaction);
+    if (!preview.ok) {
+      return preview;
+    }
+    let candidate = resetRuntimeAuthority(
+      preview.candidate,
+      'BLOCK_TRANSACTION_APPLIED',
+      `Applied ${preview.applied.length} beginner block operation(s); fresh confirmation required.`
+    );
+    candidate.blueprint.revision = Math.max(
+      1,
+      Number(contract?.blueprint?.revision || 1) + 1
+    );
+    const result = validateBlueprint(candidate);
+    if (result.errors.length) {
+      return {
+        ...preview,
+        ok: false,
+        status: 'BLOCK_TRANSACTION_REJECTED',
+        candidate: null,
+        errors: result.errors,
+        warnings: result.warnings,
+        after_hash: preview.before_hash,
+        next_action: 'No changes were made because the final authority reset did not validate.'
+      };
+    }
+    const receipt = {
+      schema_version: '1.0',
+      transaction_id: isNonEmptyString(transaction.transaction_id)
+        ? transaction.transaction_id
+        : `block-transaction-r${candidate.blueprint.revision}`,
+      operation_count: preview.applied.length,
+      before_contract_sha256: preview.before_hash,
+      after_contract_sha256: structureHash(candidate),
+      before_command_sha256: preview.before_command_hash,
+      after_command_sha256: commandHash(candidate),
+      runtime_authority_reset: true,
+      launch_authorized: false,
+      status: 'BLOCK_TRANSACTION_CLIENT_VALIDATED'
+    };
+    const event = candidate.blueprint.events[candidate.blueprint.events.length - 1];
+    if (isObject(event) && event.type === 'BLOCK_TRANSACTION_APPLIED') {
+      event.receipt = deepClone(receipt);
+    }
+    return {
+      ...preview,
+      status: receipt.status,
+      candidate,
+      after_hash: receipt.after_contract_sha256,
+      after_command_hash: receipt.after_command_sha256,
+      receipt
+    };
+  }
+
+  function applyBlockRecipe(contract, recipeId) {
+    const recipe = LEGO_RECIPES.find((item) => item.id === recipeId);
+    if (!recipe) {
+      return {
+        ok: false,
+        status: 'BLOCK_TRANSACTION_REJECTED',
+        candidate: null,
+        errors: [issue('block.recipe', `Unknown starter recipe: ${recipeId}.`, 'recipe')],
+        warnings: [],
+        before_hash: structureHash(contract),
+        after_hash: structureHash(contract),
+        confirmation_will_reset: false,
+        next_action: 'Choose one of the declared starter recipes.'
+      };
+    }
+    return applyBlockTransaction(contract, {
+      schema_version: '1.0',
+      transaction_id: `recipe-${recipe.id}`,
+      operations: recipe.block_types.map((blockType) => ({
+        op: 'insert-block',
+        block_type: blockType
+      }))
+    });
+  }
+
   function issue(code, message, path) {
     return { code, message, path: path || '$' };
   }
@@ -423,6 +1225,22 @@
       }
       if (!isNonEmptyString(node.owner)) {
         errors.push(issue('node.owner', 'Node owner is required.', `${path}.owner`));
+      }
+      if (['model', 'provider', 'vendor', 'adapter_id', 'runtime_adapter'].some(
+        (field) => field in node
+      )) {
+        errors.push(issue(
+          'node.binding',
+          'Graph nodes cannot bind a named model, provider, vendor, or runtime adapter.',
+          path
+        ));
+      }
+      if ('beginner_block' in node && !blockTypeForNode(node)) {
+        errors.push(issue(
+          'node.beginner-block',
+          'beginner_block must name a declared palette type and match its generated ID prefix.',
+          `${path}.beginner_block`
+        ));
       }
       ['inputs', 'outputs', 'reads', 'writes'].forEach((field) => {
         if (!isUniqueStringList(node[field], true)) {
@@ -599,6 +1417,50 @@
     }
     if (visited !== nodeMap.size) {
       errors.push(issue('graph.cycle', 'Static graph must be acyclic.', 'edges'));
+    } else if (isPositiveInteger(budgets.wall_time_seconds)) {
+      const criticalIndegree = new Map(Array.from(nodeMap.keys(), (id) => [id, 0]));
+      const criticalDuration = new Map(
+        Array.from(nodeMap.entries(), ([id, node]) => [
+          id,
+          isPositiveInteger(node.timeout_seconds) ? node.timeout_seconds : 0
+        ])
+      );
+      adjacency.forEach((targets) => {
+        targets.forEach((target) => (
+          criticalIndegree.set(target, criticalIndegree.get(target) + 1)
+        ));
+      });
+      const criticalReady = Array.from(criticalIndegree.entries())
+        .filter(([, degree]) => degree === 0)
+        .map(([id]) => id);
+      while (criticalReady.length) {
+        const id = criticalReady.pop();
+        adjacency.get(id).forEach((target) => {
+          const targetNode = nodeMap.get(target);
+          const targetTimeout = isPositiveInteger(targetNode?.timeout_seconds)
+            ? targetNode.timeout_seconds
+            : 0;
+          criticalDuration.set(
+            target,
+            Math.max(
+              criticalDuration.get(target),
+              criticalDuration.get(id) + targetTimeout
+            )
+          );
+          criticalIndegree.set(target, criticalIndegree.get(target) - 1);
+          if (criticalIndegree.get(target) === 0) {
+            criticalReady.push(target);
+          }
+        });
+      }
+      const longestPathSeconds = Math.max(0, ...criticalDuration.values());
+      if (longestPathSeconds > budgets.wall_time_seconds) {
+        errors.push(issue(
+          'budget.critical-path',
+          `Critical-path timeout ${longestPathSeconds}s exceeds graph wall time.`,
+          'budgets.wall_time_seconds'
+        ));
+      }
     }
 
     const joins = Array.isArray(contract.joins) ? contract.joins : [];
@@ -702,15 +1564,135 @@
     if (!isObject(team)) {
       return { errors: [issue('team.object', 'team_command must be an object.', 'team_command')], warnings };
     }
-    ['commander', 'integration_owner', 'topology', 'activation_gate', 'state_path', 'artifact_path'].forEach((field) => {
+    if (team.schema_version !== '1.1') {
+      errors.push(issue(
+        'team.schema',
+        'team_command.schema_version must be 1.1.',
+        'team_command.schema_version'
+      ));
+    }
+    [
+      'commander',
+      'integration_owner',
+      'topology',
+      'activation_gate',
+      'runtime_validation_node',
+      'adapter_readiness_node',
+      'state_path',
+      'artifact_path'
+    ].forEach((field) => {
       if (!isNonEmptyString(team[field])) {
         errors.push(issue('team.field', `${field} is required.`, `team_command.${field}`));
       }
     });
-    const gate = (contract?.nodes || []).find((node) => node.id === team.activation_gate);
+    const graphNodes = Array.isArray(contract?.nodes) ? contract.nodes : [];
+    const graphNodeMap = new Map(graphNodes.map((node) => [node.id, node]));
+    const graphEdges = Array.isArray(contract?.edges) ? contract.edges : [];
+    const graphAdjacency = new Map(graphNodes.map((node) => [node.id, new Set()]));
+    graphEdges.forEach((edge) => {
+      if (DEPENDENCY_EDGE_TYPES.has(edge?.type)
+        && graphAdjacency.has(edge.from)
+        && graphAdjacency.has(edge.to)) {
+        graphAdjacency.get(edge.from).add(edge.to);
+      }
+    });
+
+    const gate = graphNodeMap.get(team.activation_gate);
     if (!gate || gate.kind !== 'human-gate') {
       errors.push(issue('team.gate', 'activation_gate must reference a human-gate node.', 'team_command.activation_gate'));
     }
+    const runtimeNode = graphNodeMap.get(team.runtime_validation_node);
+    if (!runtimeNode || runtimeNode.kind !== 'deterministic') {
+      errors.push(issue(
+        'team.runtime.node',
+        'runtime_validation_node must reference a deterministic Graph node.',
+        'team_command.runtime_validation_node'
+      ));
+    }
+    if (gate && runtimeNode && !graphEdges.some((edge) => (
+      edge.from === gate.id
+      && edge.to === runtimeNode.id
+      && edge.type === 'verification'
+    ))) {
+      errors.push(issue(
+        'team.runtime.edge',
+        'The human gate must release the runtime-validation node through a verification edge.',
+        'team_command.runtime_validation_node'
+      ));
+    }
+    if (isNonEmptyString(contract?.owner) && team.integration_owner !== contract.owner) {
+      errors.push(issue(
+        'team.integration.owner',
+        'integration_owner must match the Graph owner.',
+        'team_command.integration_owner'
+      ));
+    }
+    if (runtimeNode && isNonEmptyString(team.integration_owner)
+      && runtimeNode.owner !== team.integration_owner) {
+      errors.push(issue(
+        'team.runtime.owner',
+        'The integration owner must own runtime validation.',
+        'team_command.runtime_validation_node'
+      ));
+    }
+    const readinessNode = graphNodeMap.get(team.adapter_readiness_node);
+    if (!readinessNode || readinessNode.kind !== 'deterministic') {
+      errors.push(issue(
+        'team.adapter-readiness.node',
+        'adapter_readiness_node must reference a deterministic Graph node.',
+        'team_command.adapter_readiness_node'
+      ));
+    } else {
+      if (readinessNode.owner !== 'harness-runtime') {
+        errors.push(issue(
+          'team.adapter-readiness.owner',
+          'Adapter readiness is owned by the Harness runtime.',
+          'team_command.adapter_readiness_node'
+        ));
+      }
+      if (!Array.isArray(readinessNode.outputs)
+        || !readinessNode.outputs.includes('adapter_readiness_receipt')) {
+        errors.push(issue(
+          'team.adapter-readiness.output',
+          'Adapter readiness must emit adapter_readiness_receipt.',
+          'team_command.adapter_readiness_node'
+        ));
+      }
+    }
+    if (runtimeNode && readinessNode && !graphEdges.some((edge) => (
+      edge.from === runtimeNode.id
+      && edge.to === readinessNode.id
+      && edge.type === 'verification'
+      && edge.payload_schema === 'runtime_validation_receipt'
+    ))) {
+      errors.push(issue(
+        'team.adapter-readiness.edge',
+        'Runtime contract validation must release adapter readiness through a typed verification edge.',
+        'team_command.adapter_readiness_node'
+      ));
+    }
+
+    const executionReachable = new Set();
+    const executionRoot = readinessNode || runtimeNode;
+    if (executionRoot && graphAdjacency.has(executionRoot.id)) {
+      const stack = [executionRoot.id];
+      while (stack.length) {
+        const nodeId = stack.pop();
+        if (executionReachable.has(nodeId)) {
+          continue;
+        }
+        executionReachable.add(nodeId);
+        graphAdjacency.get(nodeId).forEach((target) => stack.push(target));
+      }
+    }
+    const executionAgentNodes = new Map(
+      graphNodes
+        .filter((node) => (
+          executionReachable.has(node.id)
+          && (node.kind === 'agent' || node.kind === 'agent-team')
+        ))
+        .map((node) => [node.id, node])
+    );
     if (!isObject(team.admission)
       || !isNonEmptyString(team.admission.rationale)
       || !isNonEmptyString(team.admission.orchestration_tax)) {
@@ -722,10 +1704,152 @@
         errors.push(issue('team.review', `${field} must be finite.`, `team_command.review_budget.${field}`));
       }
     });
+    if (isPositiveInteger(review.max_parallel_workers)
+      && isPositiveInteger(contract?.budgets?.max_concurrency)
+      && review.max_parallel_workers > contract.budgets.max_concurrency) {
+      errors.push(issue(
+        'team.review.concurrency',
+        'Team parallel workers exceed the Graph concurrency budget.',
+        'team_command.review_budget.max_parallel_workers'
+      ));
+    }
     if (!isUniqueStringList(team.ipc_schema, false)
       || REQUIRED_IPC_FIELDS.some((field) => !team.ipc_schema.includes(field))) {
       errors.push(issue('team.ipc', 'IPC schema is missing required fields.', 'team_command.ipc_schema'));
     }
+    const ipcContract = isObject(team.ipc_contract) ? team.ipc_contract : {};
+    if (ipcContract.protocol !== 'agent-team-ipc/1.0'
+      || ipcContract.transport !== 'append-only-jsonl'
+      || !isNonEmptyString(ipcContract.ledger)
+      || ipcContract.artifact_transfer !== 'content-addressed-reference') {
+      errors.push(issue(
+        'team.ipc.contract',
+        'IPC needs the versioned append-only JSONL and content-addressed artifact contract.',
+        'team_command.ipc_contract'
+      ));
+    }
+    if (!isUniqueStringList(ipcContract.required_envelope_fields, false)
+      || REQUIRED_IPC_ENVELOPE_FIELDS.some(
+        (field) => !ipcContract.required_envelope_fields.includes(field)
+      )) {
+      errors.push(issue(
+        'team.ipc.envelope',
+        'IPC required_envelope_fields are incomplete.',
+        'team_command.ipc_contract.required_envelope_fields'
+      ));
+    }
+    if (!isUniqueStringList(ipcContract.message_types, false)
+      || !isNonEmptyString(ipcContract.deduplication_key)
+      || !isNonEmptyString(ipcContract.ordering_key)) {
+      errors.push(issue(
+        'team.ipc.messages',
+        'IPC message types, deduplication, and ordering must be explicit.',
+        'team_command.ipc_contract'
+      ));
+    }
+
+    const roster = isObject(team.agent_roster) ? team.agent_roster : {};
+    const adapters = Array.isArray(roster.adapters) ? roster.adapters : [];
+    const adapterMap = new Map();
+    if (roster.schema_version !== '1.0'
+      || !isUniqueStringList(roster.required_adapter_ids, false)
+      || REQUIRED_ADAPTER_IDS.some((id) => !roster.required_adapter_ids.includes(id))) {
+      errors.push(issue(
+        'team.roster.required',
+        'The runtime roster must require Claude, Antigravity, and Codex adapter descriptors.',
+        'team_command.agent_roster'
+      ));
+    }
+    if (!adapters.length) {
+      errors.push(issue(
+        'team.roster.adapters',
+        'At least one runtime adapter descriptor is required.',
+        'team_command.agent_roster.adapters'
+      ));
+    }
+    adapters.forEach((adapter, index) => {
+      const path = `team_command.agent_roster.adapters[${index}]`;
+      [
+        'id',
+        'display_name',
+        'runtime_kind',
+        'connection_ref',
+        'launch_mode',
+        'ipc_protocol_version'
+      ].forEach((field) => {
+        if (!isNonEmptyString(adapter?.[field])) {
+          errors.push(issue('team.adapter.field', `${field} is required.`, `${path}.${field}`));
+        }
+      });
+      if (adapterMap.has(adapter?.id)) {
+        errors.push(issue('team.adapter.id', `Duplicate adapter id: ${adapter.id}.`, `${path}.id`));
+      }
+      adapterMap.set(adapter?.id, adapter);
+      if (adapter?.enabled !== true) {
+        errors.push(issue('team.adapter.enabled', 'Required mission adapters must be enabled.', `${path}.enabled`));
+      }
+      if (adapter?.connection_ref !== `runtime.adapters.${adapter?.id || ''}`) {
+        errors.push(issue(
+          'team.adapter.connection',
+          'connection_ref must be an opaque runtime.adapters.<id> reference, never a credential or URL.',
+          `${path}.connection_ref`
+        ));
+      }
+      if (adapter?.launch_mode !== 'harness-managed') {
+        errors.push(issue(
+          'team.adapter.launch',
+          'All adapter launch modes must be Harness-managed.',
+          `${path}.launch_mode`
+        ));
+      }
+      if (!isUniqueStringList(adapter?.declared_capabilities, false)
+        || !isUniqueStringList(adapter?.supported_workspace_modes, false)
+        || !isUniqueStringList(adapter?.supported_permission_profiles, false)) {
+        errors.push(issue(
+          'team.adapter.capabilities',
+          'Adapter capabilities, workspace modes, and permission profiles must be unique string lists.',
+          path
+        ));
+      }
+      if (!isPositiveInteger(adapter?.max_concurrency)) {
+        errors.push(issue(
+          'team.adapter.concurrency',
+          'Adapter max_concurrency must be finite.',
+          `${path}.max_concurrency`
+        ));
+      }
+      if (adapter?.ipc_protocol_version !== ipcContract.protocol) {
+        errors.push(issue(
+          'team.adapter.ipc',
+          'Every adapter must implement the canonical IPC protocol version.',
+          `${path}.ipc_protocol_version`
+        ));
+      }
+      if (adapter?.runtime_state?.status !== 'UNVERIFIED'
+        || adapter?.runtime_state?.probe_receipt !== null) {
+        errors.push(issue(
+          'team.adapter.authority',
+          'Browser state may only declare an UNVERIFIED adapter with no probe receipt.',
+          `${path}.runtime_state`
+        ));
+      }
+      if (containsSecretField(adapter)) {
+        errors.push(issue(
+          'team.adapter.secret',
+          'Adapter descriptors cannot contain credentials, tokens, passwords, or secret fields.',
+          path
+        ));
+      }
+    });
+    REQUIRED_ADAPTER_IDS.forEach((id) => {
+      if (!adapterMap.has(id)) {
+        errors.push(issue(
+          'team.adapter.missing',
+          `Required adapter ${id} is missing.`,
+          'team_command.agent_roster.adapters'
+        ));
+      }
+    });
     if (!isUniqueStringList(team.allowed_tools, false) || !isUniqueStringList(team.denied_tools, false)) {
       errors.push(issue('team.tools', 'Allowed and denied tools must be explicit string lists.', 'team_command'));
     }
@@ -737,9 +1861,20 @@
     const owners = new Set();
     const territories = new Map();
     const artifacts = new Set();
+    const mappedNodeIds = new Set();
+    const graphNodeToStreamId = new Map();
     workstreams.forEach((stream, index) => {
       const path = `team_command.workstreams[${index}]`;
-      ['id', 'name', 'capability', 'owner', 'output_artifact', 'verifier', 'stop_condition'].forEach((field) => {
+      [
+        'id',
+        'graph_node_id',
+        'name',
+        'capability',
+        'owner',
+        'output_artifact',
+        'verifier',
+        'stop_condition'
+      ].forEach((field) => {
         if (!isNonEmptyString(stream?.[field])) {
           errors.push(issue('team.stream.field', `${field} is required.`, `${path}.${field}`));
         }
@@ -767,16 +1902,226 @@
         errors.push(issue('team.artifact.overlap', `Output artifact has multiple writers: ${stream.output_artifact}.`, `${path}.output_artifact`));
       }
       artifacts.add(stream?.output_artifact);
+      if (Array.isArray(stream?.territory)
+        && isNonEmptyString(stream?.output_artifact)
+        && !stream.territory.includes(stream.output_artifact)) {
+        errors.push(issue(
+          'team.stream.artifact',
+          'The output artifact must be inside the workstream territory.',
+          `${path}.output_artifact`
+        ));
+      }
       const budget = isObject(stream?.budget) ? stream.budget : {};
       ['max_attempts', 'tool_calls', 'timeout_seconds'].forEach((field) => {
         if (!isPositiveInteger(budget[field])) {
           errors.push(issue('team.stream.budget', `${field} must be finite.`, `${path}.budget.${field}`));
         }
       });
-      if ('model' in (stream || {}) || 'provider' in (stream || {})) {
-        errors.push(issue('team.binding', 'Route by capability; durable model/provider bindings are not allowed.', path));
+      const mappedNode = executionAgentNodes.get(stream?.graph_node_id);
+      if (!mappedNode) {
+        errors.push(issue(
+          'team.stream.graph-node',
+          'graph_node_id must reference a reachable post-validation agent or agent-team node.',
+          `${path}.graph_node_id`
+        ));
+      } else {
+        if (mappedNodeIds.has(mappedNode.id)) {
+          errors.push(issue(
+            'team.stream.graph-node-duplicate',
+            `Graph node ${mappedNode.id} is mapped by more than one workstream.`,
+            `${path}.graph_node_id`
+          ));
+        }
+        mappedNodeIds.add(mappedNode.id);
+        graphNodeToStreamId.set(mappedNode.id, stream.id);
+        if (stream.owner !== mappedNode.owner) {
+          errors.push(issue(
+            'team.stream.owner',
+            `Workstream owner must match Graph node owner ${mappedNode.owner}.`,
+            `${path}.owner`
+          ));
+        }
+        ['max_attempts', 'tool_calls', 'timeout_seconds'].forEach((field) => {
+          if (isPositiveInteger(budget[field])
+            && isPositiveInteger(mappedNode[field])
+            && budget[field] > mappedNode[field]) {
+            errors.push(issue(
+              'team.stream.graph-budget',
+              `${field} exceeds the mapped Graph node budget.`,
+              `${path}.budget.${field}`
+            ));
+          }
+        });
+        if (Array.isArray(mappedNode.inputs)
+          && Array.isArray(stream?.inputs)
+          && mappedNode.inputs.some((input) => !stream.inputs.includes(input))) {
+          errors.push(issue(
+            'team.stream.inputs',
+            'Workstream inputs must include every mapped Graph node input.',
+            `${path}.inputs`
+          ));
+        }
+        if (Array.isArray(mappedNode.writes)
+          && isNonEmptyString(stream?.output_artifact)
+          && !mappedNode.writes.includes(stream.output_artifact)) {
+          errors.push(issue(
+            'team.stream.graph-artifact',
+            'Workstream output artifact must be a write owned by the mapped Graph node.',
+            `${path}.output_artifact`
+          ));
+        }
+      }
+      if (['model', 'provider', 'vendor', 'adapter_id', 'runtime_adapter'].some(
+        (field) => field in (stream || {})
+      )) {
+        errors.push(issue(
+          'team.binding',
+          'Route by capability; durable model, provider, vendor, or adapter bindings are not allowed.',
+          path
+        ));
       }
     });
+
+    const routing = isObject(team.routing) ? team.routing : {};
+    const routeRequests = Array.isArray(routing.route_requests) ? routing.route_requests : [];
+    if (routing.selection_policy !== 'capability-match-at-runtime'
+      || routing.require_runtime_probe !== true
+      || typeof routing.automatic_substitution !== 'boolean'
+      || routing.unavailable_action !== 'PAUSE_AND_ESCALATE') {
+      errors.push(issue(
+        'team.routing.policy',
+        'Routing must be capability-matched at runtime, probe-gated, and pause on unavailable capability.',
+        'team_command.routing'
+      ));
+    }
+    if (containsSecretField(routing)) {
+      errors.push(issue(
+        'team.routing.secret',
+        'Routing requests cannot contain credentials, tokens, passwords, or secret fields.',
+        'team_command.routing'
+      ));
+    }
+    const requestIds = new Set();
+    const workstreamMap = new Map(workstreams.map((stream) => [stream.id, stream]));
+    const adapterCovers = (adapter, request) => (
+      adapter?.enabled === true
+      && (request.required_capabilities || []).every(
+        (capability) => adapter.declared_capabilities?.includes(capability)
+      )
+      && adapter.supported_workspace_modes?.includes(request.workspace_mode)
+      && adapter.supported_permission_profiles?.includes(request.permission_profile)
+    );
+    routeRequests.forEach((request, index) => {
+      const path = `team_command.routing.route_requests[${index}]`;
+      const stream = workstreamMap.get(request?.workstream_id);
+      if (requestIds.has(request?.workstream_id)) {
+        errors.push(issue(
+          'team.routing.duplicate',
+          `Duplicate route request for ${request.workstream_id}.`,
+          `${path}.workstream_id`
+        ));
+      }
+      requestIds.add(request?.workstream_id);
+      if (!stream) {
+        errors.push(issue(
+          'team.routing.workstream',
+          'Route request must reference one declared workstream.',
+          `${path}.workstream_id`
+        ));
+      } else {
+        if (request.graph_node_id !== stream.graph_node_id
+          || request.capability_owner !== stream.owner) {
+          errors.push(issue(
+            'team.routing.ownership',
+            'Route request graph node and capability owner must match the durable workstream.',
+            path
+          ));
+        }
+      }
+      if (!isUniqueStringList(request?.required_capabilities, false)
+        || !isNonEmptyString(request?.workspace_mode)
+        || !isNonEmptyString(request?.permission_profile)) {
+        errors.push(issue(
+          'team.routing.requirements',
+          'Every route request needs capabilities, workspace mode, and permission profile.',
+          path
+        ));
+      }
+      if (['adapter_id', 'preferred_adapter_id', 'selected_adapter_id', 'model', 'provider', 'vendor']
+        .some((field) => field in (request || {}))) {
+        errors.push(issue(
+          'team.routing.binding',
+          'Route requests cannot pre-bind a named runtime adapter.',
+          path
+        ));
+      }
+      if ('territory' in (request || {})) {
+        errors.push(issue(
+          'team.routing.territory',
+          'Runtime routing cannot expand durable workstream territory.',
+          path
+        ));
+      }
+      if (!adapters.some((adapter) => adapterCovers(adapter, request || {}))) {
+        errors.push(issue(
+          'team.routing.unavailable',
+          `No enabled adapter declares the complete capability and permission profile for ${request?.workstream_id || 'route'}.`,
+          path
+        ));
+      }
+    });
+    workstreams.forEach((stream) => {
+      if (!requestIds.has(stream.id)) {
+        errors.push(issue(
+          'team.routing.missing',
+          `Workstream ${stream.id} needs exactly one capability route request.`,
+          'team_command.routing.route_requests'
+        ));
+      }
+    });
+    const orchestration = isObject(routing.orchestration_request)
+      ? routing.orchestration_request
+      : {};
+    if (orchestration.capability_owner !== team.integration_owner
+      || orchestration.serial !== true
+      || !isUniqueStringList(orchestration.required_capabilities, false)
+      || !isNonEmptyString(orchestration.workspace_mode)
+      || !isNonEmptyString(orchestration.permission_profile)
+      || !adapters.some((adapter) => adapterCovers(adapter, orchestration))) {
+      errors.push(issue(
+        'team.routing.orchestration',
+        'Serial integration needs one capability-routable Harness orchestration request.',
+        'team_command.routing.orchestration_request'
+      ));
+    }
+    const resolution = isObject(routing.resolution) ? routing.resolution : {};
+    if (resolution.status !== 'PENDING_HARNESS_PROBE'
+      || !Array.isArray(resolution.selected_routes)
+      || resolution.selected_routes.length !== 0
+      || resolution.receipt !== null) {
+      errors.push(issue(
+        'team.routing.authority',
+        'Browser state cannot claim selected routes or Harness readiness.',
+        'team_command.routing.resolution'
+      ));
+    }
+    executionAgentNodes.forEach((_node, nodeId) => {
+      if (!mappedNodeIds.has(nodeId)) {
+        errors.push(issue(
+          'team.stream.graph-node-missing',
+          `Post-validation Graph node ${nodeId} needs exactly one workstream.`,
+          'team_command.workstreams'
+        ));
+      }
+    });
+    if (isPositiveInteger(review.max_open_workstreams)
+      && review.max_open_workstreams < workstreams.length) {
+      errors.push(issue(
+        'team.review.width',
+        'max_open_workstreams is smaller than the declared workstream count.',
+        'team_command.review_budget.max_open_workstreams'
+      ));
+    }
     territories.forEach((streamIds, target) => {
       if (streamIds.length > 1) {
         errors.push(issue('team.territory.overlap', `Territory has multiple owners: ${target}.`, 'team_command.workstreams'));
@@ -788,7 +2133,63 @@
           errors.push(issue('team.dependency', `Unknown workstream dependency: ${dependency}.`, `team_command.workstreams[${index}].dependencies`));
         }
       });
+      const mappedNode = graphNodeMap.get(stream.graph_node_id);
+      if (mappedNode) {
+        const expectedDependencies = new Set(
+          graphEdges
+            .filter((edge) => (
+              edge.to === mappedNode.id
+              && DEPENDENCY_EDGE_TYPES.has(edge.type)
+              && graphNodeToStreamId.has(edge.from)
+            ))
+            .map((edge) => graphNodeToStreamId.get(edge.from))
+        );
+        const actualDependencies = new Set(stream.dependencies || []);
+        if (expectedDependencies.size !== actualDependencies.size
+          || Array.from(expectedDependencies).some((id) => !actualDependencies.has(id))) {
+          errors.push(issue(
+            'team.dependency.graph',
+            'Workstream dependencies must exactly match mapped Graph dependencies.',
+            `team_command.workstreams[${index}].dependencies`
+          ));
+        }
+      }
     });
+
+    const dependencyAdjacency = new Map(Array.from(ids, (id) => [id, new Set()]));
+    const dependencyIndegree = new Map(Array.from(ids, (id) => [id, 0]));
+    workstreams.forEach((stream) => {
+      (stream.dependencies || []).forEach((dependency) => {
+        if (dependencyAdjacency.has(dependency) && dependencyIndegree.has(stream.id)) {
+          if (!dependencyAdjacency.get(dependency).has(stream.id)) {
+            dependencyAdjacency.get(dependency).add(stream.id);
+            dependencyIndegree.set(stream.id, dependencyIndegree.get(stream.id) + 1);
+          }
+        }
+      });
+    });
+    const dependencyReady = Array.from(dependencyIndegree.entries())
+      .filter(([, degree]) => degree === 0)
+      .map(([id]) => id);
+    let dependencyVisited = 0;
+    while (dependencyReady.length) {
+      const id = dependencyReady.pop();
+      dependencyVisited += 1;
+      dependencyAdjacency.get(id).forEach((target) => {
+        dependencyIndegree.set(target, dependencyIndegree.get(target) - 1);
+        if (dependencyIndegree.get(target) === 0) {
+          dependencyReady.push(target);
+        }
+      });
+    }
+    if (dependencyVisited !== ids.size) {
+      errors.push(issue(
+        'team.dependency.cycle',
+        'Agent Team workstream dependencies must be acyclic.',
+        'team_command.workstreams'
+      ));
+    }
+
     const integration = isObject(team.integration) ? team.integration : {};
     if (!isUniqueStringList(integration.order, false)
       || integration.order.length !== ids.size
@@ -798,6 +2199,83 @@
     ['verifier', 'rollback', 'cleanup_receipt'].forEach((field) => {
       if (!isNonEmptyString(integration[field])) {
         errors.push(issue('team.integration.field', `${field} is required.`, `team_command.integration.${field}`));
+      }
+    });
+    if (!isNonEmptyString(integration.graph_node_id)) {
+      errors.push(issue(
+        'team.integration.field',
+        'graph_node_id is required.',
+        'team_command.integration.graph_node_id'
+      ));
+    } else {
+      const integrationNode = graphNodeMap.get(integration.graph_node_id);
+      const joinTargets = new Set(
+        (Array.isArray(contract?.joins) ? contract.joins : []).map((join) => join.target)
+      );
+      if (!integrationNode || !joinTargets.has(integrationNode.id)) {
+        errors.push(issue(
+          'team.integration.graph-node',
+          'Integration graph_node_id must reference an explicit Graph join target.',
+          'team_command.integration.graph_node_id'
+        ));
+      } else if (integrationNode.owner !== team.integration_owner) {
+        errors.push(issue(
+          'team.integration.graph-owner',
+          'The Graph integration node owner must match integration_owner.',
+          'team_command.integration_owner'
+        ));
+      }
+    }
+    if (Array.isArray(integration.order)) {
+      const integrationPosition = new Map(integration.order.map((id, index) => [id, index]));
+      workstreams.forEach((stream) => {
+        (stream.dependencies || []).forEach((dependency) => {
+          if (integrationPosition.has(dependency)
+            && integrationPosition.has(stream.id)
+            && integrationPosition.get(dependency) > integrationPosition.get(stream.id)) {
+            errors.push(issue(
+              'team.integration.dependency-order',
+              'Integration order must place dependencies before dependents.',
+              'team_command.integration.order'
+            ));
+          }
+        });
+      });
+    }
+    const adapterOwnerIds = new Set(
+      Array.from(adapterMap.keys())
+        .filter(isNonEmptyString)
+        .map((id) => id.trim().toLowerCase())
+    );
+    const durableOwners = [
+      { value: contract?.owner, path: 'owner' },
+      { value: team.commander, path: 'team_command.commander' },
+      { value: team.integration_owner, path: 'team_command.integration_owner' },
+      {
+        value: orchestration.capability_owner,
+        path: 'team_command.routing.orchestration_request.capability_owner'
+      }
+    ];
+    graphNodes.forEach((node, index) => durableOwners.push({
+      value: node?.owner,
+      path: `nodes[${index}].owner`
+    }));
+    workstreams.forEach((stream, index) => durableOwners.push({
+      value: stream?.owner,
+      path: `team_command.workstreams[${index}].owner`
+    }));
+    routeRequests.forEach((request, index) => durableOwners.push({
+      value: request?.capability_owner,
+      path: `team_command.routing.route_requests[${index}].capability_owner`
+    }));
+    durableOwners.forEach(({ value, path }) => {
+      if (isNonEmptyString(value)
+        && adapterOwnerIds.has(value.trim().toLowerCase())) {
+        errors.push(issue(
+          'team.owner.adapter-binding',
+          `Durable owner ${value} must be a capability role, not a runtime adapter ID.`,
+          path
+        ));
       }
     });
     if (requireConfirmed && !confirmationIsValid(contract)) {
@@ -904,33 +2382,67 @@
       throw new Error('A valid confirmed blueprint and team command are required.');
     }
     const contractSha256 = structureHash(contract);
-    const command = deepClone(contract.team_command);
-    command.handoff = null;
+    const command = commandProjection(contract);
+    const commandSha256 = sha256(stableStringify(command));
     return {
-      schema_version: '1.0',
+      schema_version: '1.1',
       handoff_id: `${contract.graph_id}-r${contract.blueprint.revision}`,
       status: 'PENDING_RUNTIME_VALIDATION',
       created_at: new Date().toISOString(),
       contract_sha256: contractSha256,
+      command_sha256: commandSha256,
       confirmation_receipt: deepClone(contract.blueprint.confirmation),
       mission: {
         objective: contract.objective,
         non_goals: deepClone(contract.non_goals),
         success_criteria: deepClone(contract.blueprint.success_criteria)
       },
+      graph_contract: structureProjection(contract),
       command,
       graph: {
         entry_nodes: deepClone(contract.entry_nodes),
         terminal_nodes: deepClone(contract.terminal_nodes),
-        activation_gate: contract.team_command.activation_gate
+        activation_gate: contract.team_command.activation_gate,
+        runtime_validation_node: contract.team_command.runtime_validation_node,
+        adapter_readiness_node: contract.team_command.adapter_readiness_node
       },
       runtime_validation: {
         status: 'REQUIRED',
-        validator: 'python skills/graph-engineering/scripts/validate_graph_contract.py blueprint/default-blueprint.json --strict',
+        contract_locator: 'handoff.graph_contract',
+        command_locator: 'handoff.command',
+        validator_command_template: 'python tools/validate_mission_handoff.py <handoff.json> --receipt <runtime-validation-receipt.json>',
+        strict_validator_command_template: 'python skills/graph-engineering/scripts/validate_graph_contract.py <extracted-graph-contract.json> --strict',
         expected_contract_sha256: contractSha256,
+        expected_command_sha256: commandSha256,
+        hash_algorithm: 'SHA-256',
+        canonicalization: 'BlueprintModel.stableStringify for both handoff.graph_contract and handoff.command',
+        required_receipt_fields: [
+          'status',
+          'validator_exit_code',
+          'contract_sha256',
+          'command_sha256',
+          'command',
+          'finished_at',
+          'launch_authorized'
+        ],
         receipt: null
       },
-      next_action: 'Run strict runtime validation and bind its receipt to this hash before recruiting capability-matched workers.'
+      adapter_readiness: {
+        status: 'REQUIRED',
+        node_id: contract.team_command.adapter_readiness_node,
+        required_adapter_ids: deepClone(contract.team_command.agent_roster.required_adapter_ids),
+        browser_claims_endpoint_health: false,
+        launch_authorized: false,
+        required_receipts: [
+          'adapter_probe_receipts',
+          'capability_route_receipt',
+          'workspace_isolation_receipts',
+          'permission_receipts',
+          'ipc_ledger_readiness_receipt'
+        ],
+        receipt: null
+      },
+      next_action: 'Validate both exported hashes, then let the Harness probe adapters and resolve capability routes before recruiting workers.'
     };
   }
 
@@ -951,13 +2463,25 @@
     VALID_EDGE_TYPES: Array.from(VALID_EDGE_TYPES),
     VALID_JOIN_MODES: Array.from(VALID_JOIN_MODES),
     VALID_EFFECT_CLASSES: Array.from(VALID_EFFECT_CLASSES),
+    getBlockCatalog,
+    getBlockRecipes,
+    blockTypeForNode,
+    createBlockDraft,
+    requiredBudgetFloor,
+    previewBlockTransaction,
+    applyBlockTransaction,
+    applyBlockRecipe,
     deepClone,
     parseImportedJson,
     prepareImportedBlueprint,
+    restoreEditableSnapshot,
+    recoverEditableDraft,
     stableStringify,
     sha256,
     structureProjection,
     structureHash,
+    commandProjection,
+    commandHash,
     validateBlueprint,
     validateTeamCommand,
     topologicalLevels,

@@ -67,6 +67,11 @@ class ArchitectureBundleTests(unittest.TestCase):
                 "canonical_contract",
                 "presentation_model",
                 "interaction_model",
+                "beginner_block_catalog",
+                "block_recipe_catalog",
+                "atomic_block_compiler",
+                "history_sanitizer",
+                "runtime_validator",
                 "provenance",
             ):
                 relative = asset[field].split("#", 1)[0]
@@ -76,6 +81,46 @@ class ArchitectureBundleTests(unittest.TestCase):
             self.assertIn("worker-process execution", asset["excludes"])
             self.assertIn("runtime scheduling or permissions", asset["excludes"])
             self.assertIn("terminal completion certification", asset["excludes"])
+            self.assertIn("a second persisted block graph", asset["excludes"])
+
+        compiler = next(
+            asset
+            for asset in assets
+            if asset["id"] == "mission-lego-block-compiler"
+        )
+        self.assertEqual("presentation-compiler", compiler["role"])
+        self.assertEqual("blueprint/model.js", compiler["path"])
+        self.assertEqual(
+            "blueprint/default-blueprint.json",
+            compiler["canonical_output"],
+        )
+        for field in (
+            "finite_budget",
+            "objective_verifier",
+            "failure_status",
+            "recovery_path",
+            "durable_receipt",
+        ):
+            self.assertTrue(compiler[field], field)
+        self.assertIn("runtime graph expansion", compiler["excludes"])
+        self.assertIn("worker recruitment", compiler["excludes"])
+
+    def test_release_versions_are_aligned(self) -> None:
+        manifest = load_manifest()
+        blueprint = json.loads(
+            (ROOT / "blueprint" / "default-blueprint.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+
+        self.assertEqual("1.3", manifest["schema_version"])
+        self.assertEqual("1.3.0", manifest["bundle_version"])
+        self.assertEqual(
+            manifest["bundle_version"],
+            blueprint["blueprint"]["blueprint_version"],
+        )
+        self.assertIn("## 1.3.0 - 2026-07-28", changelog)
 
     def test_skill_contracts_have_required_sections(self) -> None:
         manifest = load_manifest()
