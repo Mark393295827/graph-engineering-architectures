@@ -22,15 +22,27 @@ For the most consistent browser behavior:
 python -m http.server 8080
 ```
 
-Then open `http://localhost:8080/`. Edit the structure, resolve validation
-issues, and issue a human confirmation receipt. Only then does the page unlock
-the capability-based Agent Team command and handoff export. The browser never
-starts agents or claims that work has executed.
+Then open `http://localhost:8080/`. The default **Blocks** workspace offers
+starter recipes and safe Lego-like blocks over the canonical DAG; **Advanced**
+opens the complete node, edge, join, workstream, and JSON controls without
+creating a second format. Resolve validation issues and issue a human
+confirmation receipt. Only then does the page unlock the capability-based
+Agent Team command and handoff export. The exported pack
+remains pending strict validation of its embedded Graph and command contracts,
+then a separate Harness adapter-readiness gate. The browser never starts
+agents, probes adapters, or claims that work has executed.
 
 The canonical seed is
 [`blueprint/default-blueprint.json`](blueprint/default-blueprint.json), and the
 full workflow and safety boundary are documented in
 [`docs/mission-blueprint.md`](docs/mission-blueprint.md).
+
+New operators should start with the
+[`complete project usage manual`](docs/project-usage-manual.md). After the
+basic workflow is familiar, use the
+[`maximum-potential operating guide`](docs/maximum-potential-guide.md) to tune
+architecture admission, capability routing, concurrency, evidence, recovery,
+and review capacity.
 
 ## Architecture Map
 
@@ -40,6 +52,7 @@ flowchart LR
     A["Agentic Engineering<br/>workflow selection"] -->|admits| G["Graph Engineering<br/>static dependency DAG"]
     G -->|bounded loop node| L["Loop Engineering<br/>temporal depth"]
     G -->|agent or team node| T["Agent Teams Command<br/>process ownership and IPC"]
+    T -->|capability route requests| H
     G -->|executed by| H["Harness Engineering<br/>scheduler, permissions, observability"]
     G -->|persists through| C["Context Manager<br/>state and context transfer"]
     G -->|evidence gate| V["Verify Before Claim<br/>terminal proof"]
@@ -67,6 +80,19 @@ placement is not dependency topology, and animation is not execution.
 
 The bundle also includes the strict Graph and Loop validators, unit tests,
 static fixtures, benchmark code, and historical experiment receipts.
+
+## Opening Mission Blueprint
+
+Open the root `index.html` to see the complete mission immediately in the
+source-aligned 1536×1024 structural diagram. Every major visual panel opens its
+canonical mission, Graph, Agent Team, or presentation editor.
+
+Claude, Antigravity, and Codex appear as editable runtime adapter
+declarations. They exchange a versioned, hash-chained IPC envelope and
+content-addressed artifacts when a runtime Harness is present. Durable Graph
+and workstream ownership remains capability-based: the browser never selects
+an adapter, stores credentials, probes endpoints, launches agents, or claims a
+readiness receipt.
 
 ## Quick Start
 
@@ -112,6 +138,12 @@ out of scope.
 
 ## Documentation
 
+- [`docs/project-usage-manual.md`](docs/project-usage-manual.md) is the
+  complete beginner-to-runtime manual for the web interface, contracts,
+  validators, tests, recovery, and extension workflows.
+- [`docs/maximum-potential-guide.md`](docs/maximum-potential-guide.md) is the
+  operating playbook for maximizing verified throughput with bounded Graph,
+  Loop, Agent Team, and Harness controls.
 - [`docs/architecture-boundaries.md`](docs/architecture-boundaries.md) defines
   the MECE ownership model and routing rules.
 - [`docs/adoption-guide.md`](docs/adoption-guide.md) provides a staged rollout.
@@ -119,12 +151,17 @@ out of scope.
   was copied and what was intentionally excluded.
 - [`docs/upstream-provenance.md`](docs/upstream-provenance.md) records source,
   commit, licensing, and update policy.
+- [`docs/blueprint-web-provenance.md`](docs/blueprint-web-provenance.md)
+  records the user-supplied visual source, hashes, asset status, and adaptation
+  boundary.
 
 ## Provenance
 
 This repository was extracted from upstream commit
 `9cf925c16510c6efe9bf44968fbfa27340a3337b` on 2026-07-27. Copied assets retain
 their upstream paths so examples and tests remain directly traceable.
+The separately supplied blueprint raster assets have their own checksum and
+rights record; they are not represented as Third Brain MIT assets.
 
 ## License
 

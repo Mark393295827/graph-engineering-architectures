@@ -9,9 +9,10 @@
     content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
   >
   <title>Graph Engineering Mission Blueprint</title>
+  <link rel="stylesheet" href="blueprint/reference-diagram.css">
   <link rel="stylesheet" href="blueprint/styles.css">
 </head>
-<body>
+<body data-editor-mode="blocks">
   <a class="skip-link" href="#workspace">Skip to blueprint</a>
 
   <header class="topbar">
@@ -60,6 +61,11 @@
     <div class="phase" data-phase="team">
       <span>04</span>
       <div><b data-i18n="phase.team">Allocate team</b><small data-i18n="phase.teamHint">Prepare bounded handoff</small></div>
+    </div>
+    <i aria-hidden="true"></i>
+    <div class="phase runtime-phase" data-phase="runtime">
+      <span>05</span>
+      <div><b data-i18n="phase.runtime">Runtime gates</b><small data-i18n="phase.runtimeHint">Harness validates &amp; probes</small></div>
     </div>
   </div>
 
@@ -113,10 +119,254 @@
             <p class="section-intro" id="missionDisplaySummary">Confirm the whole structure first. Then allocate bounded, independently reviewable Agent Team workstreams.</p>
           </div>
           <div class="section-actions">
-            <button class="quiet-button" type="button" data-view-target="graph" data-i18n="action.editGraph">Edit graph</button>
+            <button class="quiet-button" type="button" data-view-target="graph" data-i18n="action.editGraph">Start building</button>
             <button class="primary-button" type="button" data-confirm-trigger data-i18n="action.reviewConfirm">Review &amp; confirm</button>
           </div>
         </div>
+
+        <section class="reference-blueprint" aria-labelledby="architectureMapTitle">
+          <div class="reference-blueprint-toolbar">
+            <div>
+              <p class="eyebrow">Editable architecture / source-aligned</p>
+              <b>Every visual node opens its canonical editor</b>
+            </div>
+            <div class="reference-blueprint-actions">
+              <span class="map-contract-status" id="mapContractStatus">LIVE CONTRACT · R1</span>
+              <button class="quiet-button" id="architectureAnimationToggle" type="button">Pause animation</button>
+              <button class="quiet-button" id="architectureReferenceToggle" type="button">Show source overlay</button>
+              <button class="quiet-button" id="architectureFullscreenToggle" type="button">Full screen</button>
+            </div>
+          </div>
+
+          <div class="diagram-viewport" id="architectureDiagramViewport">
+            <section
+              aria-label="Graph-engineering structural diagram"
+              class="diagram architecture-diagram"
+              id="architectureDiagram"
+            >
+              <img
+                alt="Original supplied diagram reference overlay"
+                class="reference-overlay"
+                src="blueprint/reference-assets/original-reference.jpg"
+              >
+              <div aria-hidden="true" class="ambient-grid"></div>
+              <header class="diagram-header">
+                <h1 id="architectureMapTitle">
+                  <img alt="" aria-hidden="true" class="title-star-image source-icon" draggable="false" src="blueprint/reference-assets/icons/title-star.png">
+                  <span>GRAPH-ENGINEERING STRUCTURAL DIAGRAM</span>
+                  <img alt="" aria-hidden="true" class="title-star-image source-icon" draggable="false" src="blueprint/reference-assets/icons/title-star.png">
+                </h1>
+                <p>Claude plans. Codex builds. Antigravity orchestrates.</p>
+                <figure class="mark-avatar">
+                  <img alt="Mark coffee-cup avatar" src="blueprint/reference-assets/mark-avatar.png">
+                  <figcaption>Mark</figcaption>
+                </figure>
+              </header>
+
+              <section aria-label="Edit mission input" class="panel input-panel violet map-edit-target" data-map-view="mission" role="button" tabindex="0">
+                <h2>INPUT</h2>
+                <div class="input-title-row">
+                  <img alt="" class="pixel-user source-icon" draggable="false" src="blueprint/reference-assets/icons/user-goal.png">
+                  <div>
+                    <h3>USER GOAL</h3>
+                    <p>What you want</p>
+                  </div>
+                </div>
+                <p class="body-copy">Objective, constraints,<br>success criteria.</p>
+                <span class="map-edit-cue">EDIT ↗</span>
+              </section>
+
+              <section aria-label="Edit context and constraints" class="panel context-panel neutral map-edit-target" data-map-view="mission" role="button" tabindex="0">
+                <h2>CONTEXT &amp; CONSTRAINTS</h2>
+                <ul>
+                  <li>Business Context</li>
+                  <li>Technical Constraints</li>
+                  <li>Resources</li>
+                  <li>Timeline</li>
+                  <li>Success Metrics</li>
+                </ul>
+                <span class="map-edit-cue">EDIT ↗</span>
+              </section>
+
+              <section aria-label="Edit planning graph" class="panel planning-panel orange map-edit-target" data-map-view="graph" role="button" tabindex="0">
+                <h2>PLANNING CORE</h2>
+                <div class="agent-row">
+                  <img alt="Claude" class="logo claude-logo-image" draggable="false" src="blueprint/reference-assets/claude-main.png">
+                  <div class="agent-copy">
+                    <h3>Claude</h3>
+                    <p class="accent-text">Planning / Reasoning</p>
+                    <p>Task Decomposition</p>
+                  </div>
+                </div>
+                <div aria-label="Planning actions" class="action-pills">
+                  <span>ANALYZE</span><span>BREAK DOWN</span><span>PRIORITIZE</span>
+                </div>
+                <span class="map-edit-cue">GRAPH ↗</span>
+              </section>
+
+              <section aria-label="Edit plan output graph" class="panel plan-output-panel blue-gray map-edit-target" data-map-view="graph" role="button" tabindex="0">
+                <h2>PLAN OUTPUT</h2>
+                <div class="plan-content">
+                  <ul>
+                    <li>Task List</li>
+                    <li>Dependencies</li>
+                    <li>Priority Order</li>
+                    <li>Acceptance Criteria</li>
+                  </ul>
+                  <img alt="" class="checklist-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/checklist.png">
+                </div>
+                <span class="map-edit-cue">GRAPH ↗</span>
+              </section>
+
+              <section aria-label="Edit runtime adapter roster" class="execution-panel cyan map-edit-target" data-map-view="team" role="button" tabindex="0">
+                <h2>EXECUTION LAYER</h2>
+                <article class="agent-card antigravity-card lime">
+                  <div class="agent-card-head">
+                    <img alt="Antigravity" class="logo antigravity-logo-image" draggable="false" src="blueprint/reference-assets/antigravity-main.png">
+                    <div>
+                      <h3>Antigravity</h3>
+                      <p class="accent-text">Orchestration / Automation</p>
+                      <p>Workflow Execution</p>
+                    </div>
+                  </div>
+                  <div class="capability-row">
+                    <div><img alt="" class="cap-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/run-flows.png"><small>RUN FLOWS</small></div>
+                    <div><img alt="" class="cap-icon-image spin source-icon" draggable="false" src="blueprint/reference-assets/icons/automate.png"><small>AUTOMATE</small></div>
+                    <div><img alt="" class="cap-icon-image pulse source-icon" draggable="false" src="blueprint/reference-assets/icons/monitor.png"><small>MONITOR</small></div>
+                    <div><img alt="" class="cap-icon-image spin-slow source-icon" draggable="false" src="blueprint/reference-assets/icons/retries.png"><small>RETRIES</small></div>
+                  </div>
+                </article>
+                <div aria-hidden="true" class="vertical-sync">
+                  <img alt="" class="vertical-sync-image source-icon" draggable="false" src="blueprint/reference-assets/icons/vertical-sync.png">
+                </div>
+                <article class="agent-card codex-card blue">
+                  <div class="agent-card-head">
+                    <img alt="Codex" class="logo codex-logo-image" draggable="false" src="blueprint/reference-assets/codex-main.png">
+                    <div>
+                      <h3>Codex</h3>
+                      <p class="accent-text">Implementation / Execution</p>
+                      <p>Build &amp; Complete Tasks</p>
+                    </div>
+                  </div>
+                  <div class="capability-row">
+                    <div><img alt="" class="cap-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/write-code.png"><small>WRITE CODE</small></div>
+                    <div><img alt="" class="cap-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/build.png"><small>BUILD</small></div>
+                    <div><img alt="" class="cap-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/test.png"><small>TEST</small></div>
+                    <div><img alt="" class="cap-icon-image source-icon" draggable="false" src="blueprint/reference-assets/icons/complete.png"><small>COMPLETE</small></div>
+                  </div>
+                </article>
+                <span class="map-edit-cue">ROSTER ↗</span>
+              </section>
+
+              <section aria-label="Edit output presentation" class="panel output-panel violet map-edit-target" data-map-view="format" role="button" tabindex="0">
+                <h2>OUTPUT &amp; FEEDBACK</h2>
+                <div class="deliverables-box">
+                  <h3>DELIVERABLES</h3>
+                  <ul><li>Code</li><li>Artifacts</li><li>Reports</li><li>Deployments</li></ul>
+                </div>
+                <div class="feedback-copy">
+                  <h3>FEEDBACK LOOP</h3>
+                  <p>Results, signals, and learnings return for bounded review and refinement.</p>
+                </div>
+                <span class="map-edit-cue">FORMAT ↗</span>
+              </section>
+
+              <section aria-label="Edit knowledge and complete JSON format" class="knowledge-bar cyan map-edit-target" data-map-view="format" role="button" tabindex="0">
+                <h2>KNOWLEDGE GRAPH &amp; MEMORY</h2>
+                <div class="knowledge-items">
+                  <div><img alt="" class="knowledge-icon" draggable="false" src="blueprint/reference-assets/icons/codebase-graph.png"><span>Codebase Graph</span></div>
+                  <div><img alt="" class="knowledge-icon" draggable="false" src="blueprint/reference-assets/icons/document-graph.png"><span>Document Graph</span></div>
+                  <div><img alt="" class="knowledge-icon" draggable="false" src="blueprint/reference-assets/icons/decision-log.png"><span>Decision Log</span></div>
+                  <div><img alt="" class="knowledge-icon" draggable="false" src="blueprint/reference-assets/icons/pattern-library.png"><span>Pattern Library</span></div>
+                  <div><img alt="" class="knowledge-icon" draggable="false" src="blueprint/reference-assets/icons/learning-insights.png"><span>Learning &amp; Insights</span></div>
+                </div>
+                <span class="map-edit-cue">FORMAT ↗</span>
+              </section>
+
+              <section aria-label="Bounded workflow lifecycle" class="workflow">
+                <h2>DYNAMIC WORKFLOW LOOP · VISUAL LIFECYCLE, NOT A GRAPH CYCLE</h2>
+                <div class="workflow-grid">
+                  <article aria-label="Edit goal" class="workflow-card goal-card lime map-edit-target" data-map-view="mission" data-step="1" role="button" tabindex="0">
+                    <div class="workflow-heading"><b>1</b><h3>GOAL</h3></div>
+                    <p>Define the objective.</p>
+                    <div aria-hidden="true" class="mini-flow goal-flow">
+                      <img alt="" class="workflow-source-icon goal-user-icon" draggable="false" src="blueprint/reference-assets/icons/goal-user.png">
+                      <span aria-hidden="true" class="flow-arrow">→</span>
+                      <img alt="" class="workflow-source-icon claude-mini-icon" draggable="false" src="blueprint/reference-assets/claude-mini-goal.png">
+                      <span aria-hidden="true" class="flow-arrow">→</span>
+                      <img alt="" class="workflow-source-icon goal-checklist-icon" draggable="false" src="blueprint/reference-assets/icons/goal-checklist.png">
+                    </div>
+                    <div class="progress"><i></i></div>
+                  </article>
+                  <div aria-hidden="true" class="workflow-chevron">»</div>
+                  <article aria-label="Edit plan" class="workflow-card plan-card orange map-edit-target" data-map-view="graph" data-step="2" role="button" tabindex="0">
+                    <div class="workflow-heading"><b>2</b><h3>PLAN</h3></div>
+                    <p>Break down &amp; prioritize.</p>
+                    <div aria-hidden="true" class="mini-flow plan-flow">
+                      <img alt="" class="workflow-source-icon claude-mini-icon" draggable="false" src="blueprint/reference-assets/claude-mini-plan.png">
+                      <span class="branch-lines">↗<br>→<br>→<br>↘</span>
+                      <span class="task-stack"><i>TASK 1&nbsp; ✓</i><i>TASK 2&nbsp; ✓</i><i>TASK 3&nbsp; ✓</i><i>TASK N&nbsp; ✓</i></span>
+                    </div>
+                    <div class="progress"><i></i></div>
+                  </article>
+                  <div aria-hidden="true" class="workflow-chevron">»</div>
+                  <article aria-label="Edit capability routing" class="workflow-card assign-card cyan map-edit-target" data-map-view="team" data-step="3" role="button" tabindex="0">
+                    <div class="workflow-heading"><b>3</b><h3>ASSIGN</h3></div>
+                    <p>Route by capability, then preference.</p>
+                    <div aria-hidden="true" class="mini-flow assign-flow">
+                      <img alt="" class="workflow-source-icon claude-mini-icon" draggable="false" src="blueprint/reference-assets/claude-mini-assign.png">
+                      <span class="route-lines">↗<br>↘</span>
+                      <span class="tool-stack">
+                        <img alt="" class="workflow-source-icon mini-tool-icon" draggable="false" src="blueprint/reference-assets/antigravity-mini.png">
+                        <img alt="" class="workflow-source-icon mini-tool-icon" draggable="false" src="blueprint/reference-assets/codex-mini.png">
+                      </span>
+                      <span class="route-return">↔</span>
+                    </div>
+                    <div class="progress"><i></i></div>
+                  </article>
+                  <div aria-hidden="true" class="workflow-chevron">»</div>
+                  <article aria-label="Edit execution contracts" class="workflow-card execute-card blue map-edit-target" data-map-view="team" data-step="4" role="button" tabindex="0">
+                    <div class="workflow-heading"><b>4</b><h3>EXECUTE &amp; VERIFY</h3></div>
+                    <p>Execute, review, stop or refine.</p>
+                    <div aria-hidden="true" class="mini-flow execute-flow">
+                      <img alt="" class="workflow-source-icon execute-icon" draggable="false" src="blueprint/reference-assets/icons/execute-robot.png">
+                      <span aria-hidden="true" class="flow-arrow blue-arrow">→</span>
+                      <img alt="" class="workflow-source-icon execute-icon" draggable="false" src="blueprint/reference-assets/icons/execute-code.png">
+                      <span aria-hidden="true" class="flow-arrow blue-arrow">→</span>
+                      <img alt="" class="workflow-source-icon execute-icon" draggable="false" src="blueprint/reference-assets/icons/execute-review.png">
+                      <span aria-hidden="true" class="return-loop">↶</span>
+                    </div>
+                    <div class="progress"><i></i></div>
+                  </article>
+                  <div aria-label="Continuous improvement motif" class="continuous-wrap">
+                    <div class="continuous-loop">
+                      <img alt="" class="continuous-loop-image source-icon" draggable="false" src="blueprint/reference-assets/icons/continuous-loop.png">
+                    </div>
+                    <p>BOUNDED<br>IMPROVEMENT</p>
+                  </div>
+                </div>
+                <div class="benefit-strip">
+                  <div class="benefit lime"><img alt="" class="benefit-icon" draggable="false" src="blueprint/reference-assets/icons/benefit-goal.png"><p><b>CLEAR GOALS</b><small>Shared intent<br>&amp; success criteria</small></p></div>
+                  <div class="benefit orange"><img alt="" class="benefit-icon" draggable="false" src="blueprint/reference-assets/icons/benefit-plan.png"><p><b>SMART PLANNING</b><small>Bounded decomposition<br>&amp; explicit dependencies</small></p></div>
+                  <div class="benefit cyan"><img alt="" class="benefit-icon" draggable="false" src="blueprint/reference-assets/icons/benefit-routing.png"><p><b>CAPABILITY ROUTING</b><small>Replaceable adapters<br>&amp; typed IPC</small></p></div>
+                  <div class="benefit blue"><img alt="" class="benefit-icon" draggable="false" src="blueprint/reference-assets/icons/benefit-feedback.png"><p><b>EVIDENCE GATES</b><small>Objective checks<br>&amp; durable receipts</small></p></div>
+                  <div class="benefit violet"><img alt="" class="benefit-icon" draggable="false" src="blueprint/reference-assets/icons/benefit-outcome.png"><p><b>BETTER OUTCOMES</b><small>Serial integration<br>&amp; safe cleanup</small></p></div>
+                </div>
+              </section>
+
+              <div aria-hidden="true" class="connector input-to-plan violet-line"><span></span></div>
+              <div aria-hidden="true" class="connector plan-to-execution orange-line"><label>ASSIGN TASKS</label><span></span></div>
+              <div aria-hidden="true" class="connector results-to-plan orange-line reverse"><label>RESULTS &amp;<br>SIGNALS</label><span></span></div>
+              <div aria-hidden="true" class="connector execution-to-output violet-line"><span></span></div>
+              <div aria-hidden="true" class="knowledge-link context-link cyan-line"></div>
+              <div aria-hidden="true" class="knowledge-link plan-link violet-line"></div>
+              <div aria-hidden="true" class="knowledge-link output-link violet-line"></div>
+            </section>
+          </div>
+          <p class="architecture-boundary-note">
+            The animated return arrow is a bounded Loop Engineering motif. The canonical Graph below remains a finite acyclic DAG.
+          </p>
+        </section>
 
         <div class="mission-grid">
           <section class="editor-card mission-form-card">
@@ -195,6 +445,10 @@
             <p class="section-intro" data-i18n="graph.intro">Every node has one owner, typed payloads, finite budgets, a verifier, and an explicit recovery path.</p>
           </div>
           <div class="section-actions">
+            <div class="editor-mode-switch" role="group" aria-label="Editor mode">
+              <button class="quiet-button active" id="blockModeToggle" type="button" aria-pressed="true" data-i18n="builder.modeBlocks">Blocks</button>
+              <button class="quiet-button" id="advancedModeToggle" type="button" aria-pressed="false" data-i18n="builder.modeAdvanced">Advanced</button>
+            </div>
             <button class="quiet-button" id="validateButton" type="button" data-i18n="action.validate">Validate now</button>
             <button class="primary-button" id="addNodeButton" type="button" data-i18n="action.addNode">+ Add node</button>
           </div>
@@ -204,14 +458,113 @@
           <div class="validation-icon" aria-hidden="true">✓</div>
           <div>
             <b id="validationTitle">Static contract valid</b>
-            <p id="validationSummary">All graph and team contract checks pass.</p>
+            <p id="validationSummary">All browser-side Graph and Team draft checks pass.</p>
           </div>
-          <button class="quiet-button" type="button" id="toggleValidationDetails" aria-expanded="false">Details</button>
+          <button class="quiet-button" type="button" id="toggleValidationDetails" aria-expanded="false" aria-controls="validationDetails">Details</button>
         </section>
         <div class="validation-details" id="validationDetails" hidden></div>
 
+        <section class="editor-card block-builder" id="blockBuilder" aria-labelledby="blockBuilderTitle">
+          <div class="block-builder-heading">
+            <div>
+              <p class="eyebrow" data-i18n="builder.eyebrow">Beginner / Lego mode</p>
+              <h2 id="blockBuilderTitle" data-i18n="builder.title">Build the mission one safe block at a time</h2>
+              <p data-i18n="builder.intro">Choose a ready-made block. The editor connects it, adjusts its finite budget, checks the whole graph, and commits only when every rule still passes.</p>
+            </div>
+            <div class="block-history" role="group" aria-label="Block edit history">
+              <button class="quiet-button" id="undoButton" type="button" disabled aria-label="Undo last block change" data-i18n="builder.undo">↶ Undo</button>
+              <button class="quiet-button" id="redoButton" type="button" disabled aria-label="Redo block change" data-i18n="builder.redo">↷ Redo</button>
+            </div>
+          </div>
+
+          <ol class="builder-journey" aria-label="Beginner blueprint journey">
+            <li class="complete"><span>1</span><div><b data-i18n="builder.goal">Name the goal</b><small data-i18n="builder.goalHint">Write the outcome and success checks.</small></div></li>
+            <li aria-current="step"><span>2</span><div><b data-i18n="builder.arrange">Arrange blocks</b><small data-i18n="builder.arrangeHint">Add only the steps you can explain.</small></div></li>
+            <li><span>3</span><div><b data-i18n="builder.check">Check the plan</b><small data-i18n="builder.checkHint">Fix any highlighted block.</small></div></li>
+            <li><span>4</span><div><b data-i18n="builder.allocate">Confirm &amp; allocate</b><small data-i18n="builder.allocateHint">Unlock team setup with a fresh receipt.</small></div></li>
+          </ol>
+
+          <div class="block-builder-grid">
+            <section class="block-shelf" aria-labelledby="starterRecipesTitle">
+              <div class="builder-subheading">
+                <span class="builder-step-number">A</span>
+                <div>
+                  <h3 id="starterRecipesTitle" data-i18n="builder.recipes">Use a starter recipe</h3>
+                  <p data-i18n="builder.recipesHint">Add a small, reversible pattern to the current valid blueprint.</p>
+                </div>
+              </div>
+              <div class="starter-recipe-grid" id="starterRecipeGrid">
+                <button type="button" data-block-recipe="clear-and-check">
+                  <b data-i18n="builder.clearRecipe">Clarify, then check</b>
+                  <span data-i18n="builder.clearRecipeHint">Unknown → evidence check</span>
+                  <small data-i18n="builder.safeBlocks">2 safe blocks</small>
+                </button>
+                <button type="button" data-block-recipe="approval-path">
+                  <b data-i18n="builder.approvalRecipe">Add an approval path</b>
+                  <span data-i18n="builder.approvalRecipeHint">Human decision → final check</span>
+                  <small data-i18n="builder.safeBlocks">2 safe blocks</small>
+                </button>
+                <button type="button" data-block-recipe="bounded-improvement">
+                  <b data-i18n="builder.loopRecipe">Improve safely</b>
+                  <span data-i18n="builder.loopRecipeHint">Finite repeat → final check</span>
+                  <small data-i18n="builder.safeBlocks">2 safe blocks</small>
+                </button>
+              </div>
+            </section>
+
+            <section class="block-shelf" aria-labelledby="blockPaletteTitle">
+              <div class="builder-subheading">
+                <span class="builder-step-number">B</span>
+                <div>
+                  <h3 id="blockPaletteTitle" data-i18n="builder.oneBlock">Or add one block</h3>
+                  <p data-i18n="builder.oneBlockHint">Each button shows the budget it will add before you choose it.</p>
+                </div>
+              </div>
+              <div class="block-palette" id="blockPalette">
+                <button type="button" data-block-template="clarify">
+                  <span class="block-stud" aria-hidden="true">?</span>
+                  <b data-i18n="builder.clarify">Clarify one unknown</b>
+                  <small data-i18n="builder.clarifyCost">Planning · +3 min · 3 tools</small>
+                </button>
+                <button type="button" data-block-template="approval">
+                  <span class="block-stud" aria-hidden="true">✓</span>
+                  <b data-i18n="builder.approval">Ask for approval</b>
+                  <small data-i18n="builder.approvalCost">Human gate · +5 min</small>
+                </button>
+                <button type="button" data-block-template="bounded-loop">
+                  <span class="block-stud" aria-hidden="true">↻</span>
+                  <b data-i18n="builder.loop">Improve with a limit</b>
+                  <small data-i18n="builder.loopCost">Loop · 2 attempts maximum</small>
+                </button>
+                <button type="button" data-block-template="final-check">
+                  <span class="block-stud" aria-hidden="true">◎</span>
+                  <b data-i18n="builder.finalCheck">Check the result</b>
+                  <small data-i18n="builder.finalCheckCost">Evidence · +3 min · 3 tools</small>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <section class="block-assembly" aria-labelledby="blockWorkspaceTitle">
+            <div class="builder-subheading">
+              <span class="builder-step-number">C</span>
+              <div>
+                <h3 id="blockWorkspaceTitle" data-i18n="builder.workspace">Your connected mission</h3>
+                <p data-i18n="builder.workspaceHint">Blocks on the same row may run independently. A merge block waits for every declared input.</p>
+              </div>
+              <button class="primary-button" id="blockCompileButton" type="button" data-i18n="builder.checkBlocks">Check my blocks</button>
+            </div>
+            <div class="block-compile-status" id="blockCompileStatus" role="status" aria-live="polite" data-state="ready">
+              <span aria-hidden="true">✓</span>
+              <div><b data-i18n="builder.ready">Ready to build</b><small data-i18n="builder.readyHint">The canonical blueprint currently passes browser checks.</small></div>
+            </div>
+            <ul class="block-issue-list" id="blockIssueList" aria-label="Block issues" hidden></ul>
+            <div class="block-workspace" id="blockWorkspace" aria-label="Connected mission blocks"></div>
+          </section>
+        </section>
+
         <div class="graph-editor-layout">
-          <section class="editor-card graph-canvas-card">
+          <section class="editor-card graph-canvas-card advanced-editor">
             <div class="canvas-toolbar">
               <div>
                 <b id="graphIdLabel">mission-blueprint-to-agent-team</b>
@@ -244,7 +597,7 @@
           </aside>
         </div>
 
-        <section class="editor-card contract-table-card">
+        <section class="editor-card contract-table-card advanced-editor">
           <div class="card-heading">
             <div>
               <p class="eyebrow" data-i18n="graph.edges">Typed dependencies</p>
@@ -260,7 +613,7 @@
           </div>
         </section>
 
-        <section class="editor-card contract-table-card">
+        <section class="editor-card contract-table-card advanced-editor">
           <div class="card-heading">
             <div>
               <p class="eyebrow" data-i18n="graph.joins">Multi-input gates</p>
@@ -280,7 +633,14 @@
             <p class="section-intro" data-i18n="team.intro">Strategic control and integration stay serial. Independently ownable execution and review may run in parallel.</p>
           </div>
           <div class="section-actions">
-            <button class="quiet-button" id="addWorkstreamButton" type="button" data-i18n="action.addStream">+ Add workstream</button>
+            <button
+              class="quiet-button"
+              id="addWorkstreamButton"
+              type="button"
+              data-i18n="action.addStream"
+              title="A new workstream must be generated atomically with its Graph node, capability route, and integration order."
+              disabled
+            >Generated from Work blocks</button>
             <button class="primary-button" id="handoffButton" type="button" data-i18n="action.prepareHandoff">Prepare agent handoff</button>
           </div>
         </div>
@@ -296,6 +656,28 @@
         </section>
 
         <div id="teamWorkspace" inert>
+          <section class="editor-card runtime-roster-card">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">Harness runtime adapters</p>
+                <h2>Claude + Antigravity + Codex</h2>
+              </div>
+              <span class="adapter-state-chip">DECLARED · UNVERIFIED</span>
+            </div>
+            <p class="runtime-roster-intro">
+              Named runtimes advertise capabilities here; the Harness probes them and selects a compatible route only at execution time. Graph and workstream owners remain vendor-neutral.
+            </p>
+            <div class="runtime-roster-grid" id="runtimeRosterGrid"></div>
+            <div class="capability-router-strip">
+              <div class="router-emblem" aria-hidden="true">⌘</div>
+              <div>
+                <small>CAPABILITY ROUTER / TYPED IPC</small>
+                <b id="routingPolicyDisplay">capability-match-at-runtime</b>
+              </div>
+              <span>GRAPH HASH</span><i>+</i><span>COMMAND HASH</span><i>→</i><span>HARNESS PROBE</span><i>→</i><span>READY</span>
+            </div>
+          </section>
+
           <div class="team-summary-grid">
             <section class="editor-card command-card">
               <div class="card-heading">
@@ -312,6 +694,9 @@
                     <option value="specialist-pipeline">Specialist pipeline</option>
                   </select>
                 </label>
+                <label class="field"><span>Activation gate</span><input data-team-bind="activation_gate" data-scope="team"></label>
+                <label class="field"><span>Runtime validation node</span><input data-team-bind="runtime_validation_node" data-scope="team"></label>
+                <label class="field"><span>Integration graph node</span><input data-team-bind="integration.graph_node_id" data-scope="team"></label>
                 <label class="field"><span>Checkpoint cadence</span><input data-team-bind="checkpoint_cadence" data-scope="team"></label>
                 <label class="field full"><span>Admission rationale</span><textarea rows="3" data-team-bind="admission.rationale" data-scope="team"></textarea></label>
                 <label class="field full"><span>Orchestration tax</span><textarea rows="3" data-team-bind="admission.orchestration_tax" data-scope="team"></textarea></label>
@@ -421,11 +806,11 @@
       <div class="dialog-topline"><span>STRUCTURE GATE / 03</span><button class="icon-button" value="cancel" aria-label="Close confirmation dialog">×</button></div>
       <div class="dialog-orbit" aria-hidden="true"><span>✓</span></div>
       <p class="eyebrow">Human confirmation receipt</p>
-      <h2 id="confirmDialogTitle">Confirm the exact validated structure</h2>
+      <h2 id="confirmDialogTitle">Confirm the exact client-validated structure</h2>
       <p>This freezes no files. It records a receipt for the current semantic hash; any mission or graph edit immediately invalidates it and relocks Agent allocation.</p>
       <div class="receipt-preview">
         <div><small>Graph</small><b id="dialogGraphId">—</b></div>
-        <div><small>Validation</small><b id="dialogValidation">—</b></div>
+        <div><small>Client validation</small><b id="dialogValidation">—</b></div>
         <div class="full"><small>SHA-256</small><code id="dialogHash">—</code></div>
       </div>
       <label class="field full">
@@ -450,7 +835,13 @@
       <h2 id="workstreamDialogTitle">Edit workstream</h2>
       <div class="field-grid" id="workstreamEditor"></div>
       <div class="dialog-actions">
-        <button class="quiet-button danger-text" id="deleteWorkstreamButton" type="button">Delete workstream</button>
+        <button
+          class="quiet-button danger-text"
+          id="deleteWorkstreamButton"
+          type="button"
+          title="Remove the matching Work block, Graph edges, route request, merge input, and integration order in one validated transaction."
+          disabled
+        >Remove through Work block</button>
         <button class="primary-button" id="closeWorkstreamButton" value="default">Done</button>
       </div>
     </form>
@@ -467,7 +858,7 @@
   "non_goals": [
     "Do not execute agents from the static browser interface.",
     "Do not add graph cycles, dynamic expansion, hidden joins, or whole-graph retries.",
-    "Do not bind durable workstreams to named model vendors."
+    "Do not bind Graph nodes or durable workstream ownership to named runtime vendors; adapters remain replaceable."
   ],
   "owner": "integration-owner",
   "artifact_path": ".agent-state/graph/artifacts",
@@ -479,10 +870,10 @@
     "terminal-verification"
   ],
   "budgets": {
-    "max_nodes": 9,
+    "max_nodes": 10,
     "max_concurrency": 3,
     "max_attempts_per_node": 2,
-    "wall_time_seconds": 1800,
+    "wall_time_seconds": 4200,
     "tool_calls": 60,
     "review_changed_lines": 800
   },
@@ -578,7 +969,7 @@
       "idempotency": "One receipt is valid only for one canonical structure hash.",
       "compensation": "Invalidate the receipt when any mission or graph field changes.",
       "label": "Confirm structure",
-      "summary": "A human explicitly approves the exact validated structure before team allocation."
+      "summary": "A human explicitly approves the exact client-validated structure before team allocation."
     },
     {
       "id": "runtime-validation",
@@ -593,6 +984,7 @@
       ],
       "reads": [
         "handoff.graph_contract",
+        "tools/validate_mission_handoff.py",
         "skills/graph-engineering/scripts/validate_graph_contract.py"
       ],
       "writes": [
@@ -606,14 +998,42 @@
       "idempotency": "Emit at most one runtime validation receipt for one canonical structure hash.",
       "compensation": "Invalidate the receipt when the exported contract, command evidence, or confirmed hash changes.",
       "label": "Validate at runtime",
-      "summary": "The execution harness validates the exact exported contract before recruiting any worker."
+      "summary": "The execution harness validates the exact exported Graph and Agent Team command contracts."
+    },
+    {
+      "id": "adapter-readiness",
+      "kind": "deterministic",
+      "owner": "harness-runtime",
+      "inputs": [
+        "runtime_validation_receipt"
+      ],
+      "outputs": [
+        "adapter_readiness_receipt"
+      ],
+      "reads": [
+        "handoff.command.agent_roster",
+        "handoff.command.routing",
+        "handoff.command.ipc_contract"
+      ],
+      "writes": [
+        ".agent-state/graph/artifacts/adapter-readiness.json"
+      ],
+      "verifier": "The Harness probes every required adapter, verifies workspace and permission profiles, and binds IPC readiness to both contract hashes.",
+      "timeout_seconds": 180,
+      "max_attempts": 2,
+      "tool_calls": 6,
+      "effect_class": "reversible",
+      "idempotency": "Emit at most one adapter readiness receipt for one Graph hash and one Agent Team command hash.",
+      "compensation": "Revoke the readiness receipt when an adapter, route request, permission, workspace, IPC version, or either contract hash changes.",
+      "label": "Verify adapter readiness",
+      "summary": "Claude, Antigravity, and Codex remain unverified until the Harness proves runtime availability and compatibility."
     },
     {
       "id": "implementation-stream",
       "kind": "agent-team",
       "owner": "interface-builder",
       "inputs": [
-        "runtime_validation_receipt"
+        "adapter_readiness_receipt"
       ],
       "outputs": [
         "implementation_candidate"
@@ -640,7 +1060,7 @@
       "kind": "agent",
       "owner": "contract-reviewer",
       "inputs": [
-        "runtime_validation_receipt"
+        "adapter_readiness_receipt"
       ],
       "outputs": [
         "review_receipt"
@@ -779,18 +1199,26 @@
     },
     {
       "from": "runtime-validation",
-      "to": "implementation-stream",
+      "to": "adapter-readiness",
       "type": "verification",
       "payload_schema": "runtime_validation_receipt",
-      "condition": "strict validator exits zero and receipt hash matches",
+      "condition": "strict Graph and command contract validation exits zero and both hashes match",
       "failure_route": ""
     },
     {
-      "from": "runtime-validation",
+      "from": "adapter-readiness",
+      "to": "implementation-stream",
+      "type": "verification",
+      "payload_schema": "adapter_readiness_receipt",
+      "condition": "Harness readiness receipt covers the selected capability route, workspace, permission, and IPC contract",
+      "failure_route": ""
+    },
+    {
+      "from": "adapter-readiness",
       "to": "contract-review-stream",
       "type": "verification",
-      "payload_schema": "runtime_validation_receipt",
-      "condition": "strict validator exits zero and receipt hash matches",
+      "payload_schema": "adapter_readiness_receipt",
+      "condition": "Harness readiness receipt covers the selected capability route, workspace, permission, and IPC contract",
       "failure_route": ""
     },
     {
@@ -860,11 +1288,12 @@
     "whole_graph_rerun": false
   },
   "blueprint": {
-    "blueprint_version": "1.0.0",
+    "blueprint_version": "1.3.0",
     "mission_title": "Graph Engineering mission control",
     "summary": "Confirm the whole structure first. Then allocate bounded, independently reviewable Agent Team workstreams.",
     "success_criteria": [
       "The repository opens directly into an understandable mission blueprint.",
+      "A first-time user can add, configure, validate, undo, and remove safe blocks without editing edges, joins, or JSON.",
       "Mission, graph, team, and presentation fields are editable without source-code changes.",
       "Browser refresh preserves the local draft.",
       "JSON import and export round-trip the complete blueprint.",
@@ -883,17 +1312,19 @@
       "direction": "horizontal",
       "show_minimap": true,
       "show_guardrails": true,
-      "show_evidence": true
+      "show_evidence": true,
+      "editor_mode": "blocks"
     }
   },
   "team_command": {
-    "schema_version": "1.0",
+    "schema_version": "1.1",
     "status": "LOCKED_UNTIL_CONFIRMATION",
     "commander": "integration-owner",
     "integration_owner": "integration-owner",
     "topology": "manager-workers",
     "activation_gate": "structure-confirmation",
     "runtime_validation_node": "runtime-validation",
+    "adapter_readiness_node": "adapter-readiness",
     "admission": {
       "decision": "ALLOCATE_AFTER_CONFIRMATION_EXECUTE_AFTER_RUNTIME_VALIDATION",
       "rationale": "Allocation opens after human confirmation; worker recruitment waits for strict validation of the exact exported contract.",
@@ -918,6 +1349,217 @@
       "dependency",
       "next_action"
     ],
+    "ipc_contract": {
+      "protocol": "agent-team-ipc/1.0",
+      "transport": "append-only-jsonl",
+      "ledger": ".agent-state/team/ipc/events.jsonl",
+      "artifact_transfer": "content-addressed-reference",
+      "required_envelope_fields": [
+        "message_id",
+        "run_id",
+        "message_type",
+        "task_id",
+        "workstream_id",
+        "graph_node_id",
+        "sender_owner",
+        "sender_adapter_id",
+        "recipient_owner",
+        "recipient_adapter_id",
+        "sequence",
+        "sent_at",
+        "state",
+        "artifact",
+        "evidence",
+        "decision",
+        "unknowns",
+        "dependency",
+        "next_action",
+        "contract_sha256",
+        "command_sha256",
+        "previous_message_sha256",
+        "message_sha256"
+      ],
+      "message_types": [
+        "TASK_OFFER",
+        "TASK_ACCEPTED",
+        "CHECKPOINT",
+        "ARTIFACT_READY",
+        "REVIEW_DECISION",
+        "BLOCKED_DEPENDENCY",
+        "BLOCKED_PERMISSION",
+        "VERIFY_FAILED",
+        "STOP",
+        "INTEGRATION_DECISION",
+        "CLEANUP_RECEIPT"
+      ],
+      "deduplication_key": "message_id",
+      "ordering_key": "run_id+workstream_id+sequence"
+    },
+    "agent_roster": {
+      "schema_version": "1.0",
+      "required_adapter_ids": [
+        "claude",
+        "antigravity",
+        "codex"
+      ],
+      "adapters": [
+        {
+          "id": "claude",
+          "display_name": "Claude",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.claude",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "mission-planning",
+            "static-dag-review",
+            "typed-contract-review",
+            "architecture-boundary-review",
+            "independent-review",
+            "evidence-synthesis",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "receipt-only",
+            "read-only"
+          ],
+          "supported_permission_profiles": [
+            "review-receipt-writer",
+            "read-only-reviewer"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        },
+        {
+          "id": "antigravity",
+          "display_name": "Antigravity",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.antigravity",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "workflow-orchestration",
+            "runtime-monitoring",
+            "browser-acceptance",
+            "accessibility-review",
+            "responsive-visual-review",
+            "independent-review",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "receipt-only",
+            "integration-worktree"
+          ],
+          "supported_permission_profiles": [
+            "review-receipt-writer",
+            "integration-owner"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        },
+        {
+          "id": "codex",
+          "display_name": "Codex",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.codex",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "repository-editing",
+            "static-web-implementation",
+            "state-modeling",
+            "test-execution",
+            "integration-candidate",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "isolated-worktree",
+            "integration-worktree"
+          ],
+          "supported_permission_profiles": [
+            "isolated-writer",
+            "integration-owner"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        }
+      ]
+    },
+    "routing": {
+      "selection_policy": "capability-match-at-runtime",
+      "require_runtime_probe": true,
+      "automatic_substitution": false,
+      "unavailable_action": "PAUSE_AND_ESCALATE",
+      "route_requests": [
+        {
+          "workstream_id": "interface-builder",
+          "graph_node_id": "implementation-stream",
+          "capability_owner": "interface-builder",
+          "required_capabilities": [
+            "repository-editing",
+            "static-web-implementation",
+            "state-modeling",
+            "test-execution"
+          ],
+          "workspace_mode": "isolated-worktree",
+          "permission_profile": "isolated-writer"
+        },
+        {
+          "workstream_id": "contract-reviewer",
+          "graph_node_id": "contract-review-stream",
+          "capability_owner": "contract-reviewer",
+          "required_capabilities": [
+            "static-dag-review",
+            "typed-contract-review",
+            "architecture-boundary-review",
+            "independent-review"
+          ],
+          "workspace_mode": "receipt-only",
+          "permission_profile": "review-receipt-writer"
+        },
+        {
+          "workstream_id": "experience-reviewer",
+          "graph_node_id": "experience-review-stream",
+          "capability_owner": "experience-reviewer",
+          "required_capabilities": [
+            "browser-acceptance",
+            "accessibility-review",
+            "responsive-visual-review",
+            "independent-review"
+          ],
+          "workspace_mode": "receipt-only",
+          "permission_profile": "review-receipt-writer"
+        }
+      ],
+      "orchestration_request": {
+        "capability_owner": "integration-owner",
+        "required_capabilities": [
+          "workflow-orchestration",
+          "runtime-monitoring",
+          "agent-team-ipc"
+        ],
+        "workspace_mode": "integration-worktree",
+        "permission_profile": "integration-owner",
+        "serial": true
+      },
+      "resolution": {
+        "status": "PENDING_HARNESS_PROBE",
+        "selected_routes": [],
+        "receipt": null
+      }
+    },
     "allowed_tools": [
       "Read repository files.",
       "Edit files inside the assigned territory.",
@@ -947,7 +1589,7 @@
         "inputs": [
           "blueprint_contract",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/implementation.json",
         "dependencies": [],
@@ -971,7 +1613,7 @@
         "inputs": [
           "blueprint_contract",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/contract-review.json",
         "dependencies": [],
@@ -995,7 +1637,7 @@
         "inputs": [
           "implementation_candidate",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/experience-review.json",
         "dependencies": [
@@ -1011,6 +1653,7 @@
       }
     ],
     "integration": {
+      "graph_node_id": "serial-integration",
       "order": [
         "interface-builder",
         "contract-reviewer",
@@ -1023,7 +1666,6 @@
     "handoff": null
   }
 }
-
   </textarea>
   <script src="blueprint/model.js"></script>
   <script src="blueprint/app.js"></script>

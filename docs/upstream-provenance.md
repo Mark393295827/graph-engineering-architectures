@@ -42,6 +42,7 @@ contracts, or provide objective validation evidence.
 ## Repository-Specific Assets
 
 The editable web blueprint was added after extraction and is intentionally
-excluded from the upstream checksum ledger. Its design-input and asset
-exclusion decisions are recorded in
-[`blueprint-web-provenance.md`](blueprint-web-provenance.md).
+excluded from the upstream checksum ledger. Its user-supplied design input,
+asset status, and separate checksum ledger are recorded in
+[`blueprint-web-provenance.md`](blueprint-web-provenance.md) and
+`provenance/blueprint-reference-assets.sha256`.

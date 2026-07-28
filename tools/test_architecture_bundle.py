@@ -67,6 +67,11 @@ class ArchitectureBundleTests(unittest.TestCase):
                 "canonical_contract",
                 "presentation_model",
                 "interaction_model",
+                "beginner_block_catalog",
+                "block_recipe_catalog",
+                "atomic_block_compiler",
+                "history_sanitizer",
+                "runtime_validator",
                 "provenance",
             ):
                 relative = asset[field].split("#", 1)[0]
@@ -76,6 +81,46 @@ class ArchitectureBundleTests(unittest.TestCase):
             self.assertIn("worker-process execution", asset["excludes"])
             self.assertIn("runtime scheduling or permissions", asset["excludes"])
             self.assertIn("terminal completion certification", asset["excludes"])
+            self.assertIn("a second persisted block graph", asset["excludes"])
+
+        compiler = next(
+            asset
+            for asset in assets
+            if asset["id"] == "mission-lego-block-compiler"
+        )
+        self.assertEqual("presentation-compiler", compiler["role"])
+        self.assertEqual("blueprint/model.js", compiler["path"])
+        self.assertEqual(
+            "blueprint/default-blueprint.json",
+            compiler["canonical_output"],
+        )
+        for field in (
+            "finite_budget",
+            "objective_verifier",
+            "failure_status",
+            "recovery_path",
+            "durable_receipt",
+        ):
+            self.assertTrue(compiler[field], field)
+        self.assertIn("runtime graph expansion", compiler["excludes"])
+        self.assertIn("worker recruitment", compiler["excludes"])
+
+    def test_release_versions_are_aligned(self) -> None:
+        manifest = load_manifest()
+        blueprint = json.loads(
+            (ROOT / "blueprint" / "default-blueprint.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+
+        self.assertEqual("1.3", manifest["schema_version"])
+        self.assertEqual("1.3.0", manifest["bundle_version"])
+        self.assertEqual(
+            manifest["bundle_version"],
+            blueprint["blueprint"]["blueprint_version"],
+        )
+        self.assertIn("## 1.3.0 - 2026-07-28", changelog)
 
     def test_skill_contracts_have_required_sections(self) -> None:
         manifest = load_manifest()
@@ -139,6 +184,55 @@ class ArchitectureBundleTests(unittest.TestCase):
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("__pycache__/", gitignore)
         self.assertIn("*.pyc", gitignore)
+
+    def test_operator_documentation_covers_lifecycle_and_runtime_boundary(
+        self,
+    ) -> None:
+        manifest = load_manifest()
+        assets = {
+            asset["id"]: asset for asset in manifest["supporting_assets"]
+        }
+        manual_path = ROOT / assets["project-usage-manual"]["path"]
+        guide_path = ROOT / assets["maximum-potential-operating-guide"]["path"]
+        manual = manual_path.read_text(encoding="utf-8")
+        guide = guide_path.read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        for relative in (
+            "docs/project-usage-manual.md",
+            "docs/maximum-potential-guide.md",
+        ):
+            self.assertIn(relative, readme)
+
+        for required in (
+            "python -m http.server 8080",
+            "PENDING_RUNTIME_VALIDATION",
+            "RUNTIME_CONTRACT_VALIDATED",
+            "launch_authorized: false",
+            "Claude",
+            "Antigravity",
+            "Codex",
+            "No dynamic Graph expansion",
+            "diamond-graph-example.json",
+            "default-blueprint.json",
+            "ci-repair-loop-example.md",
+            "self-asserted local intent evidence",
+            "cleanup receipt",
+        ):
+            self.assertIn(required, manual)
+
+        for required in (
+            "verified throughput",
+            "capability",
+            "Graph hash",
+            "Command hash",
+            "Failure locality",
+            "one serial integration owner",
+            "Whole-Graph replay",
+            "automatic_substitution",
+            "PAUSE_AND_ESCALATE",
+        ):
+            self.assertIn(required.lower(), guide.lower())
 
     def test_upstream_commit_is_pinned(self) -> None:
         commit = load_manifest()["upstream"]["commit"]

@@ -5,7 +5,7 @@
   "non_goals": [
     "Do not execute agents from the static browser interface.",
     "Do not add graph cycles, dynamic expansion, hidden joins, or whole-graph retries.",
-    "Do not bind durable workstreams to named model vendors."
+    "Do not bind Graph nodes or durable workstream ownership to named runtime vendors; adapters remain replaceable."
   ],
   "owner": "integration-owner",
   "artifact_path": ".agent-state/graph/artifacts",
@@ -17,10 +17,10 @@
     "terminal-verification"
   ],
   "budgets": {
-    "max_nodes": 9,
+    "max_nodes": 10,
     "max_concurrency": 3,
     "max_attempts_per_node": 2,
-    "wall_time_seconds": 1800,
+    "wall_time_seconds": 4200,
     "tool_calls": 60,
     "review_changed_lines": 800
   },
@@ -116,7 +116,7 @@
       "idempotency": "One receipt is valid only for one canonical structure hash.",
       "compensation": "Invalidate the receipt when any mission or graph field changes.",
       "label": "Confirm structure",
-      "summary": "A human explicitly approves the exact validated structure before team allocation."
+      "summary": "A human explicitly approves the exact client-validated structure before team allocation."
     },
     {
       "id": "runtime-validation",
@@ -131,6 +131,7 @@
       ],
       "reads": [
         "handoff.graph_contract",
+        "tools/validate_mission_handoff.py",
         "skills/graph-engineering/scripts/validate_graph_contract.py"
       ],
       "writes": [
@@ -144,14 +145,42 @@
       "idempotency": "Emit at most one runtime validation receipt for one canonical structure hash.",
       "compensation": "Invalidate the receipt when the exported contract, command evidence, or confirmed hash changes.",
       "label": "Validate at runtime",
-      "summary": "The execution harness validates the exact exported contract before recruiting any worker."
+      "summary": "The execution harness validates the exact exported Graph and Agent Team command contracts."
+    },
+    {
+      "id": "adapter-readiness",
+      "kind": "deterministic",
+      "owner": "harness-runtime",
+      "inputs": [
+        "runtime_validation_receipt"
+      ],
+      "outputs": [
+        "adapter_readiness_receipt"
+      ],
+      "reads": [
+        "handoff.command.agent_roster",
+        "handoff.command.routing",
+        "handoff.command.ipc_contract"
+      ],
+      "writes": [
+        ".agent-state/graph/artifacts/adapter-readiness.json"
+      ],
+      "verifier": "The Harness probes every required adapter, verifies workspace and permission profiles, and binds IPC readiness to both contract hashes.",
+      "timeout_seconds": 180,
+      "max_attempts": 2,
+      "tool_calls": 6,
+      "effect_class": "reversible",
+      "idempotency": "Emit at most one adapter readiness receipt for one Graph hash and one Agent Team command hash.",
+      "compensation": "Revoke the readiness receipt when an adapter, route request, permission, workspace, IPC version, or either contract hash changes.",
+      "label": "Verify adapter readiness",
+      "summary": "Claude, Antigravity, and Codex remain unverified until the Harness proves runtime availability and compatibility."
     },
     {
       "id": "implementation-stream",
       "kind": "agent-team",
       "owner": "interface-builder",
       "inputs": [
-        "runtime_validation_receipt"
+        "adapter_readiness_receipt"
       ],
       "outputs": [
         "implementation_candidate"
@@ -178,7 +207,7 @@
       "kind": "agent",
       "owner": "contract-reviewer",
       "inputs": [
-        "runtime_validation_receipt"
+        "adapter_readiness_receipt"
       ],
       "outputs": [
         "review_receipt"
@@ -317,18 +346,26 @@
     },
     {
       "from": "runtime-validation",
-      "to": "implementation-stream",
+      "to": "adapter-readiness",
       "type": "verification",
       "payload_schema": "runtime_validation_receipt",
-      "condition": "strict validator exits zero and receipt hash matches",
+      "condition": "strict Graph and command contract validation exits zero and both hashes match",
       "failure_route": ""
     },
     {
-      "from": "runtime-validation",
+      "from": "adapter-readiness",
+      "to": "implementation-stream",
+      "type": "verification",
+      "payload_schema": "adapter_readiness_receipt",
+      "condition": "Harness readiness receipt covers the selected capability route, workspace, permission, and IPC contract",
+      "failure_route": ""
+    },
+    {
+      "from": "adapter-readiness",
       "to": "contract-review-stream",
       "type": "verification",
-      "payload_schema": "runtime_validation_receipt",
-      "condition": "strict validator exits zero and receipt hash matches",
+      "payload_schema": "adapter_readiness_receipt",
+      "condition": "Harness readiness receipt covers the selected capability route, workspace, permission, and IPC contract",
       "failure_route": ""
     },
     {
@@ -398,11 +435,12 @@
     "whole_graph_rerun": false
   },
   "blueprint": {
-    "blueprint_version": "1.0.0",
+    "blueprint_version": "1.3.0",
     "mission_title": "Graph Engineering mission control",
     "summary": "Confirm the whole structure first. Then allocate bounded, independently reviewable Agent Team workstreams.",
     "success_criteria": [
       "The repository opens directly into an understandable mission blueprint.",
+      "A first-time user can add, configure, validate, undo, and remove safe blocks without editing edges, joins, or JSON.",
       "Mission, graph, team, and presentation fields are editable without source-code changes.",
       "Browser refresh preserves the local draft.",
       "JSON import and export round-trip the complete blueprint.",
@@ -421,17 +459,19 @@
       "direction": "horizontal",
       "show_minimap": true,
       "show_guardrails": true,
-      "show_evidence": true
+      "show_evidence": true,
+      "editor_mode": "blocks"
     }
   },
   "team_command": {
-    "schema_version": "1.0",
+    "schema_version": "1.1",
     "status": "LOCKED_UNTIL_CONFIRMATION",
     "commander": "integration-owner",
     "integration_owner": "integration-owner",
     "topology": "manager-workers",
     "activation_gate": "structure-confirmation",
     "runtime_validation_node": "runtime-validation",
+    "adapter_readiness_node": "adapter-readiness",
     "admission": {
       "decision": "ALLOCATE_AFTER_CONFIRMATION_EXECUTE_AFTER_RUNTIME_VALIDATION",
       "rationale": "Allocation opens after human confirmation; worker recruitment waits for strict validation of the exact exported contract.",
@@ -456,6 +496,217 @@
       "dependency",
       "next_action"
     ],
+    "ipc_contract": {
+      "protocol": "agent-team-ipc/1.0",
+      "transport": "append-only-jsonl",
+      "ledger": ".agent-state/team/ipc/events.jsonl",
+      "artifact_transfer": "content-addressed-reference",
+      "required_envelope_fields": [
+        "message_id",
+        "run_id",
+        "message_type",
+        "task_id",
+        "workstream_id",
+        "graph_node_id",
+        "sender_owner",
+        "sender_adapter_id",
+        "recipient_owner",
+        "recipient_adapter_id",
+        "sequence",
+        "sent_at",
+        "state",
+        "artifact",
+        "evidence",
+        "decision",
+        "unknowns",
+        "dependency",
+        "next_action",
+        "contract_sha256",
+        "command_sha256",
+        "previous_message_sha256",
+        "message_sha256"
+      ],
+      "message_types": [
+        "TASK_OFFER",
+        "TASK_ACCEPTED",
+        "CHECKPOINT",
+        "ARTIFACT_READY",
+        "REVIEW_DECISION",
+        "BLOCKED_DEPENDENCY",
+        "BLOCKED_PERMISSION",
+        "VERIFY_FAILED",
+        "STOP",
+        "INTEGRATION_DECISION",
+        "CLEANUP_RECEIPT"
+      ],
+      "deduplication_key": "message_id",
+      "ordering_key": "run_id+workstream_id+sequence"
+    },
+    "agent_roster": {
+      "schema_version": "1.0",
+      "required_adapter_ids": [
+        "claude",
+        "antigravity",
+        "codex"
+      ],
+      "adapters": [
+        {
+          "id": "claude",
+          "display_name": "Claude",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.claude",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "mission-planning",
+            "static-dag-review",
+            "typed-contract-review",
+            "architecture-boundary-review",
+            "independent-review",
+            "evidence-synthesis",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "receipt-only",
+            "read-only"
+          ],
+          "supported_permission_profiles": [
+            "review-receipt-writer",
+            "read-only-reviewer"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        },
+        {
+          "id": "antigravity",
+          "display_name": "Antigravity",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.antigravity",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "workflow-orchestration",
+            "runtime-monitoring",
+            "browser-acceptance",
+            "accessibility-review",
+            "responsive-visual-review",
+            "independent-review",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "receipt-only",
+            "integration-worktree"
+          ],
+          "supported_permission_profiles": [
+            "review-receipt-writer",
+            "integration-owner"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        },
+        {
+          "id": "codex",
+          "display_name": "Codex",
+          "runtime_kind": "external-agent-adapter",
+          "enabled": true,
+          "connection_ref": "runtime.adapters.codex",
+          "launch_mode": "harness-managed",
+          "declared_capabilities": [
+            "repository-editing",
+            "static-web-implementation",
+            "state-modeling",
+            "test-execution",
+            "integration-candidate",
+            "agent-team-ipc"
+          ],
+          "supported_workspace_modes": [
+            "isolated-worktree",
+            "integration-worktree"
+          ],
+          "supported_permission_profiles": [
+            "isolated-writer",
+            "integration-owner"
+          ],
+          "max_concurrency": 1,
+          "ipc_protocol_version": "agent-team-ipc/1.0",
+          "runtime_state": {
+            "status": "UNVERIFIED",
+            "probe_receipt": null
+          }
+        }
+      ]
+    },
+    "routing": {
+      "selection_policy": "capability-match-at-runtime",
+      "require_runtime_probe": true,
+      "automatic_substitution": false,
+      "unavailable_action": "PAUSE_AND_ESCALATE",
+      "route_requests": [
+        {
+          "workstream_id": "interface-builder",
+          "graph_node_id": "implementation-stream",
+          "capability_owner": "interface-builder",
+          "required_capabilities": [
+            "repository-editing",
+            "static-web-implementation",
+            "state-modeling",
+            "test-execution"
+          ],
+          "workspace_mode": "isolated-worktree",
+          "permission_profile": "isolated-writer"
+        },
+        {
+          "workstream_id": "contract-reviewer",
+          "graph_node_id": "contract-review-stream",
+          "capability_owner": "contract-reviewer",
+          "required_capabilities": [
+            "static-dag-review",
+            "typed-contract-review",
+            "architecture-boundary-review",
+            "independent-review"
+          ],
+          "workspace_mode": "receipt-only",
+          "permission_profile": "review-receipt-writer"
+        },
+        {
+          "workstream_id": "experience-reviewer",
+          "graph_node_id": "experience-review-stream",
+          "capability_owner": "experience-reviewer",
+          "required_capabilities": [
+            "browser-acceptance",
+            "accessibility-review",
+            "responsive-visual-review",
+            "independent-review"
+          ],
+          "workspace_mode": "receipt-only",
+          "permission_profile": "review-receipt-writer"
+        }
+      ],
+      "orchestration_request": {
+        "capability_owner": "integration-owner",
+        "required_capabilities": [
+          "workflow-orchestration",
+          "runtime-monitoring",
+          "agent-team-ipc"
+        ],
+        "workspace_mode": "integration-worktree",
+        "permission_profile": "integration-owner",
+        "serial": true
+      },
+      "resolution": {
+        "status": "PENDING_HARNESS_PROBE",
+        "selected_routes": [],
+        "receipt": null
+      }
+    },
     "allowed_tools": [
       "Read repository files.",
       "Edit files inside the assigned territory.",
@@ -485,7 +736,7 @@
         "inputs": [
           "blueprint_contract",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/implementation.json",
         "dependencies": [],
@@ -509,7 +760,7 @@
         "inputs": [
           "blueprint_contract",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/contract-review.json",
         "dependencies": [],
@@ -533,7 +784,7 @@
         "inputs": [
           "implementation_candidate",
           "structure_approval_receipt",
-          "runtime_validation_receipt"
+          "adapter_readiness_receipt"
         ],
         "output_artifact": ".agent-state/team/artifacts/experience-review.json",
         "dependencies": [
@@ -549,6 +800,7 @@
       }
     ],
     "integration": {
+      "graph_node_id": "serial-integration",
       "order": [
         "interface-builder",
         "contract-reviewer",

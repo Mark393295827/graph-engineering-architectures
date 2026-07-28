@@ -15,14 +15,14 @@
       'action.import': 'Import',
       'action.export': 'Export',
       'action.confirm': 'Confirm structure',
-      'action.editGraph': 'Edit graph',
+      'action.editGraph': 'Start building',
       'action.reviewConfirm': 'Review & confirm',
       'action.confirmStructure': 'Confirm this structure',
       'action.validate': 'Validate now',
       'action.addNode': '+ Add node',
       'action.addEdge': '+ Add edge',
       'action.addJoin': '+ Add join',
-      'action.addStream': '+ Add workstream',
+      'action.addStream': 'Generated from Work blocks',
       'action.prepareHandoff': 'Prepare agent handoff',
       'action.reviewStructure': 'Review structure',
       'action.downloadHandoff': 'Download handoff pack',
@@ -35,6 +35,8 @@
       'phase.confirmHint': 'Bind a structure hash',
       'phase.team': 'Allocate team',
       'phase.teamHint': 'Prepare bounded handoff',
+      'phase.runtime': 'Runtime gates',
+      'phase.runtimeHint': 'Harness validates & probes',
       'nav.workspace': 'Workspace',
       'nav.mission': 'Mission',
       'nav.missionHint': 'Intent & acceptance',
@@ -64,10 +66,49 @@
       'metric.streams': 'team streams',
       'preview.eyebrow': 'Forward-only mission flow',
       'preview.title': 'Blueprint → confirmation → team → evidence',
-      'graph.eyebrow': 'Canonical static DAG',
-      'graph.title': 'Edit topology and execution contracts',
-      'graph.intro': 'Every node has one owner, typed payloads, finite budgets, a verifier, and an explicit recovery path.',
-      'graph.inspector': 'Node inspector',
+      'graph.eyebrow': 'Beginner blocks / canonical static DAG',
+      'graph.title': 'Build the mission with safe blocks',
+      'graph.intro': 'Start with plain-language blocks. Each safe action compiles into typed nodes, finite budgets, evidence, and recovery.',
+      'graph.inspector': 'Block settings',
+      'builder.modeBlocks': 'Blocks',
+      'builder.modeAdvanced': 'Advanced',
+      'builder.eyebrow': 'Beginner / Lego mode',
+      'builder.title': 'Build the mission one safe block at a time',
+      'builder.intro': 'Choose a ready-made block. The editor connects it, adjusts its finite budget, checks the whole graph, and commits only when every rule still passes.',
+      'builder.undo': '↶ Undo',
+      'builder.redo': '↷ Redo',
+      'builder.goal': 'Name the goal',
+      'builder.goalHint': 'Write the outcome and success checks.',
+      'builder.arrange': 'Arrange blocks',
+      'builder.arrangeHint': 'Add only the steps you can explain.',
+      'builder.check': 'Check the plan',
+      'builder.checkHint': 'Fix any highlighted block.',
+      'builder.allocate': 'Confirm & allocate',
+      'builder.allocateHint': 'Unlock team setup with a fresh receipt.',
+      'builder.recipes': 'Use a starter recipe',
+      'builder.recipesHint': 'Add a small, reversible pattern to the current valid blueprint.',
+      'builder.clearRecipe': 'Clarify, then check',
+      'builder.clearRecipeHint': 'Unknown → evidence check',
+      'builder.approvalRecipe': 'Add an approval path',
+      'builder.approvalRecipeHint': 'Human decision → final check',
+      'builder.loopRecipe': 'Improve safely',
+      'builder.loopRecipeHint': 'Finite repeat → final check',
+      'builder.safeBlocks': '2 safe blocks',
+      'builder.oneBlock': 'Or add one block',
+      'builder.oneBlockHint': 'Each button shows the budget it will add before you choose it.',
+      'builder.clarify': 'Clarify one unknown',
+      'builder.approval': 'Ask for approval',
+      'builder.loop': 'Improve with a limit',
+      'builder.finalCheck': 'Check the result',
+      'builder.clarifyCost': 'Planning · +3 min · 3 tools',
+      'builder.approvalCost': 'Human gate · +5 min',
+      'builder.loopCost': 'Loop · 2 attempts maximum',
+      'builder.finalCheckCost': 'Evidence · +3 min · 3 tools',
+      'builder.workspace': 'Your connected mission',
+      'builder.workspaceHint': 'Blocks on the same row may run independently. A merge block waits for every declared input.',
+      'builder.checkBlocks': 'Check my blocks',
+      'builder.ready': 'Ready to build',
+      'builder.readyHint': 'The canonical blueprint currently passes browser checks.',
       'graph.edges': 'Typed dependencies',
       'graph.edgesTitle': 'Edges',
       'graph.joins': 'Multi-input gates',
@@ -86,14 +127,14 @@
       'action.import': '导入',
       'action.export': '导出',
       'action.confirm': '确认结构',
-      'action.editGraph': '编辑图结构',
+      'action.editGraph': '开始搭建',
       'action.reviewConfirm': '审查并确认',
       'action.confirmStructure': '确认当前结构',
       'action.validate': '立即验证',
       'action.addNode': '+ 添加节点',
       'action.addEdge': '+ 添加边',
       'action.addJoin': '+ 添加连接',
-      'action.addStream': '+ 添加工作流',
+      'action.addStream': '由工作块生成',
       'action.prepareHandoff': '准备智能体交接',
       'action.reviewStructure': '审查结构',
       'action.downloadHandoff': '下载交接包',
@@ -106,6 +147,8 @@
       'phase.confirmHint': '绑定结构哈希',
       'phase.team': '分配团队',
       'phase.teamHint': '准备有界交接',
+      'phase.runtime': '运行时关卡',
+      'phase.runtimeHint': 'Harness 验证并探测',
       'nav.workspace': '工作区',
       'nav.mission': '任务',
       'nav.missionHint': '意图与验收',
@@ -135,10 +178,49 @@
       'metric.streams': '团队工作流',
       'preview.eyebrow': '单向任务流程',
       'preview.title': '蓝图 → 确认 → 团队 → 证据',
-      'graph.eyebrow': '规范静态 DAG',
-      'graph.title': '编辑拓扑与执行契约',
-      'graph.intro': '每个节点都有唯一所有者、类型化载荷、有限预算、验证器和明确恢复路径。',
-      'graph.inspector': '节点检查器',
+      'graph.eyebrow': '初学者积木 / 规范静态 DAG',
+      'graph.title': '使用安全积木搭建任务',
+      'graph.intro': '先使用易懂的积木。每次安全操作都会编译为类型化节点、有限预算、证据和恢复路径。',
+      'graph.inspector': '积木设置',
+      'builder.modeBlocks': '积木',
+      'builder.modeAdvanced': '高级',
+      'builder.eyebrow': '初学者 / 乐高模式',
+      'builder.title': '一次使用一个安全积木来搭建任务',
+      'builder.intro': '选择现成积木。编辑器会自动连接、调整有限预算、检查整张图，并且只有所有规则通过时才会提交。',
+      'builder.undo': '↶ 撤销',
+      'builder.redo': '↷ 重做',
+      'builder.goal': '写明目标',
+      'builder.goalHint': '填写结果和成功检查。',
+      'builder.arrange': '排列积木',
+      'builder.arrangeHint': '只添加你能解释的步骤。',
+      'builder.check': '检查计划',
+      'builder.checkHint': '修复所有高亮积木。',
+      'builder.allocate': '确认并分配',
+      'builder.allocateHint': '用新收据解锁团队设置。',
+      'builder.recipes': '使用起步配方',
+      'builder.recipesHint': '在当前有效蓝图中加入一个小型、可撤销的模式。',
+      'builder.clearRecipe': '先澄清，再检查',
+      'builder.clearRecipeHint': '未知项 → 证据检查',
+      'builder.approvalRecipe': '添加审批路径',
+      'builder.approvalRecipeHint': '人工决定 → 最终检查',
+      'builder.loopRecipe': '安全改进',
+      'builder.loopRecipeHint': '有限重复 → 最终检查',
+      'builder.safeBlocks': '2 个安全积木',
+      'builder.oneBlock': '或者添加一个积木',
+      'builder.oneBlockHint': '每个按钮都会提前显示新增预算。',
+      'builder.clarify': '澄清一个未知项',
+      'builder.approval': '请求人工批准',
+      'builder.loop': '有限次数改进',
+      'builder.finalCheck': '检查结果',
+      'builder.clarifyCost': '规划 · +3 分钟 · 3 次工具调用',
+      'builder.approvalCost': '人工关卡 · +5 分钟',
+      'builder.loopCost': '循环 · 最多尝试 2 次',
+      'builder.finalCheckCost': '证据 · +3 分钟 · 3 次工具调用',
+      'builder.workspace': '已连接的任务',
+      'builder.workspaceHint': '同一行积木可以独立执行；合并积木会等待所有声明的输入。',
+      'builder.checkBlocks': '检查我的积木',
+      'builder.ready': '可以开始搭建',
+      'builder.readyHint': '当前规范蓝图已通过浏览器检查。',
       'graph.edges': '类型化依赖',
       'graph.edgesTitle': '边',
       'graph.joins': '多输入关卡',
@@ -173,6 +255,12 @@
     edgeMetric: document.getElementById('edgeMetric'),
     joinMetric: document.getElementById('joinMetric'),
     teamMetric: document.getElementById('teamMetric'),
+    mapContractStatus: document.getElementById('mapContractStatus'),
+    architectureDiagram: document.getElementById('architectureDiagram'),
+    architectureDiagramViewport: document.getElementById('architectureDiagramViewport'),
+    architectureAnimationToggle: document.getElementById('architectureAnimationToggle'),
+    architectureReferenceToggle: document.getElementById('architectureReferenceToggle'),
+    architectureFullscreenToggle: document.getElementById('architectureFullscreenToggle'),
     missionGraphStage: document.getElementById('missionGraphStage'),
     missionLinearFlow: document.getElementById('missionLinearFlow'),
     graphStage: document.getElementById('graphStage'),
@@ -184,6 +272,18 @@
     validationSummary: document.getElementById('validationSummary'),
     validationDetails: document.getElementById('validationDetails'),
     toggleValidationDetails: document.getElementById('toggleValidationDetails'),
+    blockBuilder: document.getElementById('blockBuilder'),
+    blockModeToggle: document.getElementById('blockModeToggle'),
+    advancedModeToggle: document.getElementById('advancedModeToggle'),
+    blockPalette: document.getElementById('blockPalette'),
+    starterRecipeGrid: document.getElementById('starterRecipeGrid'),
+    blockWorkspace: document.getElementById('blockWorkspace'),
+    blockCompileButton: document.getElementById('blockCompileButton'),
+    blockCompileStatus: document.getElementById('blockCompileStatus'),
+    blockIssueList: document.getElementById('blockIssueList'),
+    undoButton: document.getElementById('undoButton'),
+    redoButton: document.getElementById('redoButton'),
+    nodeInspector: document.getElementById('nodeInspector'),
     nodeInspectorBody: document.getElementById('nodeInspectorBody'),
     inspectorHeading: document.getElementById('inspectorHeading'),
     duplicateNodeButton: document.getElementById('duplicateNodeButton'),
@@ -199,6 +299,8 @@
     handoffCardButton: document.getElementById('handoffCardButton'),
     handoffTitle: document.getElementById('handoffTitle'),
     handoffSummary: document.getElementById('handoffSummary'),
+    runtimeRosterGrid: document.getElementById('runtimeRosterGrid'),
+    routingPolicyDisplay: document.getElementById('routingPolicyDisplay'),
     ipcFields: document.getElementById('ipcFields'),
     integrationOwnerDisplay: document.getElementById('integrationOwnerDisplay'),
     workstreamGrid: document.getElementById('workstreamGrid'),
@@ -227,8 +329,13 @@
   let saveTimer = null;
   let toastTimer = null;
   let resizeTimer = null;
+  let architectureLoopTimer = null;
+  let architectureStepIndex = 0;
   let storageAvailable = true;
   let currentLanguage = 'en';
+  let undoHistory = [];
+  let redoHistory = [];
+  const historyLimit = 30;
 
   function createElement(tag, className, text) {
     const element = document.createElement(tag);
@@ -239,6 +346,17 @@
       element.textContent = String(text);
     }
     return element;
+  }
+
+  function scrollElementIntoView(element, block) {
+    if (!element) {
+      return;
+    }
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    element.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: block || 'start'
+    });
   }
 
   function createSvgElement(tag) {
@@ -314,11 +432,17 @@
       if (envelope.storage_schema_version !== '1.0' || !envelope.state) {
         throw new Error('Unsupported local storage envelope.');
       }
-      const result = Model.validateBlueprint(envelope.state);
-      if (result.errors.length) {
-        throw new Error('Stored draft no longer satisfies the blueprint schema.');
+      const recovered = Model.recoverEditableDraft(envelope.state);
+      if (recovered.repair_mode) {
+        queueMicrotask(() => {
+          showToast(
+            `Your incomplete draft was recovered in repair mode with ${recovered.issues.length} issue(s); no work was discarded.`,
+            true
+          );
+        });
+        return recovered.state;
       }
-      return Model.deepClone(envelope.state);
+      return recovered.state;
     } catch (error) {
       storageAvailable = false;
       queueMicrotask(() => {
@@ -389,7 +513,20 @@
     } catch (_error) {
       storageAvailable = false;
     }
+    elements.undoButton.setAttribute(
+      'aria-label',
+      currentLanguage === 'zh-CN' ? '撤销上一次积木更改' : 'Undo last block change'
+    );
+    elements.redoButton.setAttribute(
+      'aria-label',
+      currentLanguage === 'zh-CN' ? '重做积木更改' : 'Redo block change'
+    );
+    updateArchitectureControls();
     refreshStatus();
+    if (state?.nodes) {
+      renderBlockWorkspace();
+      renderNodeInspector();
+    }
   }
 
   function resolveInitialLanguage() {
@@ -460,6 +597,66 @@
     elements.edgeMetric.textContent = state.edges.length;
     elements.joinMetric.textContent = state.joins.length;
     elements.teamMetric.textContent = state.team_command.workstreams.length;
+    elements.mapContractStatus.textContent = `LIVE CONTRACT · R${state.blueprint.revision || 1} · ${state.nodes.length} NODES`;
+  }
+
+  function fitArchitectureDiagram() {
+    const viewport = elements.architectureDiagramViewport;
+    if (!viewport) {
+      return;
+    }
+    const fullscreen = document.fullscreenElement === viewport;
+    const availableWidth = Math.max(1, fullscreen ? window.innerWidth - 24 : viewport.clientWidth);
+    const availableHeight = fullscreen ? Math.max(1, window.innerHeight - 24) : 1024;
+    const scale = Math.min(1, availableWidth / 1536, availableHeight / 1024);
+    viewport.style.setProperty('--scale', scale.toFixed(4));
+    viewport.style.height = `${Math.ceil(1024 * scale)}px`;
+  }
+
+  function setArchitectureStep(index) {
+    const cards = Array.from(elements.architectureDiagram.querySelectorAll('.workflow-card'));
+    if (!cards.length) {
+      return;
+    }
+    architectureStepIndex = ((index % cards.length) + cards.length) % cards.length;
+    cards.forEach((card, cardIndex) => {
+      card.classList.toggle('active', cardIndex === architectureStepIndex);
+    });
+  }
+
+  function startArchitectureLoop() {
+    clearInterval(architectureLoopTimer);
+    setArchitectureStep(architectureStepIndex);
+    architectureLoopTimer = window.setInterval(() => {
+      setArchitectureStep(architectureStepIndex + 1);
+    }, 2400);
+  }
+
+  function updateArchitectureControls() {
+    const paused = elements.architectureDiagram.classList.contains('paused');
+    const showingReference = elements.architectureDiagram.classList.contains('show-reference');
+    const fullscreen = document.fullscreenElement === elements.architectureDiagramViewport;
+    elements.architectureAnimationToggle.textContent = paused
+      ? (currentLanguage === 'zh-CN' ? '继续动画' : 'Resume animation')
+      : (currentLanguage === 'zh-CN' ? '暂停动画' : 'Pause animation');
+    elements.architectureReferenceToggle.textContent = showingReference
+      ? (currentLanguage === 'zh-CN' ? '隐藏原图' : 'Hide source overlay')
+      : (currentLanguage === 'zh-CN' ? '显示原图' : 'Show source overlay');
+    elements.architectureFullscreenToggle.textContent = fullscreen
+      ? (currentLanguage === 'zh-CN' ? '退出全屏' : 'Exit full screen')
+      : (currentLanguage === 'zh-CN' ? '全屏' : 'Full screen');
+  }
+
+  function openArchitectureTarget(target) {
+    const view = target.dataset.mapView;
+    if (!view) {
+      return;
+    }
+    setActiveView(view, true);
+    const destination = view === 'mission'
+      ? document.querySelector('.mission-form-card')
+      : document.querySelector(`[data-view-panel="${view}"] .section-heading`);
+    requestAnimationFrame(() => scrollElementIntoView(destination, 'start'));
   }
 
   function refreshStatus() {
@@ -469,11 +666,11 @@
     elements.body.dataset.status = confirmed ? 'confirmed' : (valid ? 'draft' : 'invalid');
     elements.revisionChip.textContent = `R${state.blueprint.revision || 1}`;
     elements.headerStatus.textContent = handoffReady
-      ? (currentLanguage === 'zh-CN' ? '交接包已导出 · 等待运行时验证' : 'Handoff exported · runtime validation required')
+      ? (currentLanguage === 'zh-CN' ? '交接包已导出 · 等待契约与适配器验证' : 'Handoff exported · contract and adapter gates required')
       : confirmed
         ? (currentLanguage === 'zh-CN' ? '结构已确认' : 'Structure confirmed')
         : valid
-          ? (currentLanguage === 'zh-CN' ? '结构已验证' : 'Structure validated')
+          ? (currentLanguage === 'zh-CN' ? '客户端检查通过' : 'Client checks pass')
           : (currentLanguage === 'zh-CN' ? '草稿需要修正' : 'Draft needs attention');
     elements.structureHash.textContent = `sha256:${hash.slice(0, 20)}…`;
     elements.structureHash.title = hash;
@@ -505,21 +702,26 @@
     elements.graphErrorBadge.hidden = validation.errors.length === 0;
     elements.graphErrorBadge.textContent = String(validation.errors.length);
     elements.graphErrorBadge.classList.toggle('error', validation.errors.length > 0);
-    elements.teamLockBadge.textContent = confirmed ? (handoffReady ? 'PENDING CHECK' : 'OPEN') : 'LOCKED';
+    elements.teamLockBadge.textContent = confirmed ? (handoffReady ? 'PENDING GATES' : 'OPEN') : 'LOCKED';
     elements.teamLockBadge.classList.toggle('ready', confirmed);
 
     elements.validationBanner.classList.toggle('invalid', !valid);
     elements.validationBanner.querySelector('.validation-icon').textContent = valid ? '✓' : '!';
     elements.validationTitle.textContent = valid
-      ? (currentLanguage === 'zh-CN' ? '静态契约有效' : 'Static contract valid')
+      ? (currentLanguage === 'zh-CN' ? '客户端契约检查通过' : 'Client contract checks pass')
       : `${validation.errors.length} ${currentLanguage === 'zh-CN' ? '项阻塞问题' : 'blocking issue(s)'}`;
     elements.validationSummary.textContent = valid
-      ? (currentLanguage === 'zh-CN' ? '所有图与团队契约检查均通过。' : 'All graph and team contract checks pass.')
+      ? (currentLanguage === 'zh-CN'
+        ? '所有浏览器端图与团队草稿检查均通过。'
+        : 'All browser-side Graph and Team draft checks pass.')
       : validation.errors[0]?.message || 'Validation failed.';
     renderValidationDetails();
 
     elements.teamWorkspace.inert = !confirmed;
-    elements.addWorkstreamButton.disabled = !confirmed;
+    elements.addWorkstreamButton.disabled = true;
+    elements.addWorkstreamButton.title = currentLanguage === 'zh-CN'
+      ? '新工作流必须与图节点、能力路由和集成顺序一起原子生成。'
+      : 'A new workstream must be generated atomically with its Graph node, capability route, and integration order.';
     elements.handoffButton.disabled = !confirmed || !valid;
     elements.handoffCardButton.disabled = !confirmed || !valid;
     elements.teamGate.classList.toggle('ready', confirmed);
@@ -538,7 +740,7 @@
     gateButton.hidden = confirmed;
 
     elements.handoffTitle.textContent = handoffReady
-      ? (currentLanguage === 'zh-CN' ? '交接包已导出，等待严格验证' : 'Handoff exported, strict validation pending')
+      ? (currentLanguage === 'zh-CN' ? '交接包已导出，等待契约与适配器验证' : 'Handoff exported, contract and adapter gates pending')
       : (currentLanguage === 'zh-CN' ? '可准备，但绝不自动运行' : 'Ready to prepare, never auto-run');
     elements.handoffSummary.textContent = handoffReady
       ? `${currentLanguage === 'zh-CN' ? '已绑定哈希；仍需运行时验证' : 'Bound hash; runtime validation still required'}: ${state.team_command.handoff.contract_sha256.slice(0, 16)}…`
@@ -560,6 +762,36 @@
     if (confirmed) {
       phases[3].classList.add(handoffReady ? 'complete' : 'active');
     }
+    if (handoffReady && phases[4]) {
+      phases[4].classList.add('active');
+    }
+    updateBeginnerJourney(valid, confirmed, handoffReady);
+  }
+
+  function updateBeginnerJourney(valid, confirmed, handoffReady) {
+    const steps = Array.from(document.querySelectorAll('.builder-journey > li'));
+    const missionComplete = Boolean(
+      String(state.objective || '').trim()
+      && String(state.blueprint?.mission_title || '').trim()
+      && Array.isArray(state.blueprint?.success_criteria)
+      && state.blueprint.success_criteria.length
+    );
+    let currentIndex = 0;
+    if (missionComplete) {
+      currentIndex = state.nodes.length ? (valid ? 3 : 2) : 1;
+    }
+    if (confirmed || handoffReady) {
+      currentIndex = 3;
+    }
+    steps.forEach((step, index) => {
+      const complete = index < currentIndex || (handoffReady && index === currentIndex);
+      step.classList.toggle('complete', complete);
+      if (index === currentIndex) {
+        step.setAttribute('aria-current', 'step');
+      } else {
+        step.removeAttribute('aria-current');
+      }
+    });
   }
 
   function renderValidationDetails() {
@@ -594,6 +826,12 @@
     document.documentElement.dataset.showMinimap = presentation.show_minimap === false ? 'false' : 'true';
     document.documentElement.dataset.showEvidence = presentation.show_evidence === false ? 'false' : 'true';
     document.getElementById('guardrailCard').hidden = presentation.show_guardrails === false;
+    const editorMode = presentation.editor_mode === 'advanced' ? 'advanced' : 'blocks';
+    elements.body.dataset.editorMode = editorMode;
+    elements.blockModeToggle.classList.toggle('active', editorMode === 'blocks');
+    elements.advancedModeToggle.classList.toggle('active', editorMode === 'advanced');
+    elements.blockModeToggle.setAttribute('aria-pressed', String(editorMode === 'blocks'));
+    elements.advancedModeToggle.setAttribute('aria-pressed', String(editorMode === 'advanced'));
     document.querySelectorAll('[data-presentation]').forEach((control) => {
       const value = presentation[control.dataset.presentation];
       if (control.type === 'checkbox') {
@@ -665,18 +903,15 @@
         if (!node) {
           return;
         }
-        const card = createElement(
-          interactive ? 'button' : 'div',
-          `graph-node kind-${node.kind}`
-        );
+        const card = createElement('button', `graph-node kind-${node.kind}`);
+        card.type = 'button';
         if (interactive) {
-          card.type = 'button';
           card.dataset.nodeId = node.id;
           card.classList.toggle('selected', node.id === selectedNodeId);
           card.setAttribute('aria-label', `Edit node ${node.label || node.id}`);
         } else {
-          card.tabIndex = 0;
           card.dataset.previewNodeId = node.id;
+          card.setAttribute('aria-label', `Open graph editor for node ${node.label || node.id}`);
         }
         if (!confirmed && lockedIds.has(node.id)) {
           card.classList.add('locked');
@@ -781,6 +1016,477 @@
     renderGraph(elements.graphStage, elements.graphLinearFlow, true);
     elements.graphIdLabel.textContent = state.graph_id;
     elements.graphOwnerLabel.textContent = `Owner · ${state.owner}`;
+    renderBlockWorkspace();
+  }
+
+  function setEditorMode(mode, persist) {
+    const nextMode = mode === 'advanced' ? 'advanced' : 'blocks';
+    elements.body.dataset.editorMode = nextMode;
+    elements.blockModeToggle.classList.toggle('active', nextMode === 'blocks');
+    elements.advancedModeToggle.classList.toggle('active', nextMode === 'advanced');
+    elements.blockModeToggle.setAttribute('aria-pressed', String(nextMode === 'blocks'));
+    elements.advancedModeToggle.setAttribute('aria-pressed', String(nextMode === 'advanced'));
+    if (persist && state.blueprint.presentation.editor_mode !== nextMode) {
+      state.blueprint.presentation.editor_mode = nextMode;
+      scheduleSave();
+    }
+    if (activeView === 'graph') {
+      requestAnimationFrame(() => {
+        renderGraphViews();
+        renderNodeInspector();
+        const focusTarget = nextMode === 'blocks'
+          ? elements.blockBuilder
+          : elements.graphStage;
+        scrollElementIntoView(focusTarget, 'start');
+      });
+    }
+  }
+
+  function beginnerBlockType(node) {
+    const insertedType = Model.blockTypeForNode(node);
+    if (insertedType) {
+      return insertedType;
+    }
+    if (state.entry_nodes.includes(node.id)) {
+      return 'goal';
+    }
+    if (state.terminal_nodes.includes(node.id)) {
+      return 'deliver';
+    }
+    if (node.id === state.team_command.integration?.graph_node_id) {
+      return 'merge';
+    }
+    if (node.id === state.team_command.runtime_validation_node
+      || node.id === state.team_command.adapter_readiness_node) {
+      return 'safety-check';
+    }
+    if (node.kind === 'human-gate') {
+      return 'approval';
+    }
+    if (node.kind === 'loop') {
+      return 'bounded-loop';
+    }
+    if (node.kind === 'agent-team') {
+      return 'team-work';
+    }
+    if (node.kind === 'agent') {
+      return /review/i.test(node.id) ? 'review' : 'work';
+    }
+    return /verif|check|review/i.test(`${node.id} ${node.label || ''}`)
+      ? 'check'
+      : 'step';
+  }
+
+  function beginnerBlockLabel(type) {
+    const labels = currentLanguage === 'zh-CN'
+      ? {
+        goal: '目标',
+        deliver: '交付',
+        merge: '合并',
+        'safety-check': '安全检查',
+        approval: '人工确认',
+        'bounded-loop': '有限循环',
+        'team-work': '团队工作',
+        review: '独立审查',
+        work: '工作',
+        check: '检查',
+        clarify: '澄清',
+        'final-check': '结果检查',
+        step: '步骤'
+      }
+      : {
+        goal: 'Goal',
+        deliver: 'Deliver',
+        merge: 'Merge',
+        'safety-check': 'Safety check',
+        approval: 'Approval',
+        'bounded-loop': 'Repeat safely',
+        'team-work': 'Team work',
+        review: 'Independent review',
+        work: 'Work',
+        check: 'Check',
+        clarify: 'Clarify',
+        'final-check': 'Result check',
+        step: 'Step'
+      };
+    return labels[type] || type;
+  }
+
+  function nodeIdsForIssue(item) {
+    const ids = new Set();
+    const path = item?.path || '';
+    let match = /^nodes\[(\d+)]/.exec(path);
+    if (match && state.nodes[Number(match[1])]) {
+      ids.add(state.nodes[Number(match[1])].id);
+    }
+    match = /^edges\[(\d+)]/.exec(path);
+    if (match && state.edges[Number(match[1])]) {
+      const edge = state.edges[Number(match[1])];
+      ids.add(edge.from);
+      ids.add(edge.to);
+    }
+    match = /^joins\[(\d+)]/.exec(path);
+    if (match && state.joins[Number(match[1])]) {
+      const join = state.joins[Number(match[1])];
+      ids.add(join.target);
+      (join.inputs || []).forEach((id) => ids.add(id));
+    }
+    match = /^team_command\.workstreams\[(\d+)]/.exec(path);
+    if (match && state.team_command.workstreams[Number(match[1])]) {
+      ids.add(state.team_command.workstreams[Number(match[1])].graph_node_id);
+    }
+    match = /^team_command\.routing\.route_requests\[(\d+)]/.exec(path);
+    if (match && state.team_command.routing?.route_requests?.[Number(match[1])]) {
+      ids.add(state.team_command.routing.route_requests[Number(match[1])].graph_node_id);
+    }
+    if (path === 'team_command.activation_gate') {
+      ids.add(state.team_command.activation_gate);
+    }
+    if (path === 'team_command.runtime_validation_node') {
+      ids.add(state.team_command.runtime_validation_node);
+    }
+    if (path === 'team_command.adapter_readiness_node') {
+      ids.add(state.team_command.adapter_readiness_node);
+    }
+    if (path === 'team_command.integration.graph_node_id') {
+      ids.add(state.team_command.integration?.graph_node_id);
+    }
+    if (item?.code === 'writer.overlap') {
+      const target = /multiple owners:\s*(.+?)\.$/.exec(item.message || '')?.[1];
+      state.nodes.forEach((node) => {
+        if (target && node.writes?.includes(target)) {
+          ids.add(node.id);
+        }
+      });
+    }
+    return Array.from(ids).filter((id) => state.nodes.some((node) => node.id === id));
+  }
+
+  function nodeIssues(nodeId) {
+    return validation.errors.filter((item) => nodeIdsForIssue(item).includes(nodeId));
+  }
+
+  function hasUnmappedBlockIssues() {
+    return validation.errors.some((item) => nodeIdsForIssue(item).length === 0);
+  }
+
+  function renderBlockIssues(issues, actionRejected) {
+    const blocking = Array.isArray(issues) ? issues : validation.errors;
+    const statusKey = blocking.length
+      ? `${currentLanguage}:${actionRejected ? 'rejected' : 'invalid'}:${blocking.length}:${blocking[0]?.code || ''}`
+      : `${currentLanguage}:ready`;
+    const statusChanged = elements.blockCompileStatus.dataset.announceKey !== statusKey;
+    elements.blockCompileStatus.dataset.announceKey = statusKey;
+    elements.blockIssueList.replaceChildren();
+    if (!blocking.length) {
+      elements.blockIssueList.hidden = true;
+      elements.blockCompileStatus.dataset.state = 'ready';
+      if (!statusChanged) {
+        return;
+      }
+      elements.blockCompileStatus.replaceChildren();
+      const icon = createElement('span', '', '✓');
+      icon.setAttribute('aria-hidden', 'true');
+      const copy = createElement('div');
+      copy.append(
+        createElement('b', '', currentLanguage === 'zh-CN' ? '所有积木已连接' : 'All blocks are connected'),
+        createElement(
+          'small',
+          '',
+          currentLanguage === 'zh-CN'
+            ? '当前规范蓝图已通过浏览器检查；确认后才能设置团队。'
+            : 'The canonical blueprint passes browser checks; team setup still requires confirmation.'
+        )
+      );
+      elements.blockCompileStatus.append(icon, copy);
+      return;
+    }
+    elements.blockIssueList.hidden = false;
+    elements.blockCompileStatus.dataset.state = 'invalid';
+    if (statusChanged) {
+      elements.blockCompileStatus.replaceChildren();
+      const icon = createElement('span', '', '!');
+      icon.setAttribute('aria-hidden', 'true');
+      const copy = createElement('div');
+      copy.append(
+        createElement(
+          'b',
+          '',
+          actionRejected
+            ? (currentLanguage === 'zh-CN' ? '操作未应用' : 'Action not applied')
+            : (currentLanguage === 'zh-CN' ? '有积木需要处理' : 'Some blocks need attention')
+        ),
+        createElement(
+          'small',
+          '',
+          actionRejected
+            ? (currentLanguage === 'zh-CN'
+              ? '蓝图没有改变。请查看下面的原因。'
+              : 'The blueprint was not changed. Review the reason below.')
+            : (currentLanguage === 'zh-CN'
+              ? `${blocking.length} 项阻塞问题`
+              : `${blocking.length} blocking issue${blocking.length === 1 ? '' : 's'}`)
+        )
+      );
+      elements.blockCompileStatus.append(icon, copy);
+    }
+    blocking.slice(0, 12).forEach((item) => {
+      const row = createElement('li');
+      const button = createElement('button', '', item.message);
+      button.type = 'button';
+      button.dataset.blockIssue = item.code;
+      button.dataset.path = item.path;
+      row.append(button);
+      elements.blockIssueList.append(row);
+    });
+  }
+
+  function renderBlockWorkspace() {
+    if (!elements.blockWorkspace) {
+      return;
+    }
+    elements.blockWorkspace.replaceChildren();
+    const nodeMap = new Map(state.nodes.map((node) => [node.id, node]));
+    const levels = Model.topologicalLevels(state);
+    const confirmed = Model.confirmationIsValid(state);
+    const planHasUnmappedIssues = hasUnmappedBlockIssues();
+    levels.forEach((ids, levelIndex) => {
+      const group = createElement('section', 'block-level');
+      group.setAttribute(
+        'aria-label',
+        currentLanguage === 'zh-CN'
+          ? `第 ${levelIndex + 1} 步`
+          : `Step ${levelIndex + 1}`
+      );
+      const header = createElement('div', 'block-level-heading');
+      header.append(
+        createElement('span', '', String(levelIndex + 1).padStart(2, '0')),
+        createElement(
+          'small',
+          '',
+          ids.length > 1
+            ? (currentLanguage === 'zh-CN'
+              ? `${ids.length} 个积木可以独立执行`
+              : `${ids.length} blocks may run independently`)
+            : (currentLanguage === 'zh-CN' ? '一个有限积木' : 'One bounded block')
+        )
+      );
+      const row = createElement('div', 'block-level-row');
+      row.setAttribute('role', 'list');
+      row.setAttribute(
+        'aria-label',
+        currentLanguage === 'zh-CN'
+          ? `第 ${levelIndex + 1} 步的积木`
+          : `Blocks in step ${levelIndex + 1}`
+      );
+      ids.forEach((id) => {
+        const node = nodeMap.get(id);
+        if (!node) {
+          return;
+        }
+        const type = beginnerBlockType(node);
+        const issues = nodeIssues(id);
+        const needsAttention = issues.length > 0 || planHasUnmappedIssues;
+        const card = createElement('article', `mission-block block-${type}`);
+        card.dataset.blockId = id;
+        card.dataset.blockType = type;
+        card.setAttribute('role', 'listitem');
+        const top = createElement('div', 'mission-block-top');
+        top.append(
+          createElement('span', 'mission-block-kind', beginnerBlockLabel(type)),
+          createElement(
+            'span',
+            `block-state ${needsAttention ? 'needs-attention' : (confirmed ? 'confirmed' : 'ready')}`,
+            needsAttention
+              ? (issues.length
+                ? (currentLanguage === 'zh-CN' ? '需要处理' : 'Needs attention')
+                : (currentLanguage === 'zh-CN' ? '方案需处理' : 'Plan needs attention'))
+              : (confirmed
+                ? (currentLanguage === 'zh-CN' ? '已确认' : 'Confirmed')
+                : (currentLanguage === 'zh-CN' ? '已就绪' : 'Ready'))
+          )
+        );
+        const configure = createElement('button', 'mission-block-main');
+        configure.type = 'button';
+        configure.dataset.blockAction = 'configure';
+        configure.dataset.blockId = id;
+        configure.setAttribute(
+          'aria-label',
+          `${currentLanguage === 'zh-CN' ? '设置' : 'Configure'} ${node.label || node.id}`
+        );
+        configure.append(
+          createElement('b', '', node.label || node.id),
+          createElement('p', '', node.summary || node.verifier),
+          createElement(
+            'small',
+            '',
+            currentLanguage === 'zh-CN'
+              ? `${node.timeout_seconds} 秒 · 最多 ${node.max_attempts} 次`
+              : `${node.timeout_seconds}s · ${node.max_attempts} attempt${node.max_attempts === 1 ? '' : 's'}`
+          )
+        );
+        const actions = createElement('div', 'mission-block-actions');
+        if (Model.blockTypeForNode(node)) {
+          const remove = createElement(
+            'button',
+            'quiet-button danger-text',
+            currentLanguage === 'zh-CN' ? '移除' : 'Remove'
+          );
+          remove.type = 'button';
+          remove.dataset.blockAction = 'remove';
+          remove.dataset.blockId = id;
+          remove.setAttribute(
+            'aria-label',
+            `${currentLanguage === 'zh-CN' ? '移除' : 'Remove'} ${node.label || node.id}`
+          );
+          actions.append(remove);
+        }
+        card.append(top, configure);
+        if (actions.childElementCount) {
+          card.append(actions);
+        }
+        row.append(card);
+      });
+      group.append(header, row);
+      elements.blockWorkspace.append(group);
+      if (levelIndex < levels.length - 1) {
+        const connector = createElement('div', 'block-level-connector', '↓');
+        connector.setAttribute('aria-hidden', 'true');
+        elements.blockWorkspace.append(connector);
+      }
+    });
+    renderBlockIssues();
+    updateHistoryControls();
+  }
+
+  function updateHistoryControls() {
+    elements.undoButton.disabled = undoHistory.length === 0;
+    elements.redoButton.disabled = redoHistory.length === 0;
+  }
+
+  function rememberBlockState() {
+    undoHistory.push(Model.deepClone(state));
+    if (undoHistory.length > historyLimit) {
+      undoHistory.shift();
+    }
+    redoHistory = [];
+  }
+
+  function commitBlockResult(result, message, options) {
+    const settings = options || {};
+    if (!result.ok) {
+      renderBlockIssues(result.errors, true);
+      showToast(result.errors[0]?.message || 'The block action was not applied.', true);
+      return false;
+    }
+    rememberBlockState();
+    state = result.candidate;
+    selectedNodeId = settings.selectedNodeId
+      || result.applied?.[result.applied.length - 1]?.id
+      || selectedNodeId;
+    selectedWorkstreamId = null;
+    updateDerivedStatus();
+    scheduleSave();
+    renderAll();
+    setActiveView('graph', true);
+    showToast(message, false);
+    requestAnimationFrame(() => {
+      if (settings.focusField) {
+        const control = elements.nodeInspectorBody.querySelector(
+          `[data-node-field="${CSS.escape(settings.focusField)}"]`
+        );
+        control?.focus({ preventScroll: true });
+        scrollElementIntoView(elements.nodeInspector, 'start');
+        return;
+      }
+      const card = elements.blockWorkspace.querySelector(
+        `.mission-block[data-block-id="${CSS.escape(selectedNodeId || '')}"] .mission-block-main`
+      );
+      card?.focus({ preventScroll: true });
+      scrollElementIntoView(card, 'center');
+    });
+    return true;
+  }
+
+  function addBeginnerBlock(blockType) {
+    const definition = Model.getBlockCatalog().find((item) => item.id === blockType);
+    const result = Model.applyBlockTransaction(state, {
+      schema_version: '1.0',
+      transaction_id: `add-${blockType}-r${Number(state.blueprint.revision || 1) + 1}`,
+      operations: [{ op: 'insert-block', block_type: blockType }]
+    });
+    const budget = result.budget_delta || {};
+    const budgetCopy = result.ok
+      ? ` Budget: +${Math.max(0, budget.wall_time_seconds || 0)}s, +${Math.max(0, budget.tool_calls || 0)} tool calls.`
+      : '';
+    commitBlockResult(
+      result,
+      `${definition?.name || 'Block'} added and the complete graph still passes.${budgetCopy}`
+    );
+  }
+
+  function applyBeginnerRecipe(recipeId) {
+    const recipe = Model.getBlockRecipes().find((item) => item.id === recipeId);
+    const result = Model.applyBlockRecipe(state, recipeId);
+    commitBlockResult(
+      result,
+      `${recipe?.name || 'Starter recipe'} added as one validated, undoable change.`
+    );
+  }
+
+  function removeBeginnerBlock(blockId) {
+    const node = state.nodes.find((item) => item.id === blockId);
+    if (!node) {
+      return;
+    }
+    const result = Model.applyBlockTransaction(state, {
+      schema_version: '1.0',
+      transaction_id: `remove-${blockId}-r${Number(state.blueprint.revision || 1) + 1}`,
+      operations: [{ op: 'remove-block', block_id: blockId }]
+    });
+    const outgoingTarget = state.edges.find((edge) => edge.from === blockId)?.to;
+    const incomingSource = state.edges.find((edge) => edge.to === blockId)?.from;
+    const nextSelection = result.candidate?.nodes.some((item) => item.id === outgoingTarget)
+      ? outgoingTarget
+      : (result.candidate?.nodes.some((item) => item.id === incomingSource)
+        ? incomingSource
+        : result.candidate?.nodes[0]?.id);
+    commitBlockResult(
+      result,
+      `${node.label || node.id} removed; surrounding blocks were reconnected safely.`,
+      { selectedNodeId: nextSelection || null }
+    );
+  }
+
+  function restoreBlockHistory(direction) {
+    const source = direction === 'undo' ? undoHistory : redoHistory;
+    const target = direction === 'undo' ? redoHistory : undoHistory;
+    if (!source.length) {
+      return;
+    }
+    target.push(Model.deepClone(state));
+    const snapshot = source.pop();
+    const previousRevision = Number(state.blueprint.revision || 1);
+    state = Model.restoreEditableSnapshot(
+      snapshot,
+      `${direction === 'undo' ? 'Undo' : 'Redo'} restored editable content; confirmation and runtime authority remain cleared.`
+    );
+    state.blueprint.revision = Math.max(
+      previousRevision,
+      Number(state.blueprint.revision || 1)
+    ) + 1;
+    selectedNodeId = state.nodes.some((node) => node.id === selectedNodeId)
+      ? selectedNodeId
+      : state.nodes[0]?.id || null;
+    selectedWorkstreamId = null;
+    updateDerivedStatus();
+    scheduleSave();
+    renderAll();
+    setActiveView('graph', true);
+    showToast(
+      `${direction === 'undo' ? 'Undo' : 'Redo'} complete. A fresh confirmation is still required.`,
+      false
+    );
   }
 
   function createField(labelText, value, options) {
@@ -804,6 +1510,9 @@
       }
     }
     control.value = value ?? '';
+    if (settings.placeholder) {
+      control.placeholder = settings.placeholder;
+    }
     if (settings.dataset) {
       Object.entries(settings.dataset).forEach(([key, dataValue]) => {
         control.dataset[key] = dataValue;
@@ -830,26 +1539,98 @@
       return;
     }
     elements.inspectorHeading.textContent = node.label || node.id;
+    const overview = createElement('div', 'block-inspector-overview');
+    overview.append(
+      createElement('span', 'mission-block-kind', beginnerBlockLabel(beginnerBlockType(node))),
+      createElement(
+        'p',
+        '',
+        currentLanguage === 'zh-CN'
+          ? '先编辑易懂的字段。技术标识、类型化端口和写入规则保留在下方的高级契约中。'
+          : 'Start with the plain-language fields. Technical IDs, typed ports, and write rules stay in Advanced contract below.'
+      )
+    );
+    const basics = createElement('div', 'inspector-section beginner-fields');
+    basics.append(
+      createField(
+        currentLanguage === 'zh-CN' ? '积木名称' : 'Block name',
+        node.label || '',
+        { full: true, dataset: { nodeField: 'label' } }
+      ),
+      createField(
+        currentLanguage === 'zh-CN' ? '这个积木做什么？' : 'What happens in this block?',
+        node.summary || '',
+        {
+          type: 'textarea',
+          rows: 2,
+          full: true,
+          dataset: { nodeField: 'summary' }
+        }
+      ),
+      createField(
+        currentLanguage === 'zh-CN' ? '怎样算完成？' : 'How will we know it is done?',
+        node.verifier,
+        {
+          type: 'textarea',
+          rows: 3,
+          full: true,
+          dataset: { nodeField: 'verifier' }
+        }
+      ),
+      createField(
+        currentLanguage === 'zh-CN' ? '时间上限（秒）' : 'Time limit · seconds',
+        node.timeout_seconds,
+        {
+          type: 'number',
+          min: 1,
+          dataset: { nodeField: 'timeout_seconds', number: 'true' }
+        }
+      ),
+      createField(
+        currentLanguage === 'zh-CN' ? '最多尝试次数' : 'Attempt limit',
+        node.max_attempts,
+        {
+          type: 'number',
+          min: 1,
+          dataset: { nodeField: 'max_attempts', number: 'true' }
+        }
+      ),
+      createField(
+        currentLanguage === 'zh-CN' ? '失败后怎么办？' : 'What happens if it fails?',
+        node.compensation || '',
+        {
+          type: 'textarea',
+          rows: 2,
+          full: true,
+          placeholder: currentLanguage === 'zh-CN'
+            ? '停止，保留已经验证的积木，并报告证据。'
+            : 'Stop, keep prior verified blocks, and report the evidence.',
+          dataset: { nodeField: 'compensation' }
+        }
+      )
+    );
+
+    const advanced = createElement('details', 'advanced-contract');
+    const advancedSummary = createElement(
+      'summary',
+      '',
+      currentLanguage === 'zh-CN' ? '高级契约' : 'Advanced contract'
+    );
     const identity = createElement('div', 'inspector-section');
     identity.append(
       createField('ID', node.id, { full: true, dataset: { nodeField: 'id' } }),
-      createField('Label', node.label || '', { full: true, dataset: { nodeField: 'label' } }),
       createField('Kind', node.kind, {
         options: Model.VALID_NODE_KINDS,
         dataset: { nodeField: 'kind' }
       }),
-      createField('Owner', node.owner, { dataset: { nodeField: 'owner' } }),
-      createField('Summary', node.summary || '', {
-        type: 'textarea',
-        rows: 2,
-        full: true,
-        dataset: { nodeField: 'summary' }
+      createField('Owner / capability role', node.owner, {
+        dataset: { nodeField: 'owner' }
       })
     );
     const payloads = createElement('div', 'inspector-section');
     [
-      ['Inputs · one per line', 'inputs'],
-      ['Outputs · one per line', 'outputs'],
+      ['Needs / input ports · one per line', 'inputs'],
+      ['Creates / output ports · one per line', 'outputs'],
       ['Reads · one per line', 'reads'],
       ['Writes · one per line', 'writes']
     ].forEach(([label, field]) => {
@@ -862,22 +1643,6 @@
     });
     const evidence = createElement('div', 'inspector-section');
     evidence.append(
-      createField('Verifier', node.verifier, {
-        type: 'textarea',
-        rows: 3,
-        full: true,
-        dataset: { nodeField: 'verifier' }
-      }),
-      createField('Timeout · seconds', node.timeout_seconds, {
-        type: 'number',
-        min: 1,
-        dataset: { nodeField: 'timeout_seconds', number: 'true' }
-      }),
-      createField('Max attempts', node.max_attempts, {
-        type: 'number',
-        min: 1,
-        dataset: { nodeField: 'max_attempts', number: 'true' }
-      }),
       createField('Tool calls', node.tool_calls, {
         type: 'number',
         min: 1,
@@ -892,15 +1657,45 @@
         rows: 2,
         full: true,
         dataset: { nodeField: 'idempotency' }
-      }),
-      createField('Compensation / recovery', node.compensation || '', {
-        type: 'textarea',
-        rows: 2,
-        full: true,
-        dataset: { nodeField: 'compensation' }
       })
     );
-    elements.nodeInspectorBody.append(identity, payloads, evidence);
+    advanced.append(advancedSummary);
+    if (elements.body.dataset.editorMode === 'blocks') {
+      const note = createElement(
+        'p',
+        'advanced-contract-note',
+        currentLanguage === 'zh-CN'
+          ? '切换到高级模式后可编辑技术字段；易懂字段仍通过安全积木事务保存。'
+          : 'Switch to Advanced mode to edit technical fields; plain-language fields stay protected by safe block transactions.'
+      );
+      advanced.append(note);
+      [identity, payloads, evidence].forEach((section) => {
+        section.querySelectorAll('input, textarea, select').forEach((control) => {
+          control.disabled = true;
+        });
+      });
+    }
+    advanced.append(identity, payloads, evidence);
+    elements.nodeInspectorBody.append(overview, basics, advanced);
+    const nodeIndex = state.nodes.findIndex((item) => item.id === node.id);
+    const directPrefix = `nodes[${nodeIndex}].`;
+    validation.errors
+      .filter((item) => item.path.startsWith(directPrefix))
+      .forEach((item, issueIndex) => {
+        const field = item.path.slice(directPrefix.length).split(/[.[\]]/, 1)[0];
+        const control = elements.nodeInspectorBody.querySelector(
+          `[data-node-field="${CSS.escape(field)}"]`
+        );
+        if (!control || control.getAttribute('aria-invalid') === 'true') {
+          return;
+        }
+        const errorId = `node-${nodeIndex}-${field}-error-${issueIndex}`;
+        const error = createElement('small', 'field-error', item.message);
+        error.id = errorId;
+        control.setAttribute('aria-invalid', 'true');
+        control.setAttribute('aria-describedby', errorId);
+        control.closest('label')?.append(error);
+      });
   }
 
   function renderEdgesTable() {
@@ -976,7 +1771,104 @@
     }
   }
 
+  function createAdapterField(label, value, index, field, options) {
+    const config = options || {};
+    const wrapper = createElement('label', `field${config.full ? ' full' : ''}`);
+    wrapper.append(createElement('span', '', label));
+    let control;
+    if (config.multiline) {
+      control = createElement('textarea');
+      control.rows = config.rows || 3;
+      control.value = Array.isArray(value) ? value.join('\n') : (value || '');
+      control.dataset.list = 'true';
+    } else {
+      control = createElement('input');
+      control.type = config.type || 'text';
+      if (control.type === 'checkbox') {
+        control.checked = Boolean(value);
+      } else {
+        control.value = value ?? '';
+      }
+    }
+    control.dataset.adapterIndex = String(index);
+    control.dataset.adapterField = field;
+    control.dataset.scope = 'team';
+    wrapper.append(control);
+    return wrapper;
+  }
+
+  function renderRuntimeRoster() {
+    elements.runtimeRosterGrid.replaceChildren();
+    const visual = {
+      claude: {
+        className: 'claude',
+        image: 'blueprint/reference-assets/claude-main.png',
+        role: 'PLAN / REVIEW'
+      },
+      antigravity: {
+        className: 'antigravity',
+        image: 'blueprint/reference-assets/antigravity-main.png',
+        role: 'ORCHESTRATE / OBSERVE'
+      },
+      codex: {
+        className: 'codex',
+        image: 'blueprint/reference-assets/codex-main.png',
+        role: 'BUILD / TEST'
+      }
+    };
+    const adapters = state.team_command.agent_roster?.adapters || [];
+    adapters.forEach((adapter, index) => {
+      const treatment = visual[adapter.id] || {
+        className: 'generic',
+        image: 'blueprint/reference-assets/icons/execute-robot.png',
+        role: 'CAPABILITY ADAPTER'
+      };
+      const card = createElement('article', `runtime-adapter-card ${treatment.className}`);
+      const header = createElement('div', 'runtime-adapter-head');
+      const image = createElement('img');
+      image.src = treatment.image;
+      image.alt = '';
+      image.draggable = false;
+      const identity = createElement('div');
+      identity.append(
+        createElement('small', '', treatment.role),
+        createElement('h3', '', adapter.display_name),
+        createElement('code', '', adapter.id)
+      );
+      const status = createElement(
+        'span',
+        'runtime-adapter-status',
+        adapter.runtime_state?.status || 'UNVERIFIED'
+      );
+      header.append(image, identity, status);
+
+      const capabilities = createElement('div', 'adapter-capability-preview');
+      (adapter.declared_capabilities || []).slice(0, 4).forEach((capability) => {
+        capabilities.append(createElement('span', '', capability));
+      });
+
+      const settings = createElement('details', 'adapter-settings');
+      const summary = createElement('summary', '', 'Edit adapter contract');
+      const fields = createElement('div', 'field-grid compact-fields');
+      fields.append(
+        createAdapterField('Display name', adapter.display_name, index, 'display_name'),
+        createAdapterField('Enabled', adapter.enabled, index, 'enabled', { type: 'checkbox' }),
+        createAdapterField('Opaque connection ref', adapter.connection_ref, index, 'connection_ref', { full: true }),
+        createAdapterField('Declared capabilities · one per line', adapter.declared_capabilities, index, 'declared_capabilities', { multiline: true, full: true, rows: 5 }),
+        createAdapterField('Workspace modes · one per line', adapter.supported_workspace_modes, index, 'supported_workspace_modes', { multiline: true, full: true }),
+        createAdapterField('Permission profiles · one per line', adapter.supported_permission_profiles, index, 'supported_permission_profiles', { multiline: true, full: true }),
+        createAdapterField('Max concurrency', adapter.max_concurrency, index, 'max_concurrency', { type: 'number' }),
+        createAdapterField('IPC protocol', adapter.ipc_protocol_version, index, 'ipc_protocol_version')
+      );
+      settings.append(summary, fields);
+      card.append(header, capabilities, settings);
+      elements.runtimeRosterGrid.append(card);
+    });
+    elements.routingPolicyDisplay.textContent = state.team_command.routing?.selection_policy || 'missing routing policy';
+  }
+
   function renderTeam() {
+    renderRuntimeRoster();
     elements.ipcFields.replaceChildren();
     state.team_command.ipc_schema.forEach((field) => {
       elements.ipcFields.append(createElement('code', '', field));
@@ -1069,7 +1961,7 @@
       return;
     }
     elements.dialogGraphId.textContent = state.graph_id;
-    elements.dialogValidation.textContent = `PASS · ${state.nodes.length} nodes / ${state.edges.length} edges`;
+    elements.dialogValidation.textContent = `CLIENT PASS · ${state.nodes.length} nodes / ${state.edges.length} edges`;
     elements.dialogHash.textContent = Model.structureHash(state);
     elements.confirmationCheckbox.checked = false;
     elements.finalConfirmButton.disabled = true;
@@ -1134,6 +2026,8 @@
       throw new Error(`${sourceLabel} rejected: ${result.errors[0].message}`);
     }
     state = prepared;
+    undoHistory = [];
+    redoHistory = [];
     selectedNodeId = state.nodes[0]?.id || null;
     selectedWorkstreamId = null;
     saveDraftNow();
@@ -1178,34 +2072,36 @@
       saveDraftNow();
       refreshStatus();
       downloadJson(`${Model.safeFilename(handoff.handoff_id, 'agent-team-handoff')}.json`, handoff);
-      showToast('Handoff pack downloaded. Strict runtime validation is still required; no agents were started.', false);
+      showToast('Handoff downloaded. Contract validation and Harness adapter readiness are still required; no agents were started.', false);
     } catch (error) {
       showToast(error.message, true);
     }
   }
 
+  function commitValidatedCandidate(candidate, message, nextSelectedNodeId) {
+    const result = Model.validateBlueprint(candidate);
+    if (result.errors.length) {
+      renderBlockIssues(result.errors, true);
+      showToast(`No change was made: ${result.errors[0].message}`, true);
+      return false;
+    }
+    rememberBlockState();
+    const previousRevision = Number(state.blueprint.revision || 1);
+    state = Model.restoreEditableSnapshot(
+      candidate,
+      'An Advanced-mode graph edit was validated and committed; fresh confirmation required.'
+    );
+    state.blueprint.revision = previousRevision + 1;
+    selectedNodeId = nextSelectedNodeId || selectedNodeId;
+    updateDerivedStatus();
+    scheduleSave();
+    renderAll();
+    showToast(message, false);
+    return true;
+  }
+
   function addNode() {
-    const id = uniqueId('new-node', state.nodes.map((node) => node.id));
-    state.nodes.push({
-      id,
-      kind: 'deterministic',
-      owner: state.owner || 'integration-owner',
-      inputs: [],
-      outputs: [`${id.replace(/-/g, '_')}_result`],
-      reads: [],
-      writes: [],
-      verifier: 'Declare an objective verifier.',
-      timeout_seconds: 120,
-      max_attempts: 1,
-      tool_calls: 2,
-      effect_class: 'read-only',
-      idempotency: 'Declare duplicate-delivery behavior.',
-      compensation: '',
-      label: 'New node',
-      summary: 'Connect this bounded node to the static graph.'
-    });
-    selectedNodeId = id;
-    mutate('structure', 'graph');
+    addBeginnerBlock('clarify');
   }
 
   function duplicateSelectedNode() {
@@ -1213,13 +2109,17 @@
     if (!source) {
       return;
     }
+    const candidate = Model.deepClone(state);
     const copy = Model.deepClone(source);
-    copy.id = uniqueId(`${source.id}-copy`, state.nodes.map((node) => node.id));
+    copy.id = uniqueId(`${source.id}-copy`, candidate.nodes.map((node) => node.id));
     copy.label = `${source.label || source.id} copy`;
     copy.writes = [];
-    state.nodes.push(copy);
-    selectedNodeId = copy.id;
-    mutate('structure', 'graph');
+    candidate.nodes.push(copy);
+    commitValidatedCandidate(
+      candidate,
+      `${source.label || source.id} duplicated safely.`,
+      copy.id
+    );
   }
 
   function deleteSelectedNode() {
@@ -1227,30 +2127,40 @@
     if (!node || state.nodes.length <= 1) {
       return;
     }
+    if (Model.blockTypeForNode(node)) {
+      removeBeginnerBlock(node.id);
+      return;
+    }
     if (!window.confirm(`Delete node "${node.id}" and its connected edges?`)) {
       return;
     }
-    state.nodes = state.nodes.filter((item) => item.id !== node.id);
-    state.edges = state.edges.filter((edge) => (
+    const candidate = Model.deepClone(state);
+    candidate.nodes = candidate.nodes.filter((item) => item.id !== node.id);
+    candidate.edges = candidate.edges.filter((edge) => (
       edge.from !== node.id && edge.to !== node.id && edge.failure_route !== node.id
     ));
-    state.joins = state.joins
+    candidate.joins = candidate.joins
       .filter((join) => join.target !== node.id)
       .map((join) => ({ ...join, inputs: join.inputs.filter((id) => id !== node.id) }))
       .filter((join) => join.inputs.length >= 2);
-    state.entry_nodes = state.entry_nodes.filter((id) => id !== node.id);
-    state.terminal_nodes = state.terminal_nodes.filter((id) => id !== node.id);
-    if (!state.entry_nodes.length) {
-      state.entry_nodes = [state.nodes[0].id];
+    candidate.entry_nodes = candidate.entry_nodes.filter((id) => id !== node.id);
+    candidate.terminal_nodes = candidate.terminal_nodes.filter((id) => id !== node.id);
+    if (!candidate.entry_nodes.length) {
+      candidate.entry_nodes = [candidate.nodes[0].id];
     }
-    if (!state.terminal_nodes.length) {
-      state.terminal_nodes = [state.nodes[state.nodes.length - 1].id];
+    if (!candidate.terminal_nodes.length) {
+      candidate.terminal_nodes = [candidate.nodes[candidate.nodes.length - 1].id];
     }
-    if (state.team_command.activation_gate === node.id) {
-      state.team_command.activation_gate = state.nodes.find((item) => item.kind === 'human-gate')?.id || '';
+    if (candidate.team_command.activation_gate === node.id) {
+      candidate.team_command.activation_gate = candidate.nodes.find(
+        (item) => item.kind === 'human-gate'
+      )?.id || '';
     }
-    selectedNodeId = state.nodes[0]?.id || null;
-    mutate('structure', 'graph');
+    commitValidatedCandidate(
+      candidate,
+      `${node.label || node.id} deleted and the remaining graph revalidated.`,
+      candidate.nodes[0]?.id || null
+    );
   }
 
   function renameNode(oldId, newId) {
@@ -1268,6 +2178,25 @@
     if (state.team_command.activation_gate === oldId) {
       state.team_command.activation_gate = newId;
     }
+    if (state.team_command.runtime_validation_node === oldId) {
+      state.team_command.runtime_validation_node = newId;
+    }
+    if (state.team_command.adapter_readiness_node === oldId) {
+      state.team_command.adapter_readiness_node = newId;
+    }
+    if (state.team_command.integration?.graph_node_id === oldId) {
+      state.team_command.integration.graph_node_id = newId;
+    }
+    state.team_command.workstreams?.forEach((stream) => {
+      if (stream.graph_node_id === oldId) {
+        stream.graph_node_id = newId;
+      }
+    });
+    state.team_command.routing?.route_requests?.forEach((request) => {
+      if (request.graph_node_id === oldId) {
+        request.graph_node_id = newId;
+      }
+    });
   }
 
   function addEdge() {
@@ -1278,7 +2207,8 @@
     const source = state.nodes[0];
     const target = state.nodes.find((node) => node.id !== source.id);
     const payload = source.outputs[0] || 'payload';
-    state.edges.push({
+    const candidate = Model.deepClone(state);
+    candidate.edges.push({
       from: source.id,
       to: target.id,
       type: 'data',
@@ -1286,7 +2216,11 @@
       condition: 'verified',
       failure_route: ''
     });
-    mutate('structure', 'graph');
+    commitValidatedCandidate(
+      candidate,
+      `Connected ${source.id} to ${target.id} and revalidated the graph.`,
+      target.id
+    );
   }
 
   function addJoin() {
@@ -1296,58 +2230,44 @@
         incoming.get(edge.to).push(edge.from);
       }
     });
-    const candidate = state.nodes.find((node) => (
+    const targetCandidate = state.nodes.find((node) => (
       incoming.get(node.id).length > 1
       && !state.joins.some((join) => join.target === node.id)
     ));
-    const target = candidate || state.nodes[state.nodes.length - 1];
+    if (!targetCandidate) {
+      showToast('No block currently has multiple unmerged inputs. Nothing was changed.', true);
+      return;
+    }
+    const target = targetCandidate;
     const inputs = incoming.get(target.id) || [];
-    state.joins.push({
-      id: uniqueId('new-join', state.joins.map((join) => join.id)),
+    const candidate = Model.deepClone(state);
+    candidate.joins.push({
+      id: uniqueId('new-join', candidate.joins.map((join) => join.id)),
       target: target.id,
       mode: 'all',
       inputs,
       verifier: 'All declared input receipts are fresh and valid.',
       quorum: null
     });
-    mutate('structure', 'graph');
+    commitValidatedCandidate(
+      candidate,
+      `Added an explicit merge for ${target.id} and revalidated the graph.`,
+      target.id
+    );
   }
 
   function addWorkstream() {
-    if (!Model.confirmationIsValid(state)) {
-      openConfirmationDialog();
-      return;
-    }
-    const ids = state.team_command.workstreams.map((stream) => stream.id);
-    const id = uniqueId('new-workstream', ids);
-    const stream = {
-      id,
-      name: 'New bounded workstream',
-      capability: 'Describe the capability required; do not bind a model vendor.',
-      owner: id,
-      territory: [`.agent-state/team/artifacts/${id}.json`],
-      inputs: ['structure_approval_receipt'],
-      output_artifact: `.agent-state/team/artifacts/${id}.json`,
-      dependencies: [],
-      verifier: 'Declare an objective workstream verifier.',
-      budget: {
-        max_attempts: 2,
-        tool_calls: 6,
-        timeout_seconds: 600
-      },
-      stop_condition: 'Verifier passes or the bounded attempt budget is exhausted.'
-    };
-    state.team_command.workstreams.push(stream);
-    state.team_command.integration.order.push(id);
-    selectedWorkstreamId = id;
-    mutate('team', 'team');
-    openWorkstreamDialog(id);
+    showToast(
+      'Workstreams come from reachable Work blocks. Add the Graph node, workstream, and capability route together through a validated contract transaction.',
+      true
+    );
   }
 
   function renderWorkstreamEditor(stream) {
     elements.workstreamEditor.replaceChildren();
     const definitions = [
       ['ID', 'id', {}],
+      ['Graph node ID', 'graph_node_id', {}],
       ['Name', 'name', {}],
       ['Capability', 'capability', { full: true, type: 'textarea', rows: 2 }],
       ['Owner', 'owner', {}],
@@ -1394,26 +2314,10 @@
   }
 
   function deleteSelectedWorkstream() {
-    const streams = state.team_command.workstreams;
-    const stream = streams.find((item) => item.id === selectedWorkstreamId);
-    if (!stream || streams.length <= 2) {
-      showToast('Keep at least two independently ownable workstreams.', true);
-      return;
-    }
-    if (!window.confirm(`Delete workstream "${stream.id}"?`)) {
-      return;
-    }
-    state.team_command.workstreams = streams
-      .filter((item) => item.id !== stream.id)
-      .map((item) => ({
-        ...item,
-        dependencies: item.dependencies.filter((id) => id !== stream.id)
-      }));
-    state.team_command.integration.order = state.team_command.integration.order
-      .filter((id) => id !== stream.id);
-    elements.workstreamDialog.close();
-    selectedWorkstreamId = null;
-    mutate('team', 'team');
+    showToast(
+      'Remove the matching Work block, Graph edges, workstream, route request, merge input, and integration order in one validated transaction.',
+      true
+    );
   }
 
   function resetDraft() {
@@ -1421,6 +2325,8 @@
       return;
     }
     state = Model.deepClone(seed);
+    undoHistory = [];
+    redoHistory = [];
     selectedNodeId = state.nodes[0]?.id || null;
     selectedWorkstreamId = null;
     try {
@@ -1455,6 +2361,32 @@
     elements.integrationOwnerDisplay.textContent = state.team_command.integration_owner;
   }
 
+  function handleAdapterInput(event) {
+    const control = event.target.closest('[data-adapter-index][data-adapter-field]');
+    if (!control) {
+      return;
+    }
+    const adapter = state.team_command.agent_roster?.adapters?.[
+      Number(control.dataset.adapterIndex)
+    ];
+    if (!adapter) {
+      return;
+    }
+    const field = control.dataset.adapterField;
+    let value;
+    if (control.type === 'checkbox') {
+      value = control.checked;
+    } else if (control.type === 'number') {
+      value = Number.parseInt(control.value, 10);
+    } else if (control.dataset.list === 'true') {
+      value = listFromText(control.value);
+    } else {
+      value = control.value;
+    }
+    adapter[field] = value;
+    mutate('team', 'team');
+  }
+
   function handlePresentationChange(event) {
     const control = event.target.closest('[data-presentation]');
     if (!control) {
@@ -1482,6 +2414,72 @@
       value = listFromText(value);
     } else if (control.dataset.number === 'true') {
       value = Number.parseInt(value, 10);
+    }
+    if (elements.body.dataset.editorMode === 'blocks') {
+      const beginnerFields = new Set([
+        'label',
+        'summary',
+        'verifier',
+        'timeout_seconds',
+        'max_attempts',
+        'compensation'
+      ]);
+      if (!beginnerFields.has(field)) {
+        renderNodeInspector();
+        showToast(
+          currentLanguage === 'zh-CN'
+            ? '请切换到高级模式编辑技术契约字段。'
+            : 'Switch to Advanced mode to edit technical contract fields.',
+          true
+        );
+        return;
+      }
+      const normalizedValue = typeof value === 'string' ? value.trim() : value;
+      if (node[field] === normalizedValue) {
+        return;
+      }
+      const result = Model.applyBlockTransaction(state, {
+        schema_version: '1.0',
+        transaction_id: `update-${selectedNodeId}-${field}-r${Number(state.blueprint.revision || 1) + 1}`,
+        operations: [{
+          op: 'update-block',
+          block_id: selectedNodeId,
+          patch: { [field]: value }
+        }]
+      });
+      const committed = commitBlockResult(
+        result,
+        currentLanguage === 'zh-CN'
+          ? '积木设置已作为一次经过验证、可撤销的更改保存。'
+          : 'Block setting saved as one validated, undoable change.',
+        { selectedNodeId, focusField: field }
+      );
+      if (!committed) {
+        renderNodeInspector();
+        requestAnimationFrame(() => {
+          const freshControl = elements.nodeInspectorBody.querySelector(
+            `[data-node-field="${CSS.escape(field)}"]`
+          );
+          if (!freshControl) {
+            return;
+          }
+          const errorId = `block-field-error-${selectedNodeId}-${field}`
+            .replace(/[^a-zA-Z0-9_-]/g, '-');
+          const error = createElement(
+            'small',
+            'field-error',
+            result.errors?.[0]?.message
+              || (currentLanguage === 'zh-CN' ? '此更改未应用。' : 'This change was not applied.')
+          );
+          error.id = errorId;
+          freshControl.setAttribute('aria-invalid', 'true');
+          freshControl.setAttribute('aria-describedby', errorId);
+          freshControl.closest('label')?.append(error);
+          freshControl.focus({ preventScroll: true });
+          scrollElementIntoView(freshControl, 'center');
+        });
+      }
+      return;
     }
     if (field === 'id' && value !== node.id) {
       const oldId = node.id;
@@ -1556,6 +2554,13 @@
     mutate('team', 'status');
   }
 
+  function openPreviewNode(card) {
+    selectedNodeId = card.dataset.previewNodeId;
+    setActiveView('graph', true);
+    renderGraphViews();
+    renderNodeInspector();
+  }
+
   function bindEvents() {
     document.querySelectorAll('[data-view]').forEach((button) => {
       button.addEventListener('click', () => setActiveView(button.dataset.view, true));
@@ -1572,8 +2577,134 @@
     document.querySelectorAll('[data-language]').forEach((button) => {
       button.addEventListener('click', () => applyLanguage(button.dataset.language));
     });
+    elements.blockModeToggle.addEventListener('click', () => setEditorMode('blocks', true));
+    elements.advancedModeToggle.addEventListener('click', () => setEditorMode('advanced', true));
+    elements.blockPalette.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-block-template]');
+      if (button) {
+        addBeginnerBlock(button.dataset.blockTemplate);
+      }
+    });
+    elements.starterRecipeGrid.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-block-recipe]');
+      if (button) {
+        applyBeginnerRecipe(button.dataset.blockRecipe);
+      }
+    });
+    elements.blockWorkspace.addEventListener('click', (event) => {
+      const action = event.target.closest('[data-block-action]');
+      if (!action) {
+        return;
+      }
+      const blockId = action.dataset.blockId;
+      if (action.dataset.blockAction === 'remove') {
+        removeBeginnerBlock(blockId);
+        return;
+      }
+      if (action.dataset.blockAction === 'configure') {
+        selectedNodeId = blockId;
+        renderBlockWorkspace();
+        renderNodeInspector();
+        scrollElementIntoView(elements.nodeInspector, 'start');
+        requestAnimationFrame(() => {
+          elements.nodeInspectorBody.querySelector('[data-node-field="label"]')?.focus();
+        });
+      }
+    });
+    elements.blockIssueList.addEventListener('click', (event) => {
+      const issueButton = event.target.closest('[data-block-issue]');
+      if (!issueButton) {
+        return;
+      }
+      const issue = validation.errors.find((item) => (
+        item.code === issueButton.dataset.blockIssue
+        && item.path === issueButton.dataset.path
+      ));
+      const mappedIds = nodeIdsForIssue(issue || {
+        code: issueButton.dataset.blockIssue,
+        path: issueButton.dataset.path,
+        message: issueButton.textContent
+      });
+      if (mappedIds.length) {
+        selectedNodeId = mappedIds[0];
+        renderBlockWorkspace();
+        renderNodeInspector();
+        scrollElementIntoView(elements.nodeInspector, 'start');
+        const match = /^nodes\[\d+]\.([a-z_]+)/.exec(issueButton.dataset.path || '');
+        requestAnimationFrame(() => {
+          const field = match
+            ? elements.nodeInspectorBody.querySelector(
+              `[data-node-field="${CSS.escape(match[1])}"]`
+            )
+            : null;
+          (field || elements.nodeInspector)?.focus({ preventScroll: true });
+        });
+      } else {
+        elements.validationBanner.focus();
+      }
+    });
+    elements.blockCompileButton.addEventListener('click', () => {
+      updateDerivedStatus();
+      renderBlockWorkspace();
+      if (validation.errors.length) {
+        elements.blockIssueList.querySelector('button')?.focus();
+        showToast(`${validation.errors.length} block issue(s) need attention.`, true);
+      } else {
+        showToast('Every block compiles to a valid canonical graph. You can review and confirm it.', false);
+      }
+    });
+    elements.undoButton.addEventListener('click', () => restoreBlockHistory('undo'));
+    elements.redoButton.addEventListener('click', () => restoreBlockHistory('redo'));
     document.querySelectorAll('[data-confirm-trigger], #confirmButton').forEach((button) => {
       button.addEventListener('click', openConfirmationDialog);
+    });
+    elements.architectureDiagram.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-map-view]');
+      if (!target) {
+        return;
+      }
+      const workflowCard = target.closest('.workflow-card');
+      if (workflowCard) {
+        const cards = Array.from(elements.architectureDiagram.querySelectorAll('.workflow-card'));
+        setArchitectureStep(cards.indexOf(workflowCard));
+      }
+      openArchitectureTarget(target);
+    });
+    elements.architectureDiagram.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+        return;
+      }
+      const target = event.target.closest('[data-map-view]');
+      if (!target) {
+        return;
+      }
+      event.preventDefault();
+      openArchitectureTarget(target);
+    });
+    elements.architectureAnimationToggle.addEventListener('click', () => {
+      const paused = elements.architectureDiagram.classList.toggle('paused');
+      if (paused) {
+        clearInterval(architectureLoopTimer);
+      } else {
+        startArchitectureLoop();
+      }
+      updateArchitectureControls();
+    });
+    elements.architectureReferenceToggle.addEventListener('click', () => {
+      elements.architectureDiagram.classList.toggle('show-reference');
+      updateArchitectureControls();
+    });
+    elements.architectureFullscreenToggle.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === elements.architectureDiagramViewport) {
+          await document.exitFullscreen();
+        } else {
+          await elements.architectureDiagramViewport.requestFullscreen();
+        }
+      } catch (error) {
+        showToast(`Full-screen mode is unavailable: ${error.message}`, true);
+      }
+      updateArchitectureControls();
     });
 
     document.getElementById('importButton').addEventListener('click', () => {
@@ -1592,6 +2723,7 @@
     document.getElementById('validateButton').addEventListener('click', () => {
       updateDerivedStatus();
       refreshStatus();
+      renderBlockWorkspace();
       elements.validationBanner.focus();
       showToast(
         validation.errors.length
@@ -1626,11 +2758,26 @@
 
     document.addEventListener('input', handleBoundInput);
     document.addEventListener('input', handleTeamInput);
+    document.addEventListener('change', handleAdapterInput);
     document.addEventListener('change', handlePresentationChange);
     elements.nodeInspectorBody.addEventListener('change', handleNodeInspectorChange);
     elements.edgeTableBody.addEventListener('change', handleEdgeChange);
     elements.joinEditor.addEventListener('change', handleJoinChange);
     elements.workstreamEditor.addEventListener('change', handleWorkstreamChange);
+    document.addEventListener('keydown', (event) => {
+      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') {
+        return;
+      }
+      const target = event.target;
+      if (target instanceof HTMLElement && (
+        target.matches('input, textarea, select')
+        || target.isContentEditable
+      )) {
+        return;
+      }
+      event.preventDefault();
+      restoreBlockHistory(event.shiftKey ? 'redo' : 'undo');
+    });
 
     elements.graphStage.addEventListener('click', (event) => {
       const card = event.target.closest('[data-node-id]');
@@ -1646,10 +2793,18 @@
       if (!card) {
         return;
       }
-      selectedNodeId = card.dataset.previewNodeId;
-      setActiveView('graph', true);
-      renderGraphViews();
-      renderNodeInspector();
+      openPreviewNode(card);
+    });
+    elements.missionGraphStage.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+        return;
+      }
+      const card = event.target.closest('[data-preview-node-id]');
+      if (!card) {
+        return;
+      }
+      event.preventDefault();
+      openPreviewNode(card);
     });
     elements.edgeTableBody.addEventListener('click', (event) => {
       const button = event.target.closest('[data-remove-edge]');
@@ -1676,8 +2831,15 @@
 
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(renderGraphViews, 120);
+      resizeTimer = setTimeout(() => {
+        renderGraphViews();
+        fitArchitectureDiagram();
+      }, 120);
     }, { passive: true });
+    document.addEventListener('fullscreenchange', () => {
+      fitArchitectureDiagram();
+      updateArchitectureControls();
+    });
     window.addEventListener('hashchange', () => {
       const target = window.location.hash.replace('#', '');
       if (target) {
@@ -1709,6 +2871,14 @@
     renderAll();
     const initialView = window.location.hash.replace('#', '') || 'mission';
     setActiveView(initialView, false);
+    requestAnimationFrame(fitArchitectureDiagram);
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      startArchitectureLoop();
+    } else {
+      elements.architectureDiagram.classList.add('paused');
+      setArchitectureStep(0);
+      updateArchitectureControls();
+    }
     if (!storageAvailable) {
       elements.saveStatus.textContent = 'Memory-only draft';
     }
