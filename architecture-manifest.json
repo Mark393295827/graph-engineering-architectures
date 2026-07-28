@@ -204,6 +204,20 @@
       "purpose": "Template for compatible architecture skills."
     },
     {
+      "id": "project-usage-manual",
+      "role": "operator-documentation",
+      "path": "docs/project-usage-manual.md",
+      "audience": "First-time users, mission designers, runtime operators, and contributors.",
+      "purpose": "Provide the complete beginner-to-runtime workflow for opening, editing, validating, confirming, handing off, testing, troubleshooting, and safely extending the project."
+    },
+    {
+      "id": "maximum-potential-operating-guide",
+      "role": "operating-guide",
+      "path": "docs/maximum-potential-guide.md",
+      "audience": "Mission owners, integration owners, Agent Team commanders, Harness operators, and reviewers.",
+      "purpose": "Turn the architecture contracts into a measurable operating system for verified throughput, capability routing, bounded concurrency, failure-local recovery, evidence gates, and safe promotion."
+    },
+    {
       "id": "mission-blueprint-web",
       "role": "presentation-editor",
       "path": "index.html",

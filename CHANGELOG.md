@@ -20,6 +20,10 @@
 - Reject Claude, Antigravity, Codex, or any roster adapter ID as a durable
   Graph, workstream, routing, or integration owner in both browser and runtime
   handoff validation.
+- Added a complete beginner-to-runtime project usage manual and a
+  maximum-potential operating guide covering architecture admission,
+  capability-routed multi-agent collaboration, evidence gates, recovery,
+  operating metrics, extension workflows, and troubleshooting.
 
 ## 1.2.0 - 2026-07-28
 

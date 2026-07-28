@@ -16,6 +16,13 @@ Then open `http://localhost:8080/`. The canonical seed is embedded in the root
 HTML as a direct-open fallback, so double-clicking `index.html` also works in
 browsers that permit local storage for `file:` pages.
 
+For a control-by-control walkthrough, command reference, troubleshooting, and
+safe extension guide, read
+[`../docs/project-usage-manual.md`](../docs/project-usage-manual.md). For
+architecture admission, capability routing, concurrency, recovery, and
+operating metrics, continue with
+[`../docs/maximum-potential-guide.md`](../docs/maximum-potential-guide.md).
+
 ## Edit and hand off
 
 1. Open **Blocks** and choose a starter recipe or add a safe block. Configure

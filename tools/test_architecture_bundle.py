@@ -185,6 +185,55 @@ class ArchitectureBundleTests(unittest.TestCase):
         self.assertIn("__pycache__/", gitignore)
         self.assertIn("*.pyc", gitignore)
 
+    def test_operator_documentation_covers_lifecycle_and_runtime_boundary(
+        self,
+    ) -> None:
+        manifest = load_manifest()
+        assets = {
+            asset["id"]: asset for asset in manifest["supporting_assets"]
+        }
+        manual_path = ROOT / assets["project-usage-manual"]["path"]
+        guide_path = ROOT / assets["maximum-potential-operating-guide"]["path"]
+        manual = manual_path.read_text(encoding="utf-8")
+        guide = guide_path.read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        for relative in (
+            "docs/project-usage-manual.md",
+            "docs/maximum-potential-guide.md",
+        ):
+            self.assertIn(relative, readme)
+
+        for required in (
+            "python -m http.server 8080",
+            "PENDING_RUNTIME_VALIDATION",
+            "RUNTIME_CONTRACT_VALIDATED",
+            "launch_authorized: false",
+            "Claude",
+            "Antigravity",
+            "Codex",
+            "No dynamic Graph expansion",
+            "diamond-graph-example.json",
+            "default-blueprint.json",
+            "ci-repair-loop-example.md",
+            "self-asserted local intent evidence",
+            "cleanup receipt",
+        ):
+            self.assertIn(required, manual)
+
+        for required in (
+            "verified throughput",
+            "capability",
+            "Graph hash",
+            "Command hash",
+            "Failure locality",
+            "one serial integration owner",
+            "Whole-Graph replay",
+            "automatic_substitution",
+            "PAUSE_AND_ESCALATE",
+        ):
+            self.assertIn(required.lower(), guide.lower())
+
     def test_upstream_commit_is_pinned(self) -> None:
         commit = load_manifest()["upstream"]["commit"]
         self.assertRegex(commit, r"^[0-9a-f]{40}$")

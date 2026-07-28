@@ -37,6 +37,13 @@ The canonical seed is
 full workflow and safety boundary are documented in
 [`docs/mission-blueprint.md`](docs/mission-blueprint.md).
 
+New operators should start with the
+[`complete project usage manual`](docs/project-usage-manual.md). After the
+basic workflow is familiar, use the
+[`maximum-potential operating guide`](docs/maximum-potential-guide.md) to tune
+architecture admission, capability routing, concurrency, evidence, recovery,
+and review capacity.
+
 ## Architecture Map
 
 ```mermaid
@@ -131,6 +138,12 @@ out of scope.
 
 ## Documentation
 
+- [`docs/project-usage-manual.md`](docs/project-usage-manual.md) is the
+  complete beginner-to-runtime manual for the web interface, contracts,
+  validators, tests, recovery, and extension workflows.
+- [`docs/maximum-potential-guide.md`](docs/maximum-potential-guide.md) is the
+  operating playbook for maximizing verified throughput with bounded Graph,
+  Loop, Agent Team, and Harness controls.
 - [`docs/architecture-boundaries.md`](docs/architecture-boundaries.md) defines
   the MECE ownership model and routing rules.
 - [`docs/adoption-guide.md`](docs/adoption-guide.md) provides a staged rollout.
