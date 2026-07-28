@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "bundle_version": "1.0.0",
+  "schema_version": "1.1",
+  "bundle_version": "1.1.0",
   "name": "graph-engineering-architectures",
   "scope": "Bounded static dependency graphs and their adjacent execution, runtime, state, and verification contracts.",
   "upstream": {
@@ -194,6 +194,35 @@
       "id": "agent-skill-template",
       "path": "docs/skill-template.md",
       "purpose": "Template for compatible architecture skills."
+    },
+    {
+      "id": "mission-blueprint-web",
+      "role": "presentation-editor",
+      "path": "index.html",
+      "entrypoint": "index.html",
+      "canonical_contract": "blueprint/default-blueprint.json",
+      "presentation_model": "blueprint/default-blueprint.json#blueprint.presentation",
+      "interaction_model": "blueprint/model.js",
+      "tests": [
+        "blueprint/model.test.js",
+        "tools/test_mission_blueprint.py"
+      ],
+      "provenance": "docs/blueprint-web-provenance.md",
+      "purpose": "Open the repository with a complete editable mission blueprint, then gate capability-based Agent Team handoff on a current human confirmation receipt.",
+      "owns": [
+        "human-facing rendering",
+        "local draft editing",
+        "safe JSON import and export",
+        "structure confirmation interaction",
+        "non-executing Agent Team handoff preparation"
+      ],
+      "excludes": [
+        "dependency semantics outside the canonical Graph contract",
+        "temporal repetition",
+        "worker-process execution",
+        "runtime scheduling or permissions",
+        "terminal completion certification"
+      ]
     }
   ]
 }

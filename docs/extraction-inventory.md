@@ -44,6 +44,18 @@ Broad V7 release notes and product guides were replaced with focused documents
 in this repository so the extracted architecture can stand alone without
 implying that all Third Brain skills are present.
 
+## Repository-Specific Presentation
+
+The root `index.html`, `blueprint/`, `docs/mission-blueprint.md`, and
+`tools/test_mission_blueprint.py` were created for this repository after the
+upstream extraction. They provide the editable mission projection,
+confirmation gate, and Agent Team handoff editor registered in
+`architecture-manifest.json`.
+
+These files are not copied Third Brain assets and are not listed in
+`provenance/upstream-files.sha256`. The separate design-input record is
+`docs/blueprint-web-provenance.md`.
+
 ## Integrity
 
 `provenance/upstream-files.sha256` records line-ending-normalized hashes for

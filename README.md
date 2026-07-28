@@ -10,10 +10,33 @@ deterministic readiness, single-writer constraints, durable graph state, and
 node-local recovery. It does not own temporal repetition, worker processes, or
 the runtime kernel.
 
+## Open the Editable Mission Blueprint
+
+Open [`index.html`](index.html) to see the complete mission before starting
+work. The page is a local-first editor for mission intent, the strict static
+DAG, Agent Team allocation, and presentation format.
+
+For the most consistent browser behavior:
+
+```powershell
+python -m http.server 8080
+```
+
+Then open `http://localhost:8080/`. Edit the structure, resolve validation
+issues, and issue a human confirmation receipt. Only then does the page unlock
+the capability-based Agent Team command and handoff export. The browser never
+starts agents or claims that work has executed.
+
+The canonical seed is
+[`blueprint/default-blueprint.json`](blueprint/default-blueprint.json), and the
+full workflow and safety boundary are documented in
+[`docs/mission-blueprint.md`](docs/mission-blueprint.md).
+
 ## Architecture Map
 
 ```mermaid
 flowchart LR
+    U["Editable Mission Blueprint<br/>presentation and confirmation"] -.->|projects and edits| G
     A["Agentic Engineering<br/>workflow selection"] -->|admits| G["Graph Engineering<br/>static dependency DAG"]
     G -->|bounded loop node| L["Loop Engineering<br/>temporal depth"]
     G -->|agent or team node| T["Agent Teams Command<br/>process ownership and IPC"]
@@ -25,6 +48,9 @@ flowchart LR
 
 The machine-readable source of truth is
 [`architecture-manifest.json`](architecture-manifest.json).
+
+The web blueprint is a supporting projection, not an architecture. Visual
+placement is not dependency topology, and animation is not execution.
 
 ## Included Architectures
 

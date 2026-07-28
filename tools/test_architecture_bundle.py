@@ -53,8 +53,29 @@ class ArchitectureBundleTests(unittest.TestCase):
             self.assertIn(relation["to"], known)
             self.assertTrue(relation["type"])
 
-        for asset in manifest["supporting_assets"]:
+        assets = manifest["supporting_assets"]
+        asset_ids = [asset["id"] for asset in assets]
+        self.assertEqual(len(asset_ids), len(set(asset_ids)))
+        self.assertTrue(set(asset_ids).isdisjoint(known))
+
+        for asset in assets:
             self.assertTrue((ROOT / asset["path"]).exists(), asset["path"])
+            if asset.get("role") != "presentation-editor":
+                continue
+            for field in (
+                "entrypoint",
+                "canonical_contract",
+                "presentation_model",
+                "interaction_model",
+                "provenance",
+            ):
+                relative = asset[field].split("#", 1)[0]
+                self.assertTrue((ROOT / relative).exists(), f"{field}: {relative}")
+            for relative in asset["tests"]:
+                self.assertTrue((ROOT / relative).is_file(), relative)
+            self.assertIn("worker-process execution", asset["excludes"])
+            self.assertIn("runtime scheduling or permissions", asset["excludes"])
+            self.assertIn("terminal completion certification", asset["excludes"])
 
     def test_skill_contracts_have_required_sections(self) -> None:
         manifest = load_manifest()

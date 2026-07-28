@@ -45,6 +45,12 @@ jobs:
           skills/graph-engineering/references/diamond-graph-example.json
           --strict
 
+      - name: Validate editable mission blueprint
+        run: >-
+          python skills/graph-engineering/scripts/validate_graph_contract.py
+          blueprint/default-blueprint.json
+          --strict
+
       - name: Validate strict Loop example
         run: >-
           python skills/loop-engineering/scripts/validate_loop_contract.py
@@ -64,3 +70,6 @@ jobs:
 
       - name: Run OODA integration check
         run: node core/ooda/ooda_loop.test.js
+
+      - name: Run blueprint model checks
+        run: node --test blueprint/model.test.js

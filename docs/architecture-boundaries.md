@@ -6,6 +6,19 @@ Graph controls dependency width; Loop controls temporal depth; Agent Teams
 controls process ownership; Harness controls runtime execution; Context carries
 durable state; Verification controls completion claims.
 
+## Presentation Boundary
+
+The root mission blueprint renders and edits these contracts, but owns none of
+their execution semantics. Node placement, color, preview arrows, and lifecycle
+labels are presentation. Only the canonical JSON declares dependencies,
+payloads, joins, budgets, owners, and recovery.
+
+Browser validation is drafting feedback, not fresh command evidence. A
+confirmation receipt unlocks Agent Team allocation for the matching structure
+hash, but it does not recruit workers. Agent execution, scheduling,
+permissions, retries, observability, and cleanup remain with Teams, Loop, and
+Harness according to the ownership table below.
+
 ## MECE Ownership
 
 | Question | Owner | Contract |

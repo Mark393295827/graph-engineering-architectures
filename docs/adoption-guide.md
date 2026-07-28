@@ -1,5 +1,21 @@
 # Adoption Guide
 
+## Stage 0: Open, Edit, and Confirm the Mission
+
+Open the root `index.html`, preferably through a local static server. Review
+the whole mission before allocating work:
+
+1. Edit objective, non-goals, acceptance criteria, topology, payload schemas,
+   writers, joins, budgets, permissions, and recovery.
+2. Resolve the browser validation feedback.
+3. Run the strict validator against `blueprint/default-blueprint.json`.
+4. Issue a human confirmation receipt for the exact displayed structure hash.
+5. Only then edit or export the capability-based Agent Team command.
+
+Any semantic mission or Graph edit invalidates the receipt and relocks team
+handoff. Presentation-only changes do not. The browser prepares contracts and
+handoff artifacts; it is not a scheduler.
+
 ## Stage 1: Validate One Contract
 
 Copy `skills/graph-engineering/references/diamond-graph-example.json`, replace

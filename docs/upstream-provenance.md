@@ -38,3 +38,10 @@ was changed.
 Do not silently absorb unrelated Third Brain modules. A new copied path must
 either define Graph Engineering, implement one of its explicit adjacent
 contracts, or provide objective validation evidence.
+
+## Repository-Specific Assets
+
+The editable web blueprint was added after extraction and is intentionally
+excluded from the upstream checksum ledger. Its design-input and asset
+exclusion decisions are recorded in
+[`blueprint-web-provenance.md`](blueprint-web-provenance.md).

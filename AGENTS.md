@@ -37,8 +37,11 @@ python -m unittest discover -s tools -p "test_*.py" -v
 python -m unittest discover -s experiments/graph-engineering/tests -p "test_*.py" -v
 python skills/graph-engineering/scripts/validate_graph_contract.py `
   skills/graph-engineering/references/diamond-graph-example.json --strict
+python skills/graph-engineering/scripts/validate_graph_contract.py `
+  blueprint/default-blueprint.json --strict
 python skills/loop-engineering/scripts/validate_loop_contract.py `
   skills/loop-engineering/references/ci-repair-loop-example.md --strict
+node --test blueprint/model.test.js
 node core/ooda/ooda_loop.test.js
 ```
 

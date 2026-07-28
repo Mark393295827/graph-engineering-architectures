@@ -1,0 +1,563 @@
+{
+  "schema_version": "1.0",
+  "graph_id": "mission-blueprint-to-agent-team",
+  "objective": "Open the repository with a complete, editable mission blueprint; require explicit structure confirmation before preparing bounded Agent Team collaboration.",
+  "non_goals": [
+    "Do not execute agents from the static browser interface.",
+    "Do not add graph cycles, dynamic expansion, hidden joins, or whole-graph retries.",
+    "Do not bind durable workstreams to named model vendors."
+  ],
+  "owner": "integration-owner",
+  "artifact_path": ".agent-state/graph/artifacts",
+  "state_path": ".agent-state/graph/state.json",
+  "entry_nodes": [
+    "mission-intake"
+  ],
+  "terminal_nodes": [
+    "terminal-verification"
+  ],
+  "budgets": {
+    "max_nodes": 9,
+    "max_concurrency": 3,
+    "max_attempts_per_node": 2,
+    "wall_time_seconds": 1800,
+    "tool_calls": 60,
+    "review_changed_lines": 800
+  },
+  "permission_boundary": {
+    "allowed": [
+      "Read repository files.",
+      "Write declared project-local artifacts.",
+      "Run repository verification commands."
+    ],
+    "denied": [
+      "Production deployment.",
+      "External publication.",
+      "Credential access.",
+      "Destructive shared-state changes."
+    ],
+    "approval_required": [],
+    "rollback": "Restore the last verified repository and blueprint checkpoint."
+  },
+  "nodes": [
+    {
+      "id": "mission-intake",
+      "kind": "deterministic",
+      "owner": "integration-owner",
+      "inputs": [],
+      "outputs": [
+        "mission_brief"
+      ],
+      "reads": [
+        "README.md",
+        "AGENTS.md",
+        "architecture-manifest.json"
+      ],
+      "writes": [],
+      "verifier": "Mission objective, constraints, non-goals, and success criteria are complete.",
+      "timeout_seconds": 120,
+      "max_attempts": 1,
+      "tool_calls": 3,
+      "effect_class": "read-only",
+      "idempotency": "Pure repository intake produces the same normalized mission brief.",
+      "compensation": "",
+      "label": "Mission intake",
+      "summary": "Name the outcome, constraints, evidence, and permission boundary."
+    },
+    {
+      "id": "blueprint-design",
+      "kind": "agent",
+      "owner": "integration-owner",
+      "inputs": [
+        "mission_brief"
+      ],
+      "outputs": [
+        "blueprint_contract"
+      ],
+      "reads": [
+        "README.md",
+        "docs/architecture-boundaries.md",
+        "skills/graph-engineering/references/graph-contract.md"
+      ],
+      "writes": [
+        "blueprint/default-blueprint.json"
+      ],
+      "verifier": "The editable graph contract passes bounded client checks and can be exported with a stable structure hash.",
+      "timeout_seconds": 300,
+      "max_attempts": 2,
+      "tool_calls": 6,
+      "effect_class": "reversible",
+      "idempotency": "Write the same versioned blueprint contract atomically.",
+      "compensation": "Restore the previous versioned blueprint contract.",
+      "label": "Design the blueprint",
+      "summary": "Make topology, payloads, joins, budgets, owners, and recovery explicit."
+    },
+    {
+      "id": "structure-confirmation",
+      "kind": "human-gate",
+      "owner": "mission-owner",
+      "inputs": [
+        "blueprint_contract"
+      ],
+      "outputs": [
+        "structure_approval_receipt"
+      ],
+      "reads": [
+        "blueprint/default-blueprint.json"
+      ],
+      "writes": [
+        ".agent-state/graph/artifacts/structure-approval.json"
+      ],
+      "verifier": "The approval receipt hash matches the client-validated mission and graph structure.",
+      "timeout_seconds": 600,
+      "max_attempts": 1,
+      "tool_calls": 1,
+      "effect_class": "reversible",
+      "idempotency": "One receipt is valid only for one canonical structure hash.",
+      "compensation": "Invalidate the receipt when any mission or graph field changes.",
+      "label": "Confirm structure",
+      "summary": "A human explicitly approves the exact validated structure before team allocation."
+    },
+    {
+      "id": "runtime-validation",
+      "kind": "deterministic",
+      "owner": "integration-owner",
+      "inputs": [
+        "structure_approval_receipt",
+        "graph_contract"
+      ],
+      "outputs": [
+        "runtime_validation_receipt"
+      ],
+      "reads": [
+        "handoff.graph_contract",
+        "skills/graph-engineering/scripts/validate_graph_contract.py"
+      ],
+      "writes": [
+        ".agent-state/graph/artifacts/runtime-validation.json"
+      ],
+      "verifier": "The strict validator exits zero for the exported graph contract and the receipt hash matches the confirmed structure hash.",
+      "timeout_seconds": 120,
+      "max_attempts": 1,
+      "tool_calls": 2,
+      "effect_class": "reversible",
+      "idempotency": "Emit at most one runtime validation receipt for one canonical structure hash.",
+      "compensation": "Invalidate the receipt when the exported contract, command evidence, or confirmed hash changes.",
+      "label": "Validate at runtime",
+      "summary": "The execution harness validates the exact exported contract before recruiting any worker."
+    },
+    {
+      "id": "implementation-stream",
+      "kind": "agent-team",
+      "owner": "interface-builder",
+      "inputs": [
+        "runtime_validation_receipt"
+      ],
+      "outputs": [
+        "implementation_candidate"
+      ],
+      "reads": [
+        "blueprint/default-blueprint.json",
+        "docs/mission-blueprint.md"
+      ],
+      "writes": [
+        ".agent-state/team/artifacts/implementation.json"
+      ],
+      "verifier": "The candidate artifact and targeted interface checks pass inside the owned territory.",
+      "timeout_seconds": 900,
+      "max_attempts": 2,
+      "tool_calls": 12,
+      "effect_class": "reversible",
+      "idempotency": "Overwrite only the isolated implementation artifact for this contract hash.",
+      "compensation": "Discard the isolated candidate artifact.",
+      "label": "Build in isolation",
+      "summary": "A capability-routed builder produces one isolated implementation candidate."
+    },
+    {
+      "id": "contract-review-stream",
+      "kind": "agent",
+      "owner": "contract-reviewer",
+      "inputs": [
+        "runtime_validation_receipt"
+      ],
+      "outputs": [
+        "review_receipt"
+      ],
+      "reads": [
+        "blueprint/default-blueprint.json",
+        "architecture-manifest.json",
+        "docs/architecture-boundaries.md"
+      ],
+      "writes": [
+        ".agent-state/team/artifacts/contract-review.json"
+      ],
+      "verifier": "Static DAG, typed edge, join, budget, writer, and MECE boundary checks pass.",
+      "timeout_seconds": 600,
+      "max_attempts": 2,
+      "tool_calls": 7,
+      "effect_class": "reversible",
+      "idempotency": "Review the same contract hash and replace only the reviewer receipt.",
+      "compensation": "Discard the stale review receipt.",
+      "label": "Review the contract",
+      "summary": "An independent reviewer checks graph and architecture invariants."
+    },
+    {
+      "id": "experience-review-stream",
+      "kind": "agent",
+      "owner": "experience-reviewer",
+      "inputs": [
+        "implementation_candidate"
+      ],
+      "outputs": [
+        "review_receipt"
+      ],
+      "reads": [
+        ".agent-state/team/artifacts/implementation.json",
+        ".agent-state/team/worktrees/interface-builder"
+      ],
+      "writes": [
+        ".agent-state/team/artifacts/experience-review.json"
+      ],
+      "verifier": "Editable, persistence, import/export, accessibility, and responsive acceptance checks pass.",
+      "timeout_seconds": 600,
+      "max_attempts": 2,
+      "tool_calls": 7,
+      "effect_class": "reversible",
+      "idempotency": "Review the same candidate and replace only the experience receipt.",
+      "compensation": "Discard the stale review receipt.",
+      "label": "Review the experience",
+      "summary": "An independent reviewer checks the human-facing blueprint workflow."
+    },
+    {
+      "id": "serial-integration",
+      "kind": "deterministic",
+      "owner": "integration-owner",
+      "inputs": [
+        "implementation_candidate",
+        "review_receipt"
+      ],
+      "outputs": [
+        "integrated_artifact"
+      ],
+      "reads": [
+        ".agent-state/team/artifacts/implementation.json",
+        ".agent-state/team/artifacts/contract-review.json",
+        ".agent-state/team/artifacts/experience-review.json"
+      ],
+      "writes": [
+        "index.html",
+        "blueprint/styles.css",
+        "blueprint/app.js",
+        "blueprint/model.js",
+        "architecture-manifest.json",
+        ".agent-state/graph/artifacts/integration.json"
+      ],
+      "verifier": "All declared workstream artifacts are fresh, compatible, accepted, and integrated in dependency order.",
+      "timeout_seconds": 420,
+      "max_attempts": 2,
+      "tool_calls": 8,
+      "effect_class": "reversible",
+      "idempotency": "Integrate one accepted artifact set for the confirmed contract hash.",
+      "compensation": "Restore the pre-integration checkpoint.",
+      "label": "Integrate serially",
+      "summary": "The integration owner alone accepts and combines verified workstreams."
+    },
+    {
+      "id": "terminal-verification",
+      "kind": "deterministic",
+      "owner": "verification-owner",
+      "inputs": [
+        "integrated_artifact"
+      ],
+      "outputs": [
+        "terminal_receipt"
+      ],
+      "reads": [
+        "AGENTS.md",
+        ".agent-state/graph/artifacts/integration.json"
+      ],
+      "writes": [
+        ".agent-state/graph/artifacts/terminal-receipt.json"
+      ],
+      "verifier": "Every required command is fresh, the mission acceptance checks pass, and cleanup is recorded.",
+      "timeout_seconds": 600,
+      "max_attempts": 1,
+      "tool_calls": 6,
+      "effect_class": "reversible",
+      "idempotency": "Emit one terminal receipt for one integrated artifact hash and evidence set.",
+      "compensation": "Invalidate the terminal receipt when evidence or implementation changes.",
+      "label": "Verify before claim",
+      "summary": "Fresh command evidence and mission-level acceptance prove completion."
+    }
+  ],
+  "edges": [
+    {
+      "from": "mission-intake",
+      "to": "blueprint-design",
+      "type": "data",
+      "payload_schema": "mission_brief",
+      "condition": "verified",
+      "failure_route": ""
+    },
+    {
+      "from": "blueprint-design",
+      "to": "structure-confirmation",
+      "type": "data",
+      "payload_schema": "blueprint_contract",
+      "condition": "bounded client validation passes",
+      "failure_route": ""
+    },
+    {
+      "from": "structure-confirmation",
+      "to": "runtime-validation",
+      "type": "verification",
+      "payload_schema": "structure_approval_receipt",
+      "condition": "receipt hash matches exported graph contract",
+      "failure_route": ""
+    },
+    {
+      "from": "runtime-validation",
+      "to": "implementation-stream",
+      "type": "verification",
+      "payload_schema": "runtime_validation_receipt",
+      "condition": "strict validator exits zero and receipt hash matches",
+      "failure_route": ""
+    },
+    {
+      "from": "runtime-validation",
+      "to": "contract-review-stream",
+      "type": "verification",
+      "payload_schema": "runtime_validation_receipt",
+      "condition": "strict validator exits zero and receipt hash matches",
+      "failure_route": ""
+    },
+    {
+      "from": "implementation-stream",
+      "to": "serial-integration",
+      "type": "data",
+      "payload_schema": "implementation_candidate",
+      "condition": "candidate verifier passes",
+      "failure_route": ""
+    },
+    {
+      "from": "implementation-stream",
+      "to": "experience-review-stream",
+      "type": "data",
+      "payload_schema": "implementation_candidate",
+      "condition": "candidate verifier passes",
+      "failure_route": ""
+    },
+    {
+      "from": "contract-review-stream",
+      "to": "serial-integration",
+      "type": "verification",
+      "payload_schema": "review_receipt",
+      "condition": "contract review accepts",
+      "failure_route": ""
+    },
+    {
+      "from": "experience-review-stream",
+      "to": "serial-integration",
+      "type": "verification",
+      "payload_schema": "review_receipt",
+      "condition": "experience review accepts",
+      "failure_route": ""
+    },
+    {
+      "from": "serial-integration",
+      "to": "terminal-verification",
+      "type": "data",
+      "payload_schema": "integrated_artifact",
+      "condition": "integration receipt passes",
+      "failure_route": ""
+    }
+  ],
+  "joins": [
+    {
+      "id": "integration-barrier",
+      "target": "serial-integration",
+      "mode": "barrier-verifier",
+      "inputs": [
+        "implementation-stream",
+        "contract-review-stream",
+        "experience-review-stream"
+      ],
+      "verifier": "The implementation candidate and both independent review receipts share the confirmed contract hash.",
+      "quorum": null
+    }
+  ],
+  "stop_conditions": [
+    "The terminal mission verifier passes.",
+    "Any graph, node, team, or review budget is exhausted.",
+    "The same failure signature repeats after one changed attempt.",
+    "The structure confirmation receipt is missing or stale."
+  ],
+  "recovery": {
+    "checkpoint": ".agent-state/graph/checkpoint.json",
+    "write_back": ".agent-state/graph/events.jsonl",
+    "whole_graph_rerun": false
+  },
+  "blueprint": {
+    "blueprint_version": "1.0.0",
+    "mission_title": "Graph Engineering mission control",
+    "summary": "Confirm the whole structure first. Then allocate bounded, independently reviewable Agent Team workstreams.",
+    "success_criteria": [
+      "The repository opens directly into an understandable mission blueprint.",
+      "Mission, graph, team, and presentation fields are editable without source-code changes.",
+      "Browser refresh preserves the local draft.",
+      "JSON import and export round-trip the complete blueprint.",
+      "A valid structure hash and explicit human receipt gate the team handoff.",
+      "Required repository checks and responsive browser acceptance pass."
+    ],
+    "status": "DRAFT",
+    "revision": 1,
+    "updated_at": null,
+    "confirmation": null,
+    "events": [],
+    "presentation": {
+      "theme": "midnight",
+      "accent": "cyan",
+      "density": "comfortable",
+      "direction": "horizontal",
+      "show_minimap": true,
+      "show_guardrails": true,
+      "show_evidence": true
+    }
+  },
+  "team_command": {
+    "schema_version": "1.0",
+    "status": "LOCKED_UNTIL_CONFIRMATION",
+    "commander": "integration-owner",
+    "integration_owner": "integration-owner",
+    "topology": "manager-workers",
+    "activation_gate": "structure-confirmation",
+    "runtime_validation_node": "runtime-validation",
+    "admission": {
+      "decision": "ALLOCATE_AFTER_CONFIRMATION_EXECUTE_AFTER_RUNTIME_VALIDATION",
+      "rationale": "Allocation opens after human confirmation; worker recruitment waits for strict validation of the exact exported contract.",
+      "orchestration_tax": "Bounded by three workstreams, three isolated artifacts, one serial integration owner, and an 800-line review cap."
+    },
+    "review_budget": {
+      "max_parallel_workers": 3,
+      "max_open_workstreams": 3,
+      "max_changed_lines_per_batch": 800
+    },
+    "checkpoint_cadence": "After each material artifact or decision.",
+    "interrupt_policy": "Stop a workstream on ownership conflict, stale confirmation, repeated failure signature, permission denial, or budget exhaustion.",
+    "state_path": ".agent-state/team/state.json",
+    "artifact_path": ".agent-state/team/artifacts",
+    "ipc_schema": [
+      "task_id",
+      "state",
+      "artifact",
+      "evidence",
+      "decision",
+      "unknowns",
+      "dependency",
+      "next_action"
+    ],
+    "allowed_tools": [
+      "Read repository files.",
+      "Edit files inside the assigned territory.",
+      "Write the declared isolated artifact.",
+      "Run declared verification commands."
+    ],
+    "denied_tools": [
+      "Write another workstream's territory.",
+      "Deploy or publish externally.",
+      "Change the shared graph contract after confirmation.",
+      "Self-certify integration or terminal completion."
+    ],
+    "workstreams": [
+      {
+        "id": "interface-builder",
+        "graph_node_id": "implementation-stream",
+        "name": "Editable blueprint builder",
+        "capability": "Accessible static-web implementation and state modeling",
+        "owner": "interface-builder",
+        "territory": [
+          ".agent-state/team/worktrees/interface-builder/index.html",
+          ".agent-state/team/worktrees/interface-builder/blueprint/styles.css",
+          ".agent-state/team/worktrees/interface-builder/blueprint/app.js",
+          ".agent-state/team/worktrees/interface-builder/blueprint/model.js",
+          ".agent-state/team/artifacts/implementation.json"
+        ],
+        "inputs": [
+          "blueprint_contract",
+          "structure_approval_receipt",
+          "runtime_validation_receipt"
+        ],
+        "output_artifact": ".agent-state/team/artifacts/implementation.json",
+        "dependencies": [],
+        "verifier": "Targeted model and browser interaction checks pass.",
+        "budget": {
+          "max_attempts": 2,
+          "tool_calls": 12,
+          "timeout_seconds": 900
+        },
+        "stop_condition": "Candidate passes or the bounded attempt budget is exhausted."
+      },
+      {
+        "id": "contract-reviewer",
+        "graph_node_id": "contract-review-stream",
+        "name": "Graph contract reviewer",
+        "capability": "Static DAG, typed payload, join, budget, and architecture-boundary review",
+        "owner": "contract-reviewer",
+        "territory": [
+          ".agent-state/team/artifacts/contract-review.json"
+        ],
+        "inputs": [
+          "blueprint_contract",
+          "structure_approval_receipt",
+          "runtime_validation_receipt"
+        ],
+        "output_artifact": ".agent-state/team/artifacts/contract-review.json",
+        "dependencies": [],
+        "verifier": "Strict graph validation and MECE boundary review pass.",
+        "budget": {
+          "max_attempts": 2,
+          "tool_calls": 7,
+          "timeout_seconds": 600
+        },
+        "stop_condition": "Review accepts, rejects with evidence, or exhausts its budget."
+      },
+      {
+        "id": "experience-reviewer",
+        "graph_node_id": "experience-review-stream",
+        "name": "Experience and accessibility reviewer",
+        "capability": "Keyboard, persistence, import/export, responsive, and safety review",
+        "owner": "experience-reviewer",
+        "territory": [
+          ".agent-state/team/artifacts/experience-review.json"
+        ],
+        "inputs": [
+          "implementation_candidate",
+          "structure_approval_receipt",
+          "runtime_validation_receipt"
+        ],
+        "output_artifact": ".agent-state/team/artifacts/experience-review.json",
+        "dependencies": [
+          "interface-builder"
+        ],
+        "verifier": "The browser acceptance matrix passes with no blocking accessibility issue.",
+        "budget": {
+          "max_attempts": 2,
+          "tool_calls": 7,
+          "timeout_seconds": 600
+        },
+        "stop_condition": "Review accepts, rejects with evidence, or exhausts its budget."
+      }
+    ],
+    "integration": {
+      "order": [
+        "interface-builder",
+        "contract-reviewer",
+        "experience-reviewer"
+      ],
+      "verifier": "The integration owner accepts one fresh artifact at a time, then runs the full repository checks.",
+      "rollback": "Restore the pre-integration checkpoint and reject only the incompatible artifact.",
+      "cleanup_receipt": ".agent-state/team/cleanup-receipt.json"
+    },
+    "handoff": null
+  }
+}
