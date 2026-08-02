@@ -48,6 +48,20 @@ test('semantic edits change the structure hash while presentation and team edits
   assert.notEqual(Model.structureHash(semantic), original);
 });
 
+test('dynamic task specification participates in the structure hash', () => {
+  const blueprint = loadDefault();
+  const original = Model.structureHash(blueprint);
+  blueprint.task_spec = {
+    schema_version: 'dynamic-mission/1.0',
+    task_class: 'multimedia-production',
+    template_id: 'multimedia-source-fusion',
+    input_asset_refs: ['artifact:source-001'],
+    deliverables: ['preview-package'],
+    dynamic_expansion: false
+  };
+  assert.notEqual(Model.structureHash(blueprint), original);
+});
+
 test('human receipt is valid only for the exact current structure', () => {
   const blueprint = loadDefault();
   blueprint.blueprint.confirmation = Model.createConfirmation(blueprint, 'test-owner');

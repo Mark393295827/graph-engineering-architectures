@@ -1,0 +1,38 @@
+{
+  "schema_version": "media-asset/1.0",
+  "asset_record_id": "asset_example-source-001",
+  "asset_version_id": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "blob": {
+    "id": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "byte_length": 4096,
+    "declared_mime": "application/pdf",
+    "detected_mime": "application/pdf",
+    "locator_ref": "cas://sha256/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "media_kind": "document",
+  "technical": { "page_count": 4 },
+  "source": {
+    "origin_type": "upload",
+    "received_at": "2026-08-02T00:00:00Z",
+    "original_name_sanitized": "source-document.pdf"
+  },
+  "provenance": {
+    "creator_claim": null,
+    "license": "operator-supplied",
+    "consent": null,
+    "parent_asset_versions": [],
+    "transformation_receipts": []
+  },
+  "safety": {
+    "classification": "unclassified",
+    "policy_tags": [],
+    "scan_receipts": ["artifact:scan-example-001"],
+    "status": "ACCEPTED"
+  },
+  "accessibility": {
+    "alt_text_ref": null,
+    "transcript_ref": null,
+    "caption_ref": null
+  },
+  "variants": []
+}

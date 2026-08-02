@@ -2,7 +2,10 @@
 # Source: https://github.com/Mark393295827/third-brain-v7-skills
 # Commit: 9cf925c16510c6efe9bf44968fbfa27340a3337b
 1d5d71dcc6ccd28ab46a335349ecc74742ca4b81f4fcad212f8d134f70f1f13e  .gitattributes
-a7ad6a2f19f6e5833ab511b56491fcd69d18e253132f7e174ac1ab558e5b0803  .gitignore
+# .gitignore retains the upstream file and adds repository-specific runtime
+# exclusions for .agent-state/, runtime-state/, and media-runtime/.
+# Upstream original: a7ad6a2f19f6e5833ab511b56491fcd69d18e253132f7e174ac1ab558e5b0803
+a3b47e2e0693deecbb226c9cdbce0cce8a8d6a44bcf7cc1b3ad1d580ce10504f  .gitignore
 bd35f96510de6d59370bfae83223fef116f0fc7d69e7020a9b886df7c75eb4f6  core/ooda/act.js
 ce0a7bfd701f5e023431d0055a782c32bdda6351bf1e453e3d28bb374354baa6  core/ooda/decide.js
 0a2321112a518dd040429ac0ffa800ab0e2e75949f34ac1a737c1918213a7a37  core/ooda/index.js

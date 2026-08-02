@@ -4,6 +4,9 @@ __pycache__/
 .vscode/
 .idea/
 *.log
+.agent-state/
+runtime-state/
+media-runtime/
 outreach/awesome-lists/previews/
 .DS_Store
 Thumbs.db

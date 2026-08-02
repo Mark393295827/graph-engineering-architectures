@@ -191,6 +191,20 @@ process.stdout.write(JSON.stringify(candidates));
             "resetButton",
             "confirmDialog",
             "blueprintSeed",
+            "taskIntake",
+            "taskIntakeTitle",
+            "compileTaskPreviewButton",
+            "dynamicCompileStatus",
+            "adapterCandidateStrip",
+            "graphAdmission",
+            "graphAdmissionTitle",
+            "admissionStatus",
+            "admissionSummary",
+            "admissionPreviewButton",
+            "admissionCriticalPath",
+            "admissionEffectiveFanout",
+            "admissionProjectedRate",
+            "admissionHubCount",
         }
         self.assertTrue(required_ids.issubset(self.parser.ids))
 
@@ -204,6 +218,29 @@ process.stdout.write(JSON.stringify(candidates));
             self.assertIn(binding, self.index_text)
         self.assertIn("dataset.showMinimap", self.app_text)
         self.assertIn("dataset.showEvidence", self.app_text)
+        self.assertIn("ensureDynamicBlueprint", self.app_text)
+        self.assertIn("compileTaskPreview", self.app_text)
+        self.assertIn("calculateGraphAdmission", self.app_text)
+        self.assertIn("compileAdmissionPreview", self.app_text)
+        self.assertIn("graph-admission", self.app_text)
+        self.assertIn("PREVIEW_READY", self.app_text)
+        self.assertIn('data-bind="task_spec.template_id"', self.index_text)
+        self.assertIn('data-bind-list="task_spec.input_asset_refs"', self.index_text)
+        for admission_binding in (
+            'data-bind="task_spec.admission.dependency_source"',
+            'data-bind="task_spec.admission.partition_strategy"',
+            'data-bind="task_spec.admission.coupling_profile"',
+            'data-bind-list="task_spec.admission.structural_hubs"',
+            'data-bind="task_spec.admission.critical_path_floor_seconds"',
+            'data-bind="task_spec.admission.fanout_ceiling"',
+            'data-bind="task_spec.admission.rate_limit_rps"',
+            'data-bind="task_spec.admission.worker_rate_rps"',
+            'data-bind="task_spec.admission.coordination_tax_ceiling_percent"',
+            'data-bind="task_spec.admission.planner_gate"',
+        ):
+            self.assertIn(admission_binding, self.index_text)
+        for adapter_name in ("Claude Code", "Codex", "Antigravity", "Grok", "Kimi", "DeepSeek"):
+            self.assertIn(adapter_name, self.index_text)
         self.assertEqual(
             "blocks",
             self.contract["blueprint"]["presentation"]["editor_mode"],

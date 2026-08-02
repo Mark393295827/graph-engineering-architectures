@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph-engineering/adapter-descriptor/1.0",
+  "title": "Unverified runtime adapter descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["adapter_id", "display_name", "runtime_kind", "protocol", "connection_ref", "enabled", "capability_hints", "supported_modalities", "supported_workspace_modes", "supported_permission_profiles", "max_concurrency", "runtime_state"],
+  "properties": {
+    "adapter_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+    "display_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "runtime_kind": { "enum": ["external-agent-adapter", "local-agent-adapter", "tool-adapter"] },
+    "protocol": { "const": "agent-team-ipc/1.0" },
+    "connection_ref": { "type": "string", "pattern": "^runtime\\.adapters\\.[a-z][a-z0-9-]{1,63}$" },
+    "enabled": { "type": "boolean" },
+    "capability_hints": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,99}$" } },
+    "supported_modalities": { "type": "array", "minItems": 1, "items": { "enum": ["text", "image", "audio", "video", "document", "code", "mixed"] } },
+    "supported_workspace_modes": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+    "supported_permission_profiles": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+    "max_concurrency": { "type": "integer", "minimum": 1, "maximum": 64 },
+    "runtime_state": { "type": "object", "additionalProperties": false, "required": ["status", "probe_receipt"], "properties": { "status": { "enum": ["DECLARED", "NOT_CONFIGURED", "PROBING", "READY", "DEGRADED", "UNAVAILABLE", "EXPIRED"] }, "probe_receipt": { "type": ["string", "null"], "pattern": "^artifact:[A-Za-z0-9._:-]+$" } } }
+  }
+}

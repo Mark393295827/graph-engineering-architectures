@@ -51,6 +51,45 @@
       'mission.eyebrow': 'Mission / structure first',
       'mission.contract': 'Mission contract',
       'mission.intent': 'Intent before execution',
+      'intake.eyebrow': 'Task intake / dynamic blueprint',
+      'intake.title': 'Describe the task before choosing the graph',
+      'intake.intro': 'Choose a bounded template, name the media references, and preview the finite Graph that will be confirmed before any runtime allocation.',
+      'intake.taskClass': 'Task class',
+      'intake.template': 'Blueprint template',
+      'intake.assets': 'Bounded asset references',
+      'intake.assetHint': 'one `artifact:` or `sha256:` reference per line',
+      'intake.outputs': 'Requested deliverables',
+      'intake.outputHint': 'one output ID per line',
+      'intake.policy': 'Policy profile',
+      'intake.maxNodes': 'Maximum compiled nodes',
+      'intake.previewKicker': 'Compiler preview',
+      'intake.assetCount': 'asset refs',
+      'intake.deliverableCount': 'deliverables',
+      'intake.nodeBudget': 'node ceiling',
+      'intake.compile': 'Compile task preview',
+      'intake.disclaimer': 'Preview only · no upload, provider call, agent launch, or media execution occurs in this static page.',
+      'admission.eyebrow': 'Graph admission / shape before fan-out',
+      'admission.title': 'Measure dependency width before allocating agents',
+      'admission.intro': 'Partition from the real dependency graph, isolate structural hubs, and treat the critical path as a floor. Coupled work stays serial when parallelism cannot pay back its coordination tax.',
+      'admission.source': 'Dependency evidence',
+      'admission.sourceHint': 'Static analysis is preferred; folder and file lists are not dependency evidence.',
+      'admission.partition': 'Partition strategy',
+      'admission.coupling': 'Coupling profile',
+      'admission.hubs': 'Structural hub IDs',
+      'admission.hubHint': 'one node ID per line · isolate before fan-out',
+      'admission.criticalPath': 'Critical-path floor (seconds)',
+      'admission.fanout': 'Fan-out ceiling',
+      'admission.rateLimit': 'Rate limit (requests/sec)',
+      'admission.workerRate': 'Worker rate (requests/sec)',
+      'admission.taxCeiling': 'Coordination-tax ceiling (%)',
+      'admission.plannerGate': 'Planner preflight',
+      'admission.previewKicker': 'Deterministic admission gate',
+      'admission.criticalMetric': 'critical-path floor',
+      'admission.fanoutMetric': 'effective fan-out',
+      'admission.rateMetric': 'projected requests/sec',
+      'admission.hubMetric': 'hub candidates',
+      'admission.preview': 'Evaluate admission preview',
+      'admission.disclaimer': 'Preview only · the gate reads the declared Graph and emits no scheduler command or provider call.',
       'common.editable': 'Editable',
       'field.title': 'Mission title',
       'field.summary': 'Opening summary',
@@ -163,6 +202,45 @@
       'mission.eyebrow': '任务 / 先确认结构',
       'mission.contract': '任务契约',
       'mission.intent': '执行前明确意图',
+      'intake.eyebrow': '任务输入 / 动态蓝图',
+      'intake.title': '先描述任务，再选择依赖图',
+      'intake.intro': '选择有界模板，填写媒体引用，并预览一张将在运行时分配前确认的有限依赖图。',
+      'intake.taskClass': '任务类别',
+      'intake.template': '蓝图模板',
+      'intake.assets': '有界资产引用',
+      'intake.assetHint': '每行一个 `artifact:` 或 `sha256:` 引用',
+      'intake.outputs': '所需交付物',
+      'intake.outputHint': '每行一个输出 ID',
+      'intake.policy': '策略配置',
+      'intake.maxNodes': '编译节点上限',
+      'intake.previewKicker': '编译预览',
+      'intake.assetCount': '资产引用',
+      'intake.deliverableCount': '交付物',
+      'intake.nodeBudget': '节点上限',
+      'intake.compile': '编译任务预览',
+      'intake.disclaimer': '仅预览 · 静态页面不会上传、调用供应商、启动智能体或执行媒体任务。',
+      'admission.eyebrow': '图准入 / 扩散前先确定形状',
+      'admission.title': '分配智能体前先测量依赖宽度',
+      'admission.intro': '从真实依赖图分区，先隔离结构枢纽，并把关键路径视为下限。当并行无法抵消协调税时，让耦合任务保持串行。',
+      'admission.source': '依赖证据来源',
+      'admission.sourceHint': '优先使用静态分析；文件夹和文件列表不是依赖证据。',
+      'admission.partition': '分区策略',
+      'admission.coupling': '耦合配置',
+      'admission.hubs': '结构枢纽 ID',
+      'admission.hubHint': '每行一个节点 ID · 扩散前先隔离',
+      'admission.criticalPath': '关键路径下限（秒）',
+      'admission.fanout': '扩散上限',
+      'admission.rateLimit': '速率限制（请求/秒）',
+      'admission.workerRate': '单智能体速率（请求/秒）',
+      'admission.taxCeiling': '协调税上限（%）',
+      'admission.plannerGate': '规划器预检',
+      'admission.previewKicker': '确定性图准入关卡',
+      'admission.criticalMetric': '关键路径下限',
+      'admission.fanoutMetric': '有效扩散',
+      'admission.rateMetric': '预计请求/秒',
+      'admission.hubMetric': '枢纽候选',
+      'admission.preview': '评估准入预览',
+      'admission.disclaimer': '仅预览 · 关卡只读取声明的依赖图，不发出调度命令，也不调用供应商。',
       'common.editable': '可编辑',
       'field.title': '任务标题',
       'field.summary': '开场摘要',
@@ -237,6 +315,87 @@
     }
   };
 
+  const DYNAMIC_BLUEPRINT_DEFAULTS = {
+    schema_version: 'dynamic-mission/1.0',
+    task_class: 'multimedia-production',
+    template_id: 'multimedia-source-fusion',
+    template_version: '1.0.0',
+    input_asset_refs: [],
+    media_kinds: ['document', 'image', 'audio'],
+    deliverables: [
+      'cited-brief',
+      'storyboard',
+      'narration-script',
+      'accessible-transcript',
+      'preview-package'
+    ],
+    policy_profile: 'multimedia-review-required',
+    compiler_state: 'NEEDS_INPUT',
+    dynamic_expansion: false,
+    budgets: {
+      max_nodes: 24,
+      max_concurrency: 4,
+      max_attempts: 2,
+      wall_time_seconds: 10800,
+      tool_calls: 180,
+      media_bytes: 524288000
+    },
+    classification: {
+      status: 'NEEDS_INPUT',
+      confidence: 0,
+      topology: 'diamond',
+      evidence: []
+    },
+    last_compile: null,
+    admission: {
+      dependency_source: 'unknown',
+      partition_strategy: 'dependency-cut',
+      coupling_profile: 'needs-input',
+      structural_hubs: [],
+      critical_path_floor_seconds: 0,
+      fanout_ceiling: 3,
+      rate_limit_rps: 100,
+      worker_rate_rps: 10,
+      coordination_tax_ceiling_percent: 30,
+      planner_gate: 'script-preflight',
+      status: 'NEEDS_INPUT',
+      last_receipt: null
+    }
+  };
+
+  function ensureDynamicBlueprint(contract) {
+    if (!contract || typeof contract !== 'object') {
+      return contract;
+    }
+    const current = contract.task_spec;
+    const currentBudgets = current && typeof current.budgets === 'object'
+      ? current.budgets
+      : {};
+    const currentClassification = current && typeof current.classification === 'object'
+      ? current.classification
+      : {};
+    const currentAdmission = current && typeof current.admission === 'object'
+      ? current.admission
+      : {};
+    contract.task_spec = {
+      ...Model.deepClone(DYNAMIC_BLUEPRINT_DEFAULTS),
+      ...(current && typeof current === 'object' ? current : {}),
+      budgets: {
+        ...Model.deepClone(DYNAMIC_BLUEPRINT_DEFAULTS.budgets),
+        ...currentBudgets
+      },
+      classification: {
+        ...Model.deepClone(DYNAMIC_BLUEPRINT_DEFAULTS.classification),
+        ...currentClassification
+      },
+      admission: {
+        ...Model.deepClone(DYNAMIC_BLUEPRINT_DEFAULTS.admission),
+        ...currentAdmission
+      }
+    };
+    return contract;
+  }
+
   const elements = {
     body: document.body,
     headerStatus: document.getElementById('headerStatus'),
@@ -247,6 +406,22 @@
     saveTime: document.getElementById('saveTime'),
     missionDisplayTitle: document.getElementById('missionDisplayTitle'),
     missionDisplaySummary: document.getElementById('missionDisplaySummary'),
+    dynamicTemplateStatus: document.getElementById('dynamicTemplateStatus'),
+    dynamicCompileStatus: document.getElementById('dynamicCompileStatus'),
+    dynamicCompileSummary: document.getElementById('dynamicCompileSummary'),
+    dynamicAssetCount: document.getElementById('dynamicAssetCount'),
+    dynamicDeliverableCount: document.getElementById('dynamicDeliverableCount'),
+    dynamicNodeBudget: document.getElementById('dynamicNodeBudget'),
+    compileTaskPreviewButton: document.getElementById('compileTaskPreviewButton'),
+    admissionStatus: document.getElementById('admissionStatus'),
+    admissionSummary: document.getElementById('admissionSummary'),
+    admissionPreviewCopy: document.getElementById('admissionPreviewCopy'),
+    admissionCriticalPath: document.getElementById('admissionCriticalPath'),
+    admissionEffectiveFanout: document.getElementById('admissionEffectiveFanout'),
+    admissionProjectedRate: document.getElementById('admissionProjectedRate'),
+    admissionHubCount: document.getElementById('admissionHubCount'),
+    admissionTaxStatus: document.getElementById('admissionTaxStatus'),
+    admissionPreviewButton: document.getElementById('admissionPreviewButton'),
     confirmationSignal: document.getElementById('confirmationSignal'),
     confirmationTitle: document.getElementById('confirmationTitle'),
     confirmationCopy: document.getElementById('confirmationCopy'),
@@ -524,6 +699,7 @@
     updateArchitectureControls();
     refreshStatus();
     if (state?.nodes) {
+      refreshOverview();
       renderBlockWorkspace();
       renderNodeInspector();
     }
@@ -598,6 +774,193 @@
     elements.joinMetric.textContent = state.joins.length;
     elements.teamMetric.textContent = state.team_command.workstreams.length;
     elements.mapContractStatus.textContent = `LIVE CONTRACT · R${state.blueprint.revision || 1} · ${state.nodes.length} NODES`;
+    renderDynamicTaskPreview();
+    renderGraphAdmission();
+  }
+
+  function renderDynamicTaskPreview() {
+    const dynamic = state?.task_spec || DYNAMIC_BLUEPRINT_DEFAULTS;
+    const assetRefs = Array.isArray(dynamic.input_asset_refs)
+      ? dynamic.input_asset_refs.filter((item) => String(item).trim())
+      : [];
+    const deliverables = Array.isArray(dynamic.deliverables)
+      ? dynamic.deliverables.filter((item) => String(item).trim())
+      : [];
+    const maxNodes = Number(dynamic.budgets?.max_nodes) || DYNAMIC_BLUEPRINT_DEFAULTS.budgets.max_nodes;
+    const hasObjective = String(state?.objective || '').trim().length > 0;
+    const hasTemplate = String(dynamic.template_id || '').trim().length > 0;
+    const ready = hasObjective && hasTemplate && assetRefs.length > 0 && deliverables.length > 0;
+    const compiled = dynamic.compiler_state === 'PREVIEW_READY';
+    if (elements.dynamicAssetCount) {
+      elements.dynamicAssetCount.textContent = String(assetRefs.length);
+      elements.dynamicDeliverableCount.textContent = String(deliverables.length);
+      elements.dynamicNodeBudget.textContent = String(maxNodes);
+      elements.dynamicTemplateStatus.textContent = compiled
+        ? 'SHADOW COMPILE · PREVIEW READY'
+        : 'SHADOW COMPILE · NO EXECUTION';
+      elements.dynamicCompileStatus.textContent = compiled
+        ? 'PREVIEW READY'
+        : (ready ? 'READY TO COMPILE' : 'NEEDS INPUT');
+      elements.dynamicCompileStatus.dataset.state = compiled ? 'ready' : (ready ? 'prepared' : 'blocked');
+      elements.dynamicCompileSummary.textContent = compiled
+        ? `Finite ${dynamic.classification?.topology || 'diamond'} template preview prepared for ${assetRefs.length} asset reference(s). Confirm the resulting Graph before allocation.`
+        : (ready
+          ? 'Inputs are bounded. Compile a task preview to record the selected template and readiness evidence.'
+          : 'Add at least one bounded asset reference and one deliverable. The Graph remains unchanged until the task is compiled and confirmed.');
+    }
+  }
+
+  function calculateGraphAdmission() {
+    ensureDynamicBlueprint(state);
+    const dynamic = state.task_spec || DYNAMIC_BLUEPRINT_DEFAULTS;
+    const admission = {
+      ...DYNAMIC_BLUEPRINT_DEFAULTS.admission,
+      ...(dynamic.admission || {})
+    };
+    const nodeCount = Array.isArray(state.nodes) ? state.nodes.length : 0;
+    const graphConcurrency = Math.max(
+      1,
+      Number(state.budgets?.max_concurrency || dynamic.budgets?.max_concurrency) || 1
+    );
+    const requestedFanout = Math.min(
+      64,
+      Math.max(1, Number.parseInt(admission.fanout_ceiling, 10) || 0)
+    );
+    const effectiveFanout = Math.min(requestedFanout, graphConcurrency, Math.max(1, nodeCount));
+    const criticalPath = Math.max(0, Number(admission.critical_path_floor_seconds) || 0);
+    const rateLimit = Math.max(0, Number(admission.rate_limit_rps) || 0);
+    const workerRate = Math.max(0, Number(admission.worker_rate_rps) || 0);
+    const projectedRate = effectiveFanout * workerRate;
+    const hubs = Array.isArray(admission.structural_hubs)
+      ? admission.structural_hubs.filter((item) => String(item).trim())
+      : [];
+    const taxCeiling = Number(admission.coordination_tax_ceiling_percent);
+    const reasons = [];
+
+    if (!['static-analysis', 'declared-graph', 'manual'].includes(admission.dependency_source)) {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '需要来自真实依赖图的证据（静态分析、声明图或人工证据）。'
+        : 'Dependency evidence must come from static analysis, the declared Graph, or a reviewed manual source.');
+    }
+    if (admission.coupling_profile === 'needs-input') {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '请先判断任务是独立、混合还是耦合。'
+        : 'Classify the work as independent, mixed, or coupled before fan-out.');
+    }
+    if (!criticalPath) {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '关键路径下限必须大于零。'
+        : 'A positive critical-path floor is required.');
+    }
+    if (admission.partition_strategy === 'dependency-cut' && hubs.length === 0) {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '依赖切分需要先列出结构枢纽。'
+        : 'Dependency cuts need structural hub IDs before fan-out.');
+    }
+    if (admission.planner_gate !== 'script-preflight') {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '规划器预检必须保持启用。'
+        : 'The zero-token script preflight must stay enabled.');
+    }
+    if (requestedFanout < 1 || !rateLimit || !workerRate || !Number.isFinite(taxCeiling)
+      || taxCeiling < 0 || taxCeiling > 100) {
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '扩散、速率和协调税预算必须是有限的正值。'
+        : 'Fan-out, rate, and coordination-tax budgets must be finite values.');
+    }
+
+    let status = 'ADMIT';
+    if (reasons.length) {
+      status = 'NEEDS_INPUT';
+    } else if (projectedRate > rateLimit) {
+      status = 'RATE_LIMIT_EXCEEDED';
+      reasons.push(currentLanguage === 'zh-CN'
+        ? `预计速率 ${projectedRate}/s 超过限制 ${rateLimit}/s。`
+        : `Projected rate ${projectedRate}/s exceeds the ${rateLimit}/s limit.`);
+    } else if (admission.coupling_profile === 'coupled' || effectiveFanout < 2) {
+      status = 'SERIAL_ONLY';
+      reasons.push(currentLanguage === 'zh-CN'
+        ? '耦合或有效宽度不足，串行执行更安全。'
+        : 'Coupling or available width keeps this work serial-only.');
+    }
+
+    const summary = status === 'ADMIT'
+      ? (currentLanguage === 'zh-CN'
+        ? `可考虑并行：先隔离 ${hubs.length} 个枢纽，再在 ${effectiveFanout} 个有界分区内工作。`
+        : `Parallel candidate: isolate ${hubs.length} hub(s), then work inside ${effectiveFanout} bounded partition(s).`)
+      : status === 'SERIAL_ONLY'
+        ? (currentLanguage === 'zh-CN'
+          ? '保持串行；关键路径和耦合关系决定了并行不会带来可靠收益。'
+          : 'Keep this serial; the critical path and coupling make parallel work unreliable.')
+        : status === 'RATE_LIMIT_EXCEEDED'
+          ? (currentLanguage === 'zh-CN'
+            ? '先降低扩散或单智能体速率，再进入团队分配。'
+            : 'Reduce fan-out or worker rate before entering team allocation.')
+          : (currentLanguage === 'zh-CN'
+            ? '补齐依赖证据、枢纽和关键路径后再评估。'
+            : 'Add dependency evidence, hubs, and a critical-path floor before evaluating.');
+
+    return {
+      status,
+      dependency_source: admission.dependency_source,
+      partition_strategy: admission.partition_strategy,
+      coupling_profile: admission.coupling_profile,
+      structural_hubs: hubs,
+      critical_path_floor_seconds: criticalPath,
+      requested_fanout: requestedFanout,
+      effective_fanout: effectiveFanout,
+      graph_concurrency: graphConcurrency,
+      rate_limit_rps: rateLimit,
+      worker_rate_rps: workerRate,
+      projected_rate_rps: projectedRate,
+      coordination_tax_ceiling_percent: taxCeiling,
+      planner_gate: admission.planner_gate,
+      reasons,
+      summary
+    };
+  }
+
+  function admissionStatusLabel(status) {
+    const labels = currentLanguage === 'zh-CN'
+      ? {
+        ADMIT: '可并行候选',
+        SERIAL_ONLY: '仅串行',
+        RATE_LIMIT_EXCEEDED: '超出速率限制',
+        NEEDS_INPUT: '需要输入'
+      }
+      : {
+        ADMIT: 'PARALLEL CANDIDATE',
+        SERIAL_ONLY: 'SERIAL ONLY',
+        RATE_LIMIT_EXCEEDED: 'RATE LIMIT EXCEEDED',
+        NEEDS_INPUT: 'NEEDS INPUT'
+      };
+    return labels[status] || labels.NEEDS_INPUT;
+  }
+
+  function renderGraphAdmission() {
+    if (!elements.admissionStatus || !elements.admissionSummary) {
+      return;
+    }
+    const preview = calculateGraphAdmission();
+    const statusState = {
+      ADMIT: 'candidate',
+      SERIAL_ONLY: 'serial',
+      RATE_LIMIT_EXCEEDED: 'rate',
+      NEEDS_INPUT: 'blocked'
+    }[preview.status] || 'blocked';
+    const label = admissionStatusLabel(preview.status);
+    elements.admissionStatus.textContent = label;
+    elements.admissionStatus.dataset.state = statusState;
+    elements.admissionSummary.textContent = label;
+    elements.admissionSummary.dataset.state = statusState;
+    elements.admissionPreviewCopy.textContent = preview.summary;
+    elements.admissionCriticalPath.textContent = `${preview.critical_path_floor_seconds}s`;
+    elements.admissionEffectiveFanout.textContent = `${preview.effective_fanout}/${preview.requested_fanout}`;
+    elements.admissionProjectedRate.textContent = `${preview.projected_rate_rps}/s`;
+    elements.admissionHubCount.textContent = String(preview.structural_hubs.length);
+    elements.admissionTaxStatus.textContent = currentLanguage === 'zh-CN'
+      ? `协调税预算：${preview.coordination_tax_ceiling_percent}% · 关键路径是 ${preview.critical_path_floor_seconds}s 的下限。`
+      : `Coordination-tax ceiling: ${preview.coordination_tax_ceiling_percent}% · critical path is a ${preview.critical_path_floor_seconds}s floor.`;
   }
 
   function fitArchitectureDiagram() {
@@ -2026,6 +2389,7 @@
       throw new Error(`${sourceLabel} rejected: ${result.errors[0].message}`);
     }
     state = prepared;
+    ensureDynamicBlueprint(state);
     undoHistory = [];
     redoHistory = [];
     selectedNodeId = state.nodes[0]?.id || null;
@@ -2325,6 +2689,7 @@
       return;
     }
     state = Model.deepClone(seed);
+    ensureDynamicBlueprint(state);
     undoHistory = [];
     redoHistory = [];
     selectedNodeId = state.nodes[0]?.id || null;
@@ -2340,15 +2705,113 @@
     showToast('Local draft reset to the canonical blueprint.', false);
   }
 
+  function compileTaskPreview() {
+    ensureDynamicBlueprint(state);
+    const dynamic = state.task_spec;
+    const assetRefs = Array.isArray(dynamic.input_asset_refs)
+      ? dynamic.input_asset_refs.filter((item) => String(item).trim())
+      : [];
+    const deliverables = Array.isArray(dynamic.deliverables)
+      ? dynamic.deliverables.filter((item) => String(item).trim())
+      : [];
+    const ready = String(state.objective || '').trim()
+      && String(dynamic.template_id || '').trim()
+      && assetRefs.length > 0
+      && deliverables.length > 0;
+    dynamic.compiler_state = ready ? 'PREVIEW_READY' : 'NEEDS_INPUT';
+    dynamic.classification = {
+      ...dynamic.classification,
+      status: ready ? 'CLASSIFIED' : 'NEEDS_INPUT',
+      confidence: ready ? 1 : 0,
+      topology: ready ? 'diamond' : (dynamic.classification?.topology || 'diamond'),
+      evidence: ready
+        ? [
+          `Template ${dynamic.template_id}@${dynamic.template_version || '1.0.0'} selected by the local catalog.`,
+          `${assetRefs.length} bounded asset reference(s) enumerated before compilation.`,
+          'Runtime graph expansion remains disabled.'
+        ]
+        : []
+    };
+    dynamic.last_compile = {
+      status: dynamic.compiler_state,
+      at: new Date().toISOString(),
+      input_count: assetRefs.length,
+      deliverable_count: deliverables.length,
+      max_nodes: Number(dynamic.budgets?.max_nodes) || DYNAMIC_BLUEPRINT_DEFAULTS.budgets.max_nodes,
+      graph_revision: Number(state.blueprint.revision || 1)
+    };
+    mutate('structure', 'all');
+    if (ready) {
+      showToast('Task preview compiled. Review the finite Graph, then confirm structure before allocation.', false);
+    } else {
+      showToast('Task preview needs an objective, one bounded asset reference, and one deliverable.', true);
+    }
+  }
+
+  function compileAdmissionPreview() {
+    ensureDynamicBlueprint(state);
+    const result = calculateGraphAdmission();
+    state.task_spec.admission.status = result.status;
+    state.task_spec.admission.last_receipt = {
+      schema_version: 'graph-admission-preview/1.0',
+      graph_id: state.graph_id,
+      graph_revision: Number(state.blueprint.revision || 1),
+      evaluated_at: new Date().toISOString(),
+      ...result
+    };
+    mutate('structure', 'all');
+    const label = admissionStatusLabel(result.status);
+    showToast(
+      result.status === 'ADMIT'
+        ? `Admission preview: ${label}. Confirm the Graph before allocating agents.`
+        : `Admission preview: ${label}. Resolve the listed gate conditions before allocation.`,
+      result.status !== 'ADMIT'
+    );
+  }
+
+  function invalidateDynamicPreview(path) {
+    if (!String(path || '').startsWith('task_spec.')) {
+      return;
+    }
+    const dynamic = ensureDynamicBlueprint(state).task_spec;
+    dynamic.compiler_state = 'NEEDS_INPUT';
+    dynamic.last_compile = null;
+    dynamic.classification = {
+      ...dynamic.classification,
+      status: 'NEEDS_INPUT',
+      confidence: 0,
+      evidence: []
+    };
+    dynamic.admission = {
+      ...DYNAMIC_BLUEPRINT_DEFAULTS.admission,
+      ...(dynamic.admission || {}),
+      status: 'NEEDS_INPUT',
+      last_receipt: null
+    };
+  }
+
   function handleBoundInput(event) {
     const control = event.target.closest('[data-bind], [data-bind-list]');
     if (!control) {
       return;
     }
     const path = control.dataset.bind || control.dataset.bindList;
-    const value = control.dataset.bindList ? listFromText(control.value) : control.value;
+    let value = control.dataset.bindList ? listFromText(control.value) : control.value;
+    if (!control.dataset.bindList && control.dataset.number === 'true') {
+      const parsed = Number.parseInt(control.value, 10);
+      value = Number.isFinite(parsed) ? parsed : 0;
+    }
+    invalidateDynamicPreview(path);
     setPath(state, path, value);
     mutate(control.dataset.scope || 'structure', 'status');
+  }
+
+  function handleBoundChange(event) {
+    const control = event.target.closest('[data-bind], [data-bind-list]');
+    if (!control || (control.tagName !== 'SELECT' && control.dataset.dynamicChange !== 'true')) {
+      return;
+    }
+    handleBoundInput(event);
   }
 
   function handleTeamInput(event) {
@@ -2743,6 +3206,8 @@
     document.getElementById('refreshJsonButton').addEventListener('click', renderRawJson);
     document.getElementById('applyJsonButton').addEventListener('click', applyRawJson);
     document.getElementById('resetButton').addEventListener('click', resetDraft);
+    elements.compileTaskPreviewButton.addEventListener('click', compileTaskPreview);
+    elements.admissionPreviewButton.addEventListener('click', compileAdmissionPreview);
 
     elements.confirmationCheckbox.addEventListener('change', () => {
       elements.finalConfirmButton.disabled = !elements.confirmationCheckbox.checked;
@@ -2757,6 +3222,7 @@
     });
 
     document.addEventListener('input', handleBoundInput);
+    document.addEventListener('change', handleBoundChange);
     document.addEventListener('input', handleTeamInput);
     document.addEventListener('change', handleAdapterInput);
     document.addEventListener('change', handlePresentationChange);
@@ -2864,6 +3330,7 @@
   try {
     seed = readSeed();
     state = loadDraft();
+    ensureDynamicBlueprint(state);
     selectedNodeId = state.nodes[0]?.id || null;
     updateDerivedStatus();
     bindEvents();

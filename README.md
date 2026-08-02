@@ -62,8 +62,46 @@ flowchart LR
 The machine-readable source of truth is
 [`architecture-manifest.json`](architecture-manifest.json).
 
+## Dynamic Multimedia Foundation
+
+Phase 1 adds the versioned contract registry in
+[`blueprint/contracts`](blueprint/contracts). The task-template catalog in
+[`blueprint/task-template-registry.json`](blueprint/task-template-registry.json)
+compiles each approved task into one finite static Graph. The adapter registry
+in [`blueprint/adapter-registry.json`](blueprint/adapter-registry.json) declares
+Claude Code, Codex, Antigravity, Grok, Kimi, and DeepSeek as optional,
+probe-gated runtime candidates. No provider is considered ready until a later
+Harness probe produces a receipt, and no media bytes or credentials enter a
+blueprint or IPC message.
+
+Read the [Phase 1 dynamic multimedia blueprint](docs/dynamic-multimedia-blueprint.md)
+for the contract boundary and migration order. Validate the declarations with:
+
+```powershell
+python tools/validate_dynamic_contracts.py --strict
+```
+
 The web blueprint is a supporting projection, not an architecture. Visual
 placement is not dependency topology, and animation is not execution.
+
+### Graph admission preflight
+
+The Mission view also exposes a deterministic admission card. It turns the
+dependency-width lessons in the linked research post into editable, local
+evidence: select the dependency source, partition strategy, coupling profile,
+structural hubs, critical-path floor, fan-out, request-rate, and coordination
+tax budgets before allocating agents. The browser preview never schedules a
+worker. For command evidence against a real contract, run:
+
+```powershell
+python tools/graph_admission_gate.py blueprint/default-blueprint.json --strict
+```
+
+The gate isolates hubs, measures the critical-path floor, caps effective
+fan-out against Graph concurrency, and fails closed on missing dependency
+evidence, rate-limit excess, or disabled zero-token preflight. The external
+benchmark numbers are research context, not local performance claims; the
+receipt is derived from the declared Graph.
 
 ## Included Architectures
 
@@ -87,12 +125,12 @@ Open the root `index.html` to see the complete mission immediately in the
 source-aligned 1536×1024 structural diagram. Every major visual panel opens its
 canonical mission, Graph, Agent Team, or presentation editor.
 
-Claude, Antigravity, and Codex appear as editable runtime adapter
-declarations. They exchange a versioned, hash-chained IPC envelope and
-content-addressed artifacts when a runtime Harness is present. Durable Graph
-and workstream ownership remains capability-based: the browser never selects
-an adapter, stores credentials, probes endpoints, launches agents, or claims a
-readiness receipt.
+Claude, Antigravity, and Codex appear in the legacy editable runtime adapter
+declarations used by the static editor. The Phase 1 registry additionally
+declares Grok, Kimi, and DeepSeek for the future dynamic runtime. All six are
+optional, probe-gated candidates; durable Graph and workstream ownership
+remains capability-based. The browser never selects an adapter, stores
+credentials, probes endpoints, launches agents, or claims a readiness receipt.
 
 ## Quick Start
 

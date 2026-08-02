@@ -16,10 +16,20 @@ The opening page lets a beginner assemble a mission with Lego-like blocks
 without creating a second graph format. Every safe block compiles into the same
 canonical JSON contract used by Advanced mode and the strict validator.
 
-The repository prepares an Agent Team command for Claude, Antigravity, and
-Codex adapters. It does **not** contain a production scheduler, connect to
-model endpoints, store credentials, or launch agents from the browser. Those
-runtime duties belong to a separate Harness.
+The legacy editor prepares an Agent Team command for Claude, Antigravity, and
+Codex declarations. Phase 1 also adds a provider-neutral registry for Claude
+Code, Codex, Antigravity, Grok, Kimi, and DeepSeek as future probe-gated
+candidates. It does **not** contain a production scheduler, connect to model
+endpoints, store credentials, or launch agents from the browser. Those runtime
+duties belong to a separate Harness.
+
+For the dynamic multimedia contract boundary, read
+[`docs/dynamic-multimedia-blueprint.md`](dynamic-multimedia-blueprint.md).
+The registry and schemas can be checked before any runtime work:
+
+```powershell
+python tools/validate_dynamic_contracts.py --strict
+```
 
 ## Five-minute start
 
@@ -56,6 +66,57 @@ you want to stop the server.
 You can also double-click `index.html`. The canonical seed is embedded in the
 page for this direct-open fallback, but the local server gives more consistent
 browser storage and file-loading behavior.
+
+### Dynamic multimedia intake
+
+The Mission view opens with a task-intake card before the structural diagram.
+Use it when the mission depends on documents, images, audio, or other
+cross-domain inputs:
+
+1. Choose the task class, finite template, policy profile, and maximum node
+   ceiling.
+2. Enter one bounded `artifact:` or `sha256:` reference per line and one
+   deliverable ID per line.
+3. Select **Compile task preview**. This is a local shadow compile only: it
+   records classification evidence and readiness for review, but it does not
+   upload media, call a provider, launch an agent, or expand the Graph.
+4. Review the finite Graph and confirm the structure. Changing any task-intake
+   field invalidates the prior preview, so compile again before confirmation.
+
+The Agent Team view shows six declared but unverified candidates—Claude Code,
+Codex, Antigravity, Grok, Kimi, and DeepSeek. They are provider-neutral
+capability hints until a later Harness probe produces a readiness receipt.
+
+### Graph admission preflight
+
+Before allocating those candidates, use the **Graph admission** card directly
+below task intake. It makes the dependency shape explicit for beginners:
+
+1. Choose the dependency evidence source. Prefer static analysis or the
+   declared Graph; a folder/file list is not a dependency graph.
+2. Choose **Dependency cut** (or a serial/maker-checker strategy), classify the
+   work as independent, mixed, or coupled, and list structural hub IDs one per
+   line. Isolate those hubs before fan-out.
+3. Enter the critical-path floor in seconds, fan-out ceiling, worker request
+   rate, upstream rate limit, and coordination-tax ceiling. These are finite
+   budgets, not provider settings.
+4. Keep **Script preflight · 0 tokens** enabled and select **Evaluate admission
+   preview**.
+5. Continue only when the result is **PARALLEL CANDIDATE**. **SERIAL ONLY** is
+   a valid safe outcome for coupled work; **NEEDS INPUT** and **RATE LIMIT
+   EXCEEDED** require edits before allocation.
+
+The card is a browser preview and does not run a scheduler. To produce fresh
+command evidence from the actual default DAG, run:
+
+```powershell
+python tools/graph_admission_gate.py blueprint/default-blueprint.json --strict
+```
+
+The gate measures the local graph's hub candidates, critical-path floor,
+effective width, and projected request rate. The [linked research post](https://x.com/Argona0x/status/2082807844336771532)
+provides useful hypotheses about dependency-aware partitioning, but its trial
+numbers are not accepted as local evidence.
 
 ### 3. Build the mission
 
@@ -219,7 +280,7 @@ budget, verifier, recovery path, and artifact are created together.
 
 ### Runtime adapter roster
 
-The seed declares three replaceable adapters:
+The legacy seed declares three replaceable adapters:
 
 | Adapter | Declared mission capabilities |
 |---|---|
@@ -232,6 +293,18 @@ These are declarations, not endpoint-health claims. Their browser status stays
 `contract-reviewer`; they are never changed to `claude`, `antigravity`, or
 `codex`.
 
+The Phase 1 catalog at `blueprint/adapter-registry.json` adds three optional
+candidates to the future dynamic runtime:
+
+| Adapter | Unverified capability hints |
+|---|---|
+| Grok | Research synthesis, multimodal analysis, independent review |
+| Kimi | Long-context analysis, document analysis, multimodal analysis |
+| DeepSeek | Code analysis, reasoning review, document analysis |
+
+These hints are not provider guarantees. The Harness must measure the current
+capabilities and issue a fresh probe receipt before routing any workstream.
+
 At runtime, the Harness must:
 
 1. resolve each opaque `connection_ref`;
@@ -242,6 +315,19 @@ At runtime, the Harness must:
 
 Do not place tokens, passwords, API keys, endpoint URLs, or launch commands in
 the blueprint.
+
+### Dynamic task and media contracts
+
+Task-specific work begins with a `TaskSpec`, classification receipt, and a
+versioned template from `blueprint/task-template-registry.json`. Templates
+enumerate a bounded input set before compilation and always produce one finite
+static Graph. If the task changes after compilation, the run is superseded and
+must be compiled, validated, and confirmed again.
+
+Media inputs use `blueprint/media-asset-manifest.example.json` as the Phase 1
+shape. Store exact bytes in a future content-addressed service and pass only
+`cas://` or `artifact:` references through the Graph and Agent IPC. Do not
+paste base64 media, credentials, or provider transcripts into JSON.
 
 ### Presentation view
 
