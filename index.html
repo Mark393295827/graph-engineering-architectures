@@ -9,6 +9,7 @@
     content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
   >
   <title>Graph Engineering Mission Blueprint</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="blueprint/reference-diagram.css">
   <link rel="stylesheet" href="blueprint/styles.css">
 </head>
@@ -124,6 +125,162 @@
           </div>
         </div>
 
+        <section class="task-intake-card editor-card" id="taskIntake" aria-labelledby="taskIntakeTitle">
+          <div class="card-heading task-intake-heading">
+            <div>
+              <p class="eyebrow" data-i18n="intake.eyebrow">Task intake / dynamic blueprint</p>
+              <h2 id="taskIntakeTitle" data-i18n="intake.title">Describe the task before choosing the graph</h2>
+              <p class="task-intake-intro" data-i18n="intake.intro">Choose a bounded template, name the media references, and preview the finite Graph that will be confirmed before any runtime allocation.</p>
+            </div>
+            <span class="dynamic-status-chip" id="dynamicTemplateStatus">SHADOW COMPILE · NO EXECUTION</span>
+          </div>
+          <div class="task-intake-layout">
+            <div class="task-intake-form field-grid">
+              <label class="field">
+                <span data-i18n="intake.taskClass">Task class</span>
+                <select data-bind="task_spec.task_class" data-scope="structure" data-dynamic-change="true">
+                  <option value="multimedia-production">Multimedia production</option>
+                  <option value="cross-domain-analysis">Cross-domain analysis</option>
+                  <option value="research">Research brief</option>
+                  <option value="software-build">Software build</option>
+                  <option value="external-effect">Approval before effect</option>
+                </select>
+              </label>
+              <label class="field">
+                <span data-i18n="intake.template">Blueprint template</span>
+                <select data-bind="task_spec.template_id" data-scope="structure" data-dynamic-change="true">
+                  <option value="multimedia-source-fusion">Multimedia source fusion · 1.0.0</option>
+                  <option value="cross-domain-package">Cross-domain package · 1.0.0</option>
+                  <option value="research-brief">Research brief · 1.0.0</option>
+                  <option value="software-build-review">Software build review · 1.0.0</option>
+                  <option value="approval-before-effect">Approval before effect · 1.0.0</option>
+                </select>
+              </label>
+              <label class="field full">
+                <span><span data-i18n="intake.assets">Bounded asset references</span> <small data-i18n="intake.assetHint">one `artifact:` or `sha256:` reference per line</small></span>
+                <textarea data-bind-list="task_spec.input_asset_refs" data-scope="structure" rows="3" maxlength="4000" placeholder="artifact:source-manifest-001"></textarea>
+              </label>
+              <label class="field full">
+                <span><span data-i18n="intake.outputs">Requested deliverables</span> <small data-i18n="intake.outputHint">one output ID per line</small></span>
+                <textarea data-bind-list="task_spec.deliverables" data-scope="structure" rows="3" maxlength="2000"></textarea>
+              </label>
+              <label class="field">
+                <span data-i18n="intake.policy">Policy profile</span>
+                <select data-bind="task_spec.policy_profile" data-scope="structure" data-dynamic-change="true">
+                  <option value="multimedia-review-required">Multimedia review required</option>
+                  <option value="research-read-only">Research read-only</option>
+                  <option value="repository-reversible">Repository reversible</option>
+                  <option value="human-gated-external">Human-gated external</option>
+                </select>
+              </label>
+              <label class="field">
+                <span data-i18n="intake.maxNodes">Maximum compiled nodes</span>
+                <input type="number" min="1" max="256" data-bind="task_spec.budgets.max_nodes" data-number="true" data-scope="structure">
+              </label>
+            </div>
+            <aside class="task-intake-preview" aria-live="polite">
+              <div class="preview-kicker"><span class="status-dot" aria-hidden="true"></span><span data-i18n="intake.previewKicker">Compiler preview</span></div>
+              <strong id="dynamicCompileStatus">NEEDS INPUT</strong>
+              <p id="dynamicCompileSummary">Add at least one bounded asset reference and one deliverable. The Graph remains unchanged until the task is compiled and confirmed.</p>
+              <div class="task-intake-facts">
+                <span><b id="dynamicAssetCount">0</b><small data-i18n="intake.assetCount">asset refs</small></span>
+                <span><b id="dynamicDeliverableCount">0</b><small data-i18n="intake.deliverableCount">deliverables</small></span>
+                <span><b id="dynamicNodeBudget">24</b><small data-i18n="intake.nodeBudget">node ceiling</small></span>
+              </div>
+              <button class="primary-button full-button" id="compileTaskPreviewButton" type="button" data-i18n="intake.compile">Compile task preview</button>
+              <small class="task-intake-disclaimer" data-i18n="intake.disclaimer">Preview only · no upload, provider call, agent launch, or media execution occurs in this static page.</small>
+            </aside>
+          </div>
+        </section>
+
+        <section class="admission-card editor-card" id="graphAdmission" aria-labelledby="graphAdmissionTitle">
+          <div class="card-heading admission-heading">
+            <div>
+              <p class="eyebrow" data-i18n="admission.eyebrow">Graph admission / shape before fan-out</p>
+              <h2 id="graphAdmissionTitle" data-i18n="admission.title">Measure dependency width before allocating agents</h2>
+              <p class="admission-intro" data-i18n="admission.intro">Partition from the real dependency graph, isolate structural hubs, and treat the critical path as a floor. Coupled work stays serial when parallelism cannot pay back its coordination tax.</p>
+            </div>
+            <span class="dynamic-status-chip admission-status-chip" id="admissionStatus" data-state="blocked">NEEDS INPUT</span>
+          </div>
+          <div class="admission-layout">
+            <div class="admission-form field-grid">
+              <label class="field">
+                <span data-i18n="admission.source">Dependency evidence</span>
+                <select data-bind="task_spec.admission.dependency_source" data-scope="structure" data-dynamic-change="true">
+                  <option value="static-analysis">Static analysis</option>
+                  <option value="declared-graph">Declared Graph</option>
+                  <option value="manual">Manual evidence</option>
+                  <option value="unknown">Unknown / not supplied</option>
+                </select>
+                <small data-i18n="admission.sourceHint">Static analysis is preferred; folder and file lists are not dependency evidence.</small>
+              </label>
+              <label class="field">
+                <span data-i18n="admission.partition">Partition strategy</span>
+                <select data-bind="task_spec.admission.partition_strategy" data-scope="structure" data-dynamic-change="true">
+                  <option value="dependency-cut">Dependency cut</option>
+                  <option value="serial-critical-path">Serial critical path</option>
+                  <option value="maker-checker">Maker / checker</option>
+                  <option value="manual">Manual partition</option>
+                </select>
+              </label>
+              <label class="field">
+                <span data-i18n="admission.coupling">Coupling profile</span>
+                <select data-bind="task_spec.admission.coupling_profile" data-scope="structure" data-dynamic-change="true">
+                  <option value="independent">Independent</option>
+                  <option value="mixed">Mixed</option>
+                  <option value="coupled">Coupled</option>
+                  <option value="needs-input">Needs input</option>
+                </select>
+              </label>
+              <label class="field full">
+                <span><span data-i18n="admission.hubs">Structural hub IDs</span> <small data-i18n="admission.hubHint">one node ID per line · isolate before fan-out</small></span>
+                <textarea data-bind-list="task_spec.admission.structural_hubs" data-scope="structure" rows="3" maxlength="3000" placeholder="plan-output\nshared-context"></textarea>
+              </label>
+              <label class="field">
+                <span data-i18n="admission.criticalPath">Critical-path floor (seconds)</span>
+                <input type="number" min="0" max="604800" data-bind="task_spec.admission.critical_path_floor_seconds" data-number="true" data-scope="structure">
+              </label>
+              <label class="field">
+                <span data-i18n="admission.fanout">Fan-out ceiling</span>
+                <input type="number" min="1" max="64" data-bind="task_spec.admission.fanout_ceiling" data-number="true" data-scope="structure">
+              </label>
+              <label class="field">
+                <span data-i18n="admission.rateLimit">Rate limit (requests/sec)</span>
+                <input type="number" min="1" max="100000" data-bind="task_spec.admission.rate_limit_rps" data-number="true" data-scope="structure">
+              </label>
+              <label class="field">
+                <span data-i18n="admission.workerRate">Worker rate (requests/sec)</span>
+                <input type="number" min="1" max="100000" data-bind="task_spec.admission.worker_rate_rps" data-number="true" data-scope="structure">
+              </label>
+              <label class="field">
+                <span data-i18n="admission.taxCeiling">Coordination-tax ceiling (%)</span>
+                <input type="number" min="0" max="100" data-bind="task_spec.admission.coordination_tax_ceiling_percent" data-number="true" data-scope="structure">
+              </label>
+              <label class="field">
+                <span data-i18n="admission.plannerGate">Planner preflight</span>
+                <select data-bind="task_spec.admission.planner_gate" data-scope="structure" data-dynamic-change="true">
+                  <option value="script-preflight">Script preflight · 0 tokens</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+              </label>
+            </div>
+            <aside class="admission-preview" aria-live="polite">
+              <div class="preview-kicker"><span class="status-dot" aria-hidden="true"></span><span data-i18n="admission.previewKicker">Deterministic admission gate</span></div>
+              <strong id="admissionSummary">NEEDS INPUT</strong>
+              <p id="admissionPreviewCopy">Supply dependency evidence, coupling, and a critical-path floor before allocating workers.</p>
+              <div class="admission-facts">
+                <span><b id="admissionCriticalPath">0s</b><small data-i18n="admission.criticalMetric">critical-path floor</small></span>
+                <span><b id="admissionEffectiveFanout">0</b><small data-i18n="admission.fanoutMetric">effective fan-out</small></span>
+                <span><b id="admissionProjectedRate">0/s</b><small data-i18n="admission.rateMetric">projected requests/sec</small></span>
+                <span><b id="admissionHubCount">0</b><small data-i18n="admission.hubMetric">hub candidates</small></span>
+              </div>
+              <p class="admission-tax-status" id="admissionTaxStatus">Coordination tax is bounded locally before any handoff.</p>
+              <button class="primary-button full-button" id="admissionPreviewButton" type="button" data-i18n="admission.preview">Evaluate admission preview</button>
+              <small class="task-intake-disclaimer" data-i18n="admission.disclaimer">Preview only · the gate reads the declared Graph and emits no scheduler command or provider call.</small>
+            </aside>
+          </div>
+        </section>
+
         <section class="reference-blueprint" aria-labelledby="architectureMapTitle">
           <div class="reference-blueprint-toolbar">
             <div>
@@ -156,7 +313,7 @@
                   <span>GRAPH-ENGINEERING STRUCTURAL DIAGRAM</span>
                   <img alt="" aria-hidden="true" class="title-star-image source-icon" draggable="false" src="blueprint/reference-assets/icons/title-star.png">
                 </h1>
-                <p>Claude plans. Codex builds. Antigravity orchestrates.</p>
+                <p>Tasks compile. Capabilities route. The Harness verifies.</p>
                 <figure class="mark-avatar">
                   <img alt="Mark coffee-cup avatar" src="blueprint/reference-assets/mark-avatar.png">
                   <figcaption>Mark</figcaption>
@@ -660,13 +817,21 @@
             <div class="card-heading">
               <div>
                 <p class="eyebrow">Harness runtime adapters</p>
-                <h2>Claude + Antigravity + Codex</h2>
+                <h2>Six optional adapters · probe before route</h2>
               </div>
               <span class="adapter-state-chip">DECLARED · UNVERIFIED</span>
             </div>
             <p class="runtime-roster-intro">
-              Named runtimes advertise capabilities here; the Harness probes them and selects a compatible route only at execution time. Graph and workstream owners remain vendor-neutral.
+              Named runtimes advertise unverified capability hints here; the Harness probes them and selects a compatible route only after the confirmed blueprint is handed off. Graph and workstream owners remain vendor-neutral.
             </p>
+            <div class="adapter-candidate-strip" id="adapterCandidateStrip" aria-label="Declared adapter candidates">
+              <span>Claude Code <small>DECLARED</small></span>
+              <span>Codex <small>DECLARED</small></span>
+              <span>Antigravity <small>DECLARED</small></span>
+              <span>Grok <small>DECLARED</small></span>
+              <span>Kimi <small>DECLARED</small></span>
+              <span>DeepSeek <small>DECLARED</small></span>
+            </div>
             <div class="runtime-roster-grid" id="runtimeRosterGrid"></div>
             <div class="capability-router-strip">
               <div class="router-emblem" aria-hidden="true">⌘</div>

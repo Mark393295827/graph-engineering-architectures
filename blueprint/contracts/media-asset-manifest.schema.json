@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph-engineering/media-asset-manifest/1.0",
+  "title": "Multimedia asset manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "asset_record_id", "asset_version_id", "blob", "media_kind", "source", "provenance", "safety", "accessibility", "variants"],
+  "properties": {
+    "schema_version": { "const": "media-asset/1.0" },
+    "asset_record_id": { "type": "string", "pattern": "^asset_[A-Za-z0-9_-]{1,95}$" },
+    "asset_version_id": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "blob": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "byte_length", "declared_mime", "detected_mime", "locator_ref"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "byte_length": { "type": "integer", "minimum": 1 },
+        "declared_mime": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "detected_mime": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "locator_ref": { "type": "string", "pattern": "^cas://sha256/[a-f0-9]{64}$" }
+      }
+    },
+    "media_kind": { "enum": ["text", "image", "audio", "video", "document", "code", "mixed"] },
+    "technical": { "type": "object" },
+    "source": { "type": "object", "additionalProperties": false, "required": ["origin_type", "received_at", "original_name_sanitized"], "properties": { "origin_type": { "enum": ["upload", "generated", "derived", "external-reference"] }, "received_at": { "type": "string", "format": "date-time" }, "original_name_sanitized": { "type": "string", "maxLength": 255 } } },
+    "provenance": { "type": "object", "additionalProperties": false, "required": ["parent_asset_versions", "transformation_receipts"], "properties": { "creator_claim": {}, "license": {}, "consent": {}, "parent_asset_versions": { "type": "array", "items": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }, "transformation_receipts": { "type": "array", "items": { "type": "string", "pattern": "^artifact:[A-Za-z0-9._:-]+$" } } } },
+    "safety": { "type": "object", "additionalProperties": false, "required": ["classification", "policy_tags", "scan_receipts", "status"], "properties": { "classification": { "type": "string" }, "policy_tags": { "type": "array", "items": { "type": "string" } }, "scan_receipts": { "type": "array", "items": { "type": "string", "pattern": "^artifact:[A-Za-z0-9._:-]+$" } }, "status": { "enum": ["QUARANTINED", "ACCEPTED", "BLOCKED"] } } },
+    "accessibility": { "type": "object", "additionalProperties": false, "properties": { "alt_text_ref": { "type": ["string", "null"] }, "transcript_ref": { "type": ["string", "null"] }, "caption_ref": { "type": ["string", "null"] } } },
+    "variants": { "type": "array", "maxItems": 128, "items": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+  }
+}

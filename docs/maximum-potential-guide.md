@@ -75,6 +75,44 @@ Do not add a step just because it sounds organized. An edge exists only when
 one output is a real input, control decision, verification result, failure
 route, or compensation trigger for another node.
 
+### Use the dynamic intake as a preflight
+
+For multimedia or cross-domain work, start the Mission view's task-intake
+card before assigning any stream. Select the smallest finite template, enter
+content-addressed asset references and deliverables, and set a node ceiling
+that leaves review capacity. Compile the shadow preview, inspect its
+classification evidence, and treat every later task-spec edit as a new
+uncompiled version. The six adapter candidates are only capability hints;
+maximize throughput by probing and routing them in the Harness after the
+structure receipt, never by binding a provider into the Graph.
+
+### Make admission dependency-aware
+
+The source post's strongest operational lesson is that Graph Engineering is a
+property of the dependency diagram, not of the model brand. Use the admission
+card (or the command gate below) to make that diagram measurable before
+fan-out:
+
+- derive partitions from static-analysis or declared-Graph edges, never from
+  folders or file lists;
+- isolate structural hubs before workers receive independent branches;
+- treat the measured critical path as a floor and keep coupled work serial;
+- cap requested fan-out by Graph concurrency and the upstream request limit;
+- keep the zero-token script preflight ahead of an expensive planner; and
+- write a coordination-tax ceiling so review, IPC, integration, and cleanup
+  cannot disappear inside a speedup claim.
+
+Run the local, deterministic receipt generator with:
+
+```powershell
+python tools/graph_admission_gate.py blueprint/default-blueprint.json --strict
+```
+
+The [linked research post](https://x.com/Argona0x/status/2082807844336771532)
+is a source of hypotheses (including the reported trial comparisons), not a
+benchmark oracle. Replace its numbers with fresh measurements from the graph,
+rate limit, and review capacity of the current mission.
+
 ## 3. Design the Graph around the critical path
 
 ### Use width where it pays
@@ -120,19 +158,26 @@ changes to shared canonical files.
 This rule prevents merge races, inconsistent schemas, and “last writer wins”
 success claims.
 
-## 4. Allocate Claude, Antigravity, and Codex by capability
+## 4. Allocate model adapters by capability
 
 The adapters collaborate through a Harness, typed IPC, and content-addressed
 artifacts. They are not assumed to share native memory or talk directly to one
 another.
 
-The current roster makes these adapters natural candidates:
+The Phase 1 registry makes these optional adapters available as candidates:
 
 | Required capability | Natural candidate from the current declaration |
 |---|---|
-| Mission planning, DAG review, typed-contract review, evidence synthesis | Claude |
+| Mission planning, DAG review, typed-contract review, evidence synthesis | Claude Code |
 | Runtime orchestration, monitoring, browser, accessibility, responsive review | Antigravity |
 | Repository editing, state modeling, test execution, integration candidate | Codex |
+| Research synthesis, multimodal analysis, independent review | Grok |
+| Long-context document and multimodal analysis | Kimi |
+| Code analysis, reasoning review, document analysis | DeepSeek |
+
+The table is an unverified capability hint map, not a provider promise. The
+canonical declarations are in `blueprint/adapter-registry.json`; the Harness
+must probe the live connection and issue a readiness receipt before routing.
 
 This is a candidate map, not a fixed assignment. At the start of every run the
 Harness must probe availability and select a ready adapter that satisfies:

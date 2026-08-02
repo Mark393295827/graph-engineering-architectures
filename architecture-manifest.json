@@ -218,6 +218,40 @@
       "purpose": "Turn the architecture contracts into a measurable operating system for verified throughput, capability routing, bounded concurrency, failure-local recovery, evidence gates, and safe promotion."
     },
     {
+      "id": "dynamic-multimedia-contracts",
+      "role": "contract-registry",
+      "path": "blueprint/contracts",
+      "adapter_registry": "blueprint/adapter-registry.json",
+      "template_registry": "blueprint/task-template-registry.json",
+      "media_manifest_example": "blueprint/media-asset-manifest.example.json",
+      "admission_schema": "blueprint/contracts/graph-admission.schema.json",
+      "admission_preview_schema": "blueprint/contracts/graph-admission-preview.schema.json",
+      "admission_gate": "tools/graph_admission_gate.py",
+      "validator": "tools/validate_dynamic_contracts.py",
+      "tests": [
+        "tools/test_dynamic_contracts.py",
+        "tools/test_graph_admission_gate.py"
+      ],
+      "purpose": "Phase 1 declarations for dynamic task classification, bounded blueprint templates, six probe-gated model adapters, content-addressed media references, immutable run locks, and dependency-aware Graph admission.",
+      "owns": [
+        "versioned task and media contract shapes",
+        "finite task-template catalog",
+        "provider-neutral adapter declarations",
+        "probe-before-route policy",
+        "content-addressed media references",
+        "dependency evidence and structural-hub admission",
+        "critical-path, fan-out, rate, and coordination-tax budgets"
+      ],
+      "excludes": [
+        "runtime graph expansion",
+        "live provider calls",
+        "credential storage",
+        "media byte execution",
+        "worker scheduling",
+        "terminal completion certification"
+      ]
+    },
+    {
       "id": "mission-blueprint-web",
       "role": "presentation-editor",
       "path": "index.html",
@@ -233,6 +267,7 @@
       "reference_layout": "blueprint/reference-diagram.css",
       "reference_layout_source_sha256": "f0d638801feb9b07cb97667b2ae667cc247212233c2ae61563ce8741aca5be69",
       "reference_assets": "blueprint/reference-assets",
+      "favicon": "favicon.svg",
       "runtime_adapter_contract": "blueprint/default-blueprint.json#team_command.agent_roster",
       "capability_routing_contract": "blueprint/default-blueprint.json#team_command.routing",
       "ipc_contract": "blueprint/default-blueprint.json#team_command.ipc_contract",
@@ -242,7 +277,7 @@
         "tools/test_validate_mission_handoff.py"
       ],
       "provenance": "docs/blueprint-web-provenance.md",
-      "purpose": "Open the repository with a source-aligned, beginner-first Blocks blueprint that compiles atomic edits into the one canonical Graph contract, preserves an Advanced editor for the same JSON, presents Claude, Antigravity, and Codex as replaceable runtime adapters, gates Agent Team allocation on a current human confirmation receipt, and leaves execution blocked on strict Graph/command validation plus Harness adapter readiness.",
+      "purpose": "Open the repository with a source-aligned, beginner-first Blocks blueprint, bounded task-intake and dependency-aware admission previews that compile atomic edits into the one canonical Graph contract, preserve an Advanced editor for the same JSON, present six optional provider-neutral adapter candidates for Harness probing, gate Agent Team allocation on a current human confirmation receipt, and leave execution blocked on strict Graph/command validation plus adapter readiness.",
       "owns": [
         "human-facing rendering",
         "local draft editing",
@@ -264,6 +299,7 @@
         "adapter endpoint discovery, probing, or selection",
         "adapter readiness evidence issuance",
         "runtime validator execution or evidence issuance",
+        "dependency analysis outside the declared Graph contract",
         "terminal completion certification"
       ]
     },

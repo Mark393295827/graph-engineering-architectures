@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased
+
+- Added the Phase 1 dynamic multimedia contract registry for task specs,
+  classification receipts, bounded task templates, compiled run locks,
+  content-addressed media manifests, and probe-gated adapter descriptors.
+- Declared Claude Code, Codex, Antigravity, Grok, Kimi, and DeepSeek as
+  optional provider-neutral runtime candidates without claiming readiness or
+  storing credentials.
+- Added the editable Mission task-intake card with bounded media references,
+  finite template selection, shadow compilation status, node ceilings, and
+  preview invalidation when task inputs change.
+- Added strict registry validation and ignored runtime state/media directories
+  so future Harness execution cannot accidentally commit local artifacts.
+- Added a source-informed Graph admission preflight: dependency evidence,
+  structural-hub isolation, critical-path floors, finite fan-out, request-rate
+  caps, and a zero-token planner gate are editable in the Mission view. The
+  browser writes a `graph-admission-preview/1.0` receipt, while
+  `tools/graph_admission_gate.py` emits the command-level receipt.
+
 ## 1.3.0 - 2026-07-28
 
 - Made a beginner-first Blocks workspace the default while retaining the

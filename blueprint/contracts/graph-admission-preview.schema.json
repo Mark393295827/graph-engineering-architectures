@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "graph-engineering/graph-admission-preview/1.0",
+  "title": "Browser graph admission preview receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "graph_id",
+    "dependency_source",
+    "partition_strategy",
+    "coupling_profile",
+    "critical_path_floor_seconds",
+    "requested_fanout",
+    "effective_fanout",
+    "graph_concurrency",
+    "rate_limit_rps",
+    "worker_rate_rps",
+    "projected_rate_rps",
+    "structural_hubs",
+    "coordination_tax_ceiling_percent",
+    "planner_gate",
+    "reasons",
+    "summary",
+    "evaluated_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "graph-admission-preview/1.0" },
+    "status": { "enum": ["ADMIT", "SERIAL_ONLY", "NEEDS_INPUT", "RATE_LIMIT_EXCEEDED"] },
+    "graph_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "graph_revision": { "type": "integer", "minimum": 1 },
+    "dependency_source": { "enum": ["static-analysis", "declared-graph", "manual", "unknown"] },
+    "partition_strategy": { "enum": ["dependency-cut", "serial-critical-path", "maker-checker", "manual"] },
+    "coupling_profile": { "enum": ["independent", "mixed", "coupled", "needs-input"] },
+    "critical_path_floor_seconds": { "type": "number", "minimum": 0 },
+    "requested_fanout": { "type": "integer", "minimum": 1, "maximum": 64 },
+    "effective_fanout": { "type": "integer", "minimum": 1, "maximum": 64 },
+    "graph_concurrency": { "type": "integer", "minimum": 1, "maximum": 64 },
+    "rate_limit_rps": { "type": "number", "exclusiveMinimum": 0 },
+    "worker_rate_rps": { "type": "number", "exclusiveMinimum": 0 },
+    "projected_rate_rps": { "type": "number", "minimum": 0 },
+    "structural_hubs": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+    },
+    "coordination_tax_ceiling_percent": { "type": "number", "minimum": 0, "maximum": 100 },
+    "planner_gate": { "enum": ["script-preflight", "disabled"] },
+    "reasons": {
+      "type": "array",
+      "maxItems": 32,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
+    },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "evaluated_at": { "type": "string", "format": "date-time" }
+  }
+}

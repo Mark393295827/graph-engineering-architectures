@@ -1,0 +1,97 @@
+{
+  "schema_version": "adapter-registry/1.0",
+  "registry_id": "multi-model-agent-adapters",
+  "status": "DECLARATIONS_ONLY",
+  "policy": {
+    "durable_owners_are_capabilities": true,
+    "require_probe_before_route": true,
+    "allow_all_adapters_by_default": false,
+    "unavailable_action": "PAUSE_AND_ESCALATE"
+  },
+  "adapters": [
+    {
+      "adapter_id": "claude",
+      "display_name": "Claude Code",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.claude",
+      "enabled": true,
+      "capability_hints": ["text-reasoning", "document-analysis", "code-review", "agent-team-ipc"],
+      "supported_modalities": ["text", "document", "code", "image"],
+      "supported_workspace_modes": ["isolated-worktree", "receipt-only"],
+      "supported_permission_profiles": ["isolated-writer", "review-receipt-writer"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    },
+    {
+      "adapter_id": "codex",
+      "display_name": "Codex",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.codex",
+      "enabled": true,
+      "capability_hints": ["repository-editing", "code-analysis", "test-execution", "agent-team-ipc"],
+      "supported_modalities": ["text", "document", "code", "image"],
+      "supported_workspace_modes": ["isolated-worktree", "integration-worktree"],
+      "supported_permission_profiles": ["isolated-writer", "integration-owner"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    },
+    {
+      "adapter_id": "antigravity",
+      "display_name": "Antigravity",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.antigravity",
+      "enabled": true,
+      "capability_hints": ["workflow-orchestration", "runtime-observation", "browser-acceptance", "accessibility-review"],
+      "supported_modalities": ["text", "image", "document", "video"],
+      "supported_workspace_modes": ["receipt-only", "integration-worktree"],
+      "supported_permission_profiles": ["review-receipt-writer", "integration-owner"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    },
+    {
+      "adapter_id": "grok",
+      "display_name": "Grok",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.grok",
+      "enabled": true,
+      "capability_hints": ["research-synthesis", "multimodal-analysis", "independent-review", "agent-team-ipc"],
+      "supported_modalities": ["text", "image", "audio", "video", "document"],
+      "supported_workspace_modes": ["receipt-only", "read-only"],
+      "supported_permission_profiles": ["review-receipt-writer", "read-only-reviewer"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    },
+    {
+      "adapter_id": "kimi",
+      "display_name": "Kimi",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.kimi",
+      "enabled": true,
+      "capability_hints": ["long-context-analysis", "document-analysis", "multimodal-analysis", "agent-team-ipc"],
+      "supported_modalities": ["text", "image", "audio", "video", "document", "code"],
+      "supported_workspace_modes": ["receipt-only", "read-only"],
+      "supported_permission_profiles": ["review-receipt-writer", "read-only-reviewer"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    },
+    {
+      "adapter_id": "deepseek",
+      "display_name": "DeepSeek",
+      "runtime_kind": "external-agent-adapter",
+      "protocol": "agent-team-ipc/1.0",
+      "connection_ref": "runtime.adapters.deepseek",
+      "enabled": true,
+      "capability_hints": ["code-analysis", "reasoning-review", "document-analysis", "agent-team-ipc"],
+      "supported_modalities": ["text", "document", "code", "image"],
+      "supported_workspace_modes": ["isolated-worktree", "receipt-only"],
+      "supported_permission_profiles": ["isolated-writer", "review-receipt-writer"],
+      "max_concurrency": 1,
+      "runtime_state": { "status": "DECLARED", "probe_receipt": null }
+    }
+  ]
+}

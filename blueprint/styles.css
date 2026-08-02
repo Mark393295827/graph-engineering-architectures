@@ -782,6 +782,309 @@ body[data-status="invalid"] .status-dot {
   align-items: start;
 }
 
+.task-intake-card {
+  position: relative;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-color: rgba(var(--violet-rgb), 0.32);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(var(--violet-rgb), 0.14), transparent 23rem),
+    linear-gradient(145deg, rgba(var(--accent-rgb), 0.04), transparent 42%),
+    var(--surface);
+}
+
+.task-intake-card::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.38;
+  background-image: linear-gradient(90deg, rgba(var(--violet-rgb), 0.045) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: linear-gradient(90deg, transparent 0%, black 44%, transparent 100%);
+}
+
+.task-intake-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.task-intake-heading {
+  align-items: flex-start;
+}
+
+.task-intake-intro {
+  max-width: 780px;
+  margin: 9px 0 0;
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.dynamic-status-chip,
+.adapter-candidate-strip span {
+  color: var(--violet);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.56rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dynamic-status-chip {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid rgba(var(--violet-rgb), 0.35);
+  border-radius: 7px;
+  background: rgba(var(--violet-rgb), 0.1);
+}
+
+.task-intake-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.68fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.task-intake-form {
+  align-items: start;
+}
+
+.task-intake-preview {
+  min-height: 100%;
+  padding: 18px;
+  border: 1px solid rgba(var(--accent-rgb), 0.22);
+  border-radius: 13px;
+  background: rgba(var(--accent-rgb), 0.045);
+}
+
+.preview-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 17px;
+  color: var(--muted);
+  font-size: 0.59rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.task-intake-preview > strong {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--text);
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.task-intake-preview > strong[data-state="ready"] {
+  color: var(--green);
+}
+
+.task-intake-preview > strong[data-state="prepared"] {
+  color: var(--yellow);
+}
+
+.task-intake-preview > strong[data-state="blocked"] {
+  color: var(--orange);
+}
+
+.task-intake-preview > p {
+  min-height: 76px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.task-intake-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 15px;
+}
+
+.task-intake-facts span {
+  display: grid;
+  gap: 4px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.task-intake-facts b {
+  color: var(--text);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 1rem;
+}
+
+.task-intake-facts small {
+  font-size: 0.52rem;
+}
+
+.task-intake-disclaimer {
+  display: block;
+  margin-top: 12px;
+  color: var(--faint);
+  font-size: 0.56rem;
+  line-height: 1.5;
+}
+
+.admission-card {
+  position: relative;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-color: rgba(var(--cyan-rgb, 0, 216, 232), 0.3);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(var(--cyan-rgb, 0, 216, 232), 0.12), transparent 22rem),
+    radial-gradient(circle at 90% 100%, rgba(var(--violet-rgb), 0.11), transparent 26rem),
+    linear-gradient(145deg, rgba(var(--accent-rgb), 0.035), transparent 44%),
+    var(--surface);
+}
+
+.admission-card::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.32;
+  background-image:
+    linear-gradient(90deg, rgba(var(--cyan-rgb, 0, 216, 232), 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(var(--violet-rgb), 0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at 52% 34%, black, transparent 78%);
+}
+
+.admission-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.admission-heading {
+  align-items: flex-start;
+}
+
+.admission-intro {
+  max-width: 840px;
+  margin: 9px 0 0;
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.admission-status-chip[data-state="candidate"] {
+  color: var(--green);
+  border-color: rgba(var(--green-rgb), 0.36);
+  background: rgba(var(--green-rgb), 0.09);
+}
+
+.admission-status-chip[data-state="serial"] {
+  color: var(--yellow);
+  border-color: color-mix(in srgb, var(--yellow) 40%, transparent);
+  background: color-mix(in srgb, var(--yellow) 9%, transparent);
+}
+
+.admission-status-chip[data-state="rate"],
+.admission-status-chip[data-state="blocked"] {
+  color: var(--orange);
+  border-color: rgba(var(--orange-rgb), 0.4);
+  background: rgba(var(--orange-rgb), 0.09);
+}
+
+.admission-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(270px, 0.7fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.admission-form {
+  align-items: start;
+}
+
+.admission-form .field small {
+  line-height: 1.45;
+}
+
+.admission-preview {
+  min-height: 100%;
+  padding: 18px;
+  border: 1px solid rgba(var(--cyan-rgb, 0, 216, 232), 0.25);
+  border-radius: 13px;
+  background:
+    linear-gradient(145deg, rgba(var(--cyan-rgb, 0, 216, 232), 0.06), transparent 64%),
+    rgba(0, 0, 0, 0.14);
+}
+
+.admission-preview > strong {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--text);
+  font-size: 1.08rem;
+  letter-spacing: 0.02em;
+}
+
+.admission-preview > strong[data-state="candidate"] {
+  color: var(--green);
+}
+
+.admission-preview > strong[data-state="serial"] {
+  color: var(--yellow);
+}
+
+.admission-preview > strong[data-state="rate"] {
+  color: var(--orange);
+}
+
+.admission-preview > strong[data-state="blocked"] {
+  color: var(--orange);
+}
+
+.admission-preview > p {
+  min-height: 74px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.admission-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.admission-facts span {
+  display: grid;
+  gap: 4px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.admission-facts b {
+  color: var(--text);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.94rem;
+}
+
+.admission-facts small {
+  font-size: 0.5rem;
+}
+
+.admission-tax-status {
+  min-height: 38px !important;
+  margin-bottom: 14px !important;
+  color: var(--text-soft) !important;
+  font-size: 0.61rem !important;
+}
+
 .mission-side {
   display: grid;
   gap: 18px;
@@ -1650,6 +1953,33 @@ tr:last-child td {
   line-height: 1.6;
 }
 
+.adapter-candidate-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: -4px 0 20px;
+}
+
+.adapter-candidate-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  color: var(--text-soft);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  background: rgba(var(--accent-rgb), 0.045);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.adapter-candidate-strip small {
+  color: var(--accent);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+}
+
 .adapter-state-chip {
   padding: 6px 9px;
   border: 1px solid rgba(245, 208, 104, 0.45);
@@ -2377,6 +2707,8 @@ dialog::backdrop {
   }
 
   .mission-grid,
+  .task-intake-layout,
+  .admission-layout,
   .team-summary-grid,
   .format-grid {
     grid-template-columns: 1fr;
@@ -2573,6 +2905,22 @@ dialog::backdrop {
 
   .mission-side {
     grid-template-columns: 1fr;
+  }
+
+  .task-intake-heading {
+    flex-direction: column;
+  }
+
+  .admission-heading {
+    flex-direction: column;
+  }
+
+  .task-intake-preview > p {
+    min-height: 0;
+  }
+
+  .admission-preview > p {
+    min-height: 0;
   }
 
   .field-grid,

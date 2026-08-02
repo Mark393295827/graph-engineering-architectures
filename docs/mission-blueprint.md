@@ -21,6 +21,52 @@ runtime Harness.
 strict Graph validator as other graph contracts. The root `index.html` embeds
 an exact copy so the first view works without a build step or network request.
 
+## Dynamic task intake
+
+The opening Mission view now starts with a bounded task-intake card. It keeps
+the beginner-friendly editor surface while making the dynamic multimedia
+mission explicit:
+
+- choose a task class, finite template, policy profile, and maximum node
+  ceiling;
+- enter content-addressed `artifact:` or `sha256:` references and requested
+  deliverable IDs one per line;
+- compile a local shadow preview that records classification evidence and a
+  finite diamond topology without uploading media, calling a provider,
+  launching an agent, or expanding the Graph; and
+- review and confirm the resulting structure before any team handoff.
+
+The preview is stored under the editable `task_spec` projection and is
+invalidated whenever its inputs change. The versioned JSON Schemas, template
+catalog, media-manifest example, six optional adapter descriptors, and strict
+validator live under `blueprint/contracts`, `blueprint/task-template-registry.json`,
+`blueprint/media-asset-manifest.example.json`, and
+`blueprint/adapter-registry.json`. They define the future runtime boundary;
+the static page remains a non-executing editor.
+
+## Graph admission before team allocation
+
+The next card turns the dependency-shape guidance in the [source X post](https://x.com/Argona0x/status/2082807844336771532)
+into an editable preflight. It asks for dependency evidence, a partition
+strategy, a coupling profile, structural hub IDs, a critical-path floor,
+finite fan-out, request-rate limits, a coordination-tax ceiling, and an enabled
+zero-token script gate. The preview reports one of `PARALLEL CANDIDATE`,
+`SERIAL ONLY`, `RATE LIMIT EXCEEDED`, or `NEEDS INPUT` and stores a local
+`graph-admission-preview/1.0` receipt. It never creates Graph nodes, calls a
+provider, or starts an agent. The command gate emits the stricter
+`graph-admission/1.0` receipt described in the contract registry.
+
+For command-level evidence, run the deterministic gate against the actual
+contract:
+
+```powershell
+python tools/graph_admission_gate.py blueprint/default-blueprint.json --strict
+```
+
+The gate derives width, hubs, critical path, serial work, and projected request
+rate from the declared DAG. External trial numbers are treated as hypotheses
+to measure locally, not as acceptance thresholds.
+
 ## Beginner Blocks mode
 
 The first Graph view opens in **Blocks** mode. A first-time user can apply a
@@ -73,9 +119,10 @@ Blocks mode guides common planning and evidence edits. Advanced mode edits:
 - team commander, integration owner, topology, admission value, orchestration
   tax, checkpointing, interrupt policy, IPC, workstreams, isolated territory,
   artifacts, dependencies, verifiers, budgets, and stop conditions;
-- Claude, Antigravity, and Codex adapter declarations, opaque connection
-  references, declared capabilities, workspace modes, permission profiles,
-  concurrency, and the shared IPC protocol;
+- Claude Code, Codex, Antigravity, Grok, Kimi, and DeepSeek adapter
+  declarations, opaque connection references, declared capabilities,
+  workspace modes, permission profiles, concurrency, and the shared IPC
+  protocol;
 - capability-only route requests. They deliberately contain no selected or
   preferred adapter;
 - theme, accent, density, direction, visibility preferences, and raw JSON.
@@ -126,12 +173,15 @@ browser-edited draft or its team command.
 
 ## Runtime adapter readiness
 
-The named systems are adapter descriptors in an editable roster:
+The named systems are optional adapter descriptors in the declared registry:
 
-- Claude is presented as planning and independent review;
-- Antigravity is presented as orchestration, observation, and experience
-  review;
-- Codex is presented as implementation and testing.
+- Claude Code, Codex, Antigravity, Grok, Kimi, and DeepSeek are presented as
+  declared, unverified candidates until the Harness probes them.
+
+The current static editor keeps its original three editable roster entries for
+backward-compatible handoff drafts and shows all six registry candidates as a
+separate declared strip. Runtime selection remains capability-based and
+provider-neutral; the registry never authorizes execution or stores secrets.
 
 Those descriptions are declared capabilities for this mission, not universal
 provider claims or durable work assignments. Graph node and workstream owners

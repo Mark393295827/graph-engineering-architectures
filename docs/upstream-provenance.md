@@ -26,6 +26,11 @@ One terminal blank line was removed from
 repository passes Git whitespace validation. No executable or semantic content
 was changed.
 
+The repository-specific `.gitignore` adds exclusions for runtime state and
+media directories used by the dynamic multimedia phases. Its current hash is
+recorded in the ledger, with the upstream hash retained beside it for
+provenance.
+
 ## Updating From Upstream
 
 1. Record the new upstream commit.
