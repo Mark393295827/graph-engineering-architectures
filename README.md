@@ -81,6 +81,14 @@ for the contract boundary and migration order. Validate the declarations with:
 python tools/validate_dynamic_contracts.py --strict
 ```
 
+The same registry now includes a vendor-neutral
+[`runtime-governance/1.0` policy and receipt](docs/runtime-governance.md).
+It binds hard token, compute, and spend limits to the compiled run, requires
+measured prompt-cache evidence, reports exact cost per accepted outcome, and
+permits interaction feedback to reach only a privacy- and human-gated eval
+quarantine. It does not implement a runtime kernel or authorize automatic
+production, schema, policy, prompt, or skill mutation.
+
 The web blueprint is a supporting projection, not an architecture. Visual
 placement is not dependency topology, and animation is not execution.
 

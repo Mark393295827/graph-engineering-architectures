@@ -242,6 +242,49 @@ class ArchitectureBundleTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn(commit, provenance)
 
+    def test_runtime_governance_contract_is_registered_and_explained(self) -> None:
+        manifest = load_manifest()
+        asset = next(
+            item
+            for item in manifest["supporting_assets"]
+            if item["id"] == "dynamic-multimedia-contracts"
+        )
+        expected_paths = {
+            "runtime_governance_schema": (
+                "blueprint/contracts/runtime-governance.schema.json"
+            ),
+            "runtime_governance_policy_example": (
+                "blueprint/runtime-governance-policy.example.json"
+            ),
+            "runtime_governance_receipt_example": (
+                "blueprint/runtime-governance-receipt.example.json"
+            ),
+            "runtime_governance_guide": "docs/runtime-governance.md",
+        }
+        for field, relative in expected_paths.items():
+            self.assertEqual(relative, asset[field])
+            self.assertTrue((ROOT / relative).is_file(), field)
+
+        self.assertIn(
+            "hard runtime budget declarations and hash-bound usage receipts",
+            asset["owns"],
+        )
+        self.assertIn(
+            "automatic production, schema, policy, prompt, or skill mutation",
+            asset["excludes"],
+        )
+        guide = (ROOT / expected_paths["runtime_governance_guide"]).read_text(
+            encoding="utf-8"
+        )
+        for phrase in (
+            "cost per accepted outcome",
+            "BUDGET_STOP",
+            "eval-quarantine",
+            "SUPERSEDE_AND_RECOMPILE",
+            "runtime-governance/1.0",
+        ):
+            self.assertIn(phrase.lower(), guide.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

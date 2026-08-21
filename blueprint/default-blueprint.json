@@ -17,7 +17,7 @@
     "terminal-verification"
   ],
   "budgets": {
-    "max_nodes": 10,
+    "max_nodes": 11,
     "max_concurrency": 3,
     "max_attempts_per_node": 2,
     "wall_time_seconds": 4200,
@@ -124,7 +124,7 @@
       "owner": "integration-owner",
       "inputs": [
         "structure_approval_receipt",
-        "graph_contract"
+        "blueprint_contract"
       ],
       "outputs": [
         "runtime_validation_receipt"
@@ -292,18 +292,48 @@
       "summary": "The integration owner alone accepts and combines verified workstreams."
     },
     {
+      "id": "runtime-cleanup",
+      "kind": "deterministic",
+      "owner": "harness-runtime",
+      "inputs": [
+        "integrated_artifact"
+      ],
+      "outputs": [
+        "cleanup_receipt"
+      ],
+      "reads": [
+        ".agent-state/team/state.json",
+        ".agent-state/team/ipc/events.jsonl",
+        ".agent-state/graph/artifacts/integration.json"
+      ],
+      "writes": [
+        ".agent-state/team/cleanup-receipt.json"
+      ],
+      "verifier": "The Harness proves worker, lease, workspace, route, and IPC cleanup for the integrated contract hash.",
+      "timeout_seconds": 120,
+      "max_attempts": 2,
+      "tool_calls": 2,
+      "effect_class": "reversible",
+      "idempotency": "Emit at most one cleanup receipt for one integrated artifact and command hash.",
+      "compensation": "Restore the cleanup checkpoint and retain unresolved resources as an explicit blocker.",
+      "label": "Verify runtime cleanup",
+      "summary": "Harness cleanup evidence must exist before the terminal claim can be released."
+    },
+    {
       "id": "terminal-verification",
       "kind": "deterministic",
       "owner": "verification-owner",
       "inputs": [
-        "integrated_artifact"
+        "integrated_artifact",
+        "cleanup_receipt"
       ],
       "outputs": [
         "terminal_receipt"
       ],
       "reads": [
         "AGENTS.md",
-        ".agent-state/graph/artifacts/integration.json"
+        ".agent-state/graph/artifacts/integration.json",
+        ".agent-state/team/cleanup-receipt.json"
       ],
       "writes": [
         ".agent-state/graph/artifacts/terminal-receipt.json"
@@ -334,6 +364,14 @@
       "type": "data",
       "payload_schema": "blueprint_contract",
       "condition": "bounded client validation passes",
+      "failure_route": ""
+    },
+    {
+      "from": "blueprint-design",
+      "to": "runtime-validation",
+      "type": "data",
+      "payload_schema": "blueprint_contract",
+      "condition": "the exported blueprint contract hash matches the structure presented for approval",
       "failure_route": ""
     },
     {
@@ -407,9 +445,36 @@
       "payload_schema": "integrated_artifact",
       "condition": "integration receipt passes",
       "failure_route": ""
+    },
+    {
+      "from": "serial-integration",
+      "to": "runtime-cleanup",
+      "type": "data",
+      "payload_schema": "integrated_artifact",
+      "condition": "integration receipt passes and runtime resources can be reconciled",
+      "failure_route": ""
+    },
+    {
+      "from": "runtime-cleanup",
+      "to": "terminal-verification",
+      "type": "verification",
+      "payload_schema": "cleanup_receipt",
+      "condition": "cleanup receipt covers the integrated Graph and command hashes",
+      "failure_route": ""
     }
   ],
   "joins": [
+    {
+      "id": "runtime-validation-barrier",
+      "target": "runtime-validation",
+      "mode": "barrier-verifier",
+      "inputs": [
+        "blueprint-design",
+        "structure-confirmation"
+      ],
+      "verifier": "The blueprint contract and human approval receipt resolve to the same canonical structure hash.",
+      "quorum": null
+    },
     {
       "id": "integration-barrier",
       "target": "serial-integration",
@@ -420,6 +485,17 @@
         "experience-review-stream"
       ],
       "verifier": "The implementation candidate and both independent review receipts share the confirmed contract hash.",
+      "quorum": null
+    },
+    {
+      "id": "terminal-cleanup-barrier",
+      "target": "terminal-verification",
+      "mode": "barrier-verifier",
+      "inputs": [
+        "serial-integration",
+        "runtime-cleanup"
+      ],
+      "verifier": "The integrated artifact and Harness cleanup receipt share the same Graph and command hashes.",
       "quorum": null
     }
   ],

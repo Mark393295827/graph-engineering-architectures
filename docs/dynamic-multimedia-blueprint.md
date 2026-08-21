@@ -33,9 +33,32 @@ The source files are:
 | Probe-gated adapter descriptor | `blueprint/contracts/adapter-descriptor.schema.json` |
 | Graph admission receipt | `blueprint/contracts/graph-admission.schema.json` |
 | Browser admission preview receipt | `blueprint/contracts/graph-admission-preview.schema.json` |
+| Runtime budget, cache, outcome, and eval governance | `blueprint/contracts/runtime-governance.schema.json` |
 | Six-adapter declaration registry | `blueprint/adapter-registry.json` |
 | Task-template catalog | `blueprint/task-template-registry.json` |
 | Media manifest example | `blueprint/media-asset-manifest.example.json` |
+| Runtime governance policy example | `blueprint/runtime-governance-policy.example.json` |
+| Runtime governance receipt example | `blueprint/runtime-governance-receipt.example.json` |
+
+## Runtime governance before dispatch
+
+The compiled bundle already carries `policy_ref` and binds it with
+`run_lock.policy_sha256`. The `runtime-governance/1.0` contract now defines
+what that reference can resolve to: a fail-closed `POLICY` and a separate,
+append-only `RECEIPT`.
+
+The policy declares vendor-neutral token, compute, and spend caps. The Harness
+must reserve those limits before dispatch, block unmetered work, and emit
+`BUDGET_STOP` on exhaustion. Context Manager owns the cacheable context
+manifest and stable-prefix hash. Verify Before Claim owns accepted-outcome
+receipts. Interaction feedback may enter `eval-quarantine` only after opt-in,
+privacy scanning, redaction, and human approval; it cannot mutate production,
+schemas, policies, prompts, or skills.
+
+This is still a declaration boundary. The example receipt demonstrates exact
+hash, accounting, cache-partition, and promotion-gate invariants; it is not a
+live provider or billing receipt. See
+[`runtime-governance.md`](runtime-governance.md) for the full operating model.
 
 ## Adapter allocation
 
@@ -105,6 +128,9 @@ python tools/validate_dynamic_contracts.py --strict
 The validator checks JSON contract documents, the complete six-adapter catalog,
 probe gating, finite template cardinality, provider-neutral capability
 requirements, content-addressed media references, and secret-shaped fields.
+It also checks hard runtime limits, policy hashes, usage and reservation
+evidence, measured prompt-cache partitions, exact cost per accepted outcome,
+and privacy-gated eval quarantine.
 
 The validator intentionally does not claim that any external adapter is
 configured or reachable. Live readiness requires a later Harness probe receipt

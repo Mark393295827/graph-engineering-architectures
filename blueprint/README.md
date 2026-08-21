@@ -59,6 +59,9 @@ density, direction, and other presentation-only edits do not.
 - `styles.css` — responsive presentation model with midnight and paper themes.
 - `reference-diagram.css` and `reference-assets/` — provenance-tracked,
   source-aligned 1536×1024 visual system supplied by the user.
+- `contracts/runtime-governance.schema.json` plus the policy and receipt
+  examples — fail-closed runtime budgets, measured cache evidence, exact cost
+  per accepted outcome, and privacy-gated eval quarantine declarations.
 - `model.test.js` — dependency-free Node model tests.
 
 The browser stores a versioned local draft and can import or export complete
