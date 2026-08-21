@@ -1,0 +1,48 @@
+{
+  "schema_version": "runtime-governance/1.0",
+  "record_type": "POLICY",
+  "policy_id": "runtime-governance-default",
+  "run_scope_ref": "artifact:compiled-run-example-001",
+  "hard_limits": {
+    "max_input_tokens": 80000,
+    "max_output_tokens": 20000,
+    "max_total_tokens": 100000,
+    "max_compute_units": 25000,
+    "compute_meter_ref": "artifact:compute-meter-policy-v1",
+    "max_spend_micros": 2000000,
+    "currency": "USD"
+  },
+  "enforcement": {
+    "owner": "harness-engineering",
+    "mode": "HARD_PRE_DISPATCH",
+    "reserve_before_dispatch": true,
+    "unmetered_action": "BLOCK",
+    "on_exhaustion": "BUDGET_STOP"
+  },
+  "cache_context_policy": {
+    "owner": "context-manager",
+    "context_manifest_required": true,
+    "stable_prefix_hash_required": true,
+    "prompt_content_in_receipts": false
+  },
+  "interaction_to_eval_policy": {
+    "default_action": "DENY",
+    "source_mode": "HASHED_REFERENCE_ONLY",
+    "require_explicit_opt_in": true,
+    "require_privacy_scan": true,
+    "require_redaction": true,
+    "require_human_approval": true,
+    "allowed_destination": "eval-quarantine",
+    "max_retention_days": 30,
+    "automatic_production_mutation": false,
+    "automatic_schema_mutation": false,
+    "automatic_skill_mutation": false
+  },
+  "topology_boundary": {
+    "graph_dynamic_expansion": false,
+    "graph_feedback_edges": false,
+    "runtime_routing_scope": "PREDECLARED_CAPABILITY_ROUTES",
+    "semantic_change_action": "SUPERSEDE_AND_RECOMPILE"
+  },
+  "issued_at": "2026-08-21T01:00:00Z"
+}

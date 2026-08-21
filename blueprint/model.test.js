@@ -335,6 +335,47 @@ test('runtime roster and routing violations fail without claiming readiness', ()
   );
 });
 
+test('typed inputs and cleanup receipts gate the terminal claim', () => {
+  const blueprint = loadDefault();
+  const cleanup = blueprint.nodes.find((node) => node.id === 'runtime-cleanup');
+  const terminal = blueprint.nodes.find((node) => node.id === 'terminal-verification');
+  const cleanupEdge = blueprint.edges.find((edge) => (
+    edge.from === 'runtime-cleanup' && edge.to === 'terminal-verification'
+  ));
+  const terminalJoin = blueprint.joins.find(
+    (join) => join.target === 'terminal-verification'
+  );
+
+  assert.equal(cleanup.owner, 'harness-runtime');
+  assert.ok(cleanup.outputs.includes('cleanup_receipt'));
+  assert.ok(terminal.inputs.includes('cleanup_receipt'));
+  assert.equal(cleanupEdge.type, 'verification');
+  assert.equal(cleanupEdge.payload_schema, 'cleanup_receipt');
+  assert.deepEqual(
+    new Set(terminalJoin.inputs),
+    new Set(['serial-integration', 'runtime-cleanup'])
+  );
+  assert.deepEqual(Model.validateBlueprint(blueprint).errors, []);
+
+  const hiddenInput = loadDefault();
+  hiddenInput.nodes
+    .find((node) => node.id === 'runtime-validation')
+    .inputs.push('undeclared_ambient_input');
+  assert.ok(
+    Model.validateBlueprint(hiddenInput).errors.some(
+      (item) => item.code === 'node.input.unsupplied'
+    )
+  );
+
+  const cleanupBypass = loadDefault();
+  cleanupBypass.edges = cleanupBypass.edges.filter((edge) => !(
+    edge.from === 'runtime-cleanup' && edge.to === 'terminal-verification'
+  ));
+  assert.ok(Model.validateBlueprint(cleanupBypass).errors.some((item) => (
+    item.code === 'join.exact' || item.code === 'node.input.unsupplied'
+  )));
+});
+
 test('imports discard adapter probes, selected routes, and handoff authority', () => {
   const blueprint = loadDefault();
   blueprint.team_command.agent_roster.adapters[0].runtime_state = {

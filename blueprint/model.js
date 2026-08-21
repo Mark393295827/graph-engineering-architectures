@@ -731,12 +731,19 @@
       throw new Error(`The ${draft.lane} insertion point is missing.`);
     }
     const incoming = dependencyEdges(candidate).filter((edge) => edge.to === targetId);
-    if (incoming.length !== 1) {
+    let original = null;
+    if (incoming.length === 1) {
+      original = incoming[0];
+    } else if (incoming.length > 1 && draft.lane === 'evidence') {
+      original = incoming.find((edge) => (
+        edge.payload_schema === 'integrated_artifact' || edge.type === 'data'
+      )) || null;
+    }
+    if (!original) {
       throw new Error(
         `The ${draft.lane} lane needs exactly one visible incoming connection before a block can be inserted.`
       );
     }
-    const original = incoming[0];
     if (isNonEmptyString(original.failure_route)) {
       throw new Error('A connector with a failure route must be edited in Advanced mode.');
     }
@@ -787,6 +794,14 @@
     const edgeIndex = candidate.edges.indexOf(original);
     candidate.edges.splice(edgeIndex, 1, firstEdge, secondEdge);
     candidate.nodes.push(draft.node);
+    (candidate.joins || []).forEach((join) => {
+      if (join.target === targetId && Array.isArray(join.inputs)) {
+        const inputIndex = join.inputs.indexOf(original.from);
+        if (inputIndex >= 0) {
+          join.inputs[inputIndex] = draft.node.id;
+        }
+      }
+    });
     return draft;
   }
 
@@ -799,9 +814,7 @@
     if ((candidate.edges || []).some((edge) => edge.failure_route === blockId)) {
       throw new Error('Remove the Advanced-mode failure route before removing this block.');
     }
-    if ((candidate.joins || []).some((join) => (
-      join.target === blockId || join.inputs?.includes(blockId)
-    ))) {
+    if ((candidate.joins || []).some((join) => join.target === blockId)) {
       throw new Error('A block participating in an explicit merge must be edited in Advanced mode.');
     }
     const incoming = dependencyEdges(candidate).filter((edge) => edge.to === blockId);
@@ -843,6 +856,14 @@
     candidate.edges = candidate.edges.filter((edge) => edge !== before && edge !== after);
     candidate.edges.splice(replacementIndex, 0, replacement);
     candidate.nodes = candidate.nodes.filter((item) => item.id !== blockId);
+    (candidate.joins || []).forEach((join) => {
+      if (join.target === after.to && Array.isArray(join.inputs)) {
+        const inputIndex = join.inputs.indexOf(blockId);
+        if (inputIndex >= 0) {
+          join.inputs[inputIndex] = before.from;
+        }
+      }
+    });
     return { id: blockId, block_type: blockType };
   }
 
@@ -1301,6 +1322,7 @@
     const adjacency = new Map(Array.from(nodeMap.keys(), (id) => [id, new Set()]));
     const incoming = new Map(Array.from(nodeMap.keys(), (id) => [id, new Set()]));
     const outgoing = new Map(Array.from(nodeMap.keys(), (id) => [id, new Set()]));
+    const deliveredInputs = new Map(Array.from(nodeMap.keys(), (id) => [id, new Set()]));
     const edgeKeys = new Set();
     const compensationSources = new Set();
 
@@ -1344,6 +1366,7 @@
           if (!targetInputs.includes(edge.payload_schema)) {
             errors.push(issue('edge.input', `${edge.to} does not accept ${edge.payload_schema}.`, `${path}.payload_schema`));
           }
+          deliveredInputs.get(edge.to).add(edge.payload_schema);
         }
       }
       if (isNonEmptyString(edge.failure_route)) {
@@ -1358,6 +1381,18 @@
       if (edge.type === 'compensation') {
         compensationSources.add(edge.from);
       }
+    });
+
+    nodeMap.forEach((node, nodeId) => {
+      (Array.isArray(node.inputs) ? node.inputs : []).forEach((input, inputIndex) => {
+        if (!deliveredInputs.get(nodeId).has(input)) {
+          errors.push(issue(
+            'node.input.unsupplied',
+            `${nodeId} declares input ${input} without a typed incoming edge.`,
+            `nodes[${Array.from(nodeMap.keys()).indexOf(nodeId)}].inputs[${inputIndex}]`
+          ));
+        }
+      });
     });
 
     const entries = Array.isArray(contract.entry_nodes) ? contract.entry_nodes : [];

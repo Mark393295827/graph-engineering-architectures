@@ -228,6 +228,10 @@
       "admission_preview_schema": "blueprint/contracts/graph-admission-preview.schema.json",
       "admission_gate": "tools/graph_admission_gate.py",
       "validator": "tools/validate_dynamic_contracts.py",
+      "runtime_governance_schema": "blueprint/contracts/runtime-governance.schema.json",
+      "runtime_governance_policy_example": "blueprint/runtime-governance-policy.example.json",
+      "runtime_governance_receipt_example": "blueprint/runtime-governance-receipt.example.json",
+      "runtime_governance_guide": "docs/runtime-governance.md",
       "tests": [
         "tools/test_dynamic_contracts.py",
         "tools/test_graph_admission_gate.py"
@@ -241,6 +245,10 @@
         "content-addressed media references",
         "dependency evidence and structural-hub admission",
         "critical-path, fan-out, rate, and coordination-tax budgets"
+        ,
+        "hard runtime budget declarations and hash-bound usage receipts",
+        "meter-backed prompt-cache accounting and exact cost per accepted outcome",
+        "privacy-gated interaction-to-eval quarantine"
       ],
       "excludes": [
         "runtime graph expansion",
@@ -248,7 +256,9 @@
         "credential storage",
         "media byte execution",
         "worker scheduling",
-        "terminal completion certification"
+        "terminal completion certification",
+        "runtime budget enforcement or provider billing integration",
+        "automatic production, schema, policy, prompt, or skill mutation"
       ]
     },
     {

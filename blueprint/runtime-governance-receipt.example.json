@@ -1,0 +1,77 @@
+{
+  "schema_version": "runtime-governance/1.0",
+  "record_type": "RECEIPT",
+  "receipt_id": "governance_run-example-001",
+  "run_id": "run-example-001",
+  "policy_ref": "artifact:runtime-governance-default",
+  "policy_sha256": "744d4e50c20e38b3458f349053b81896e8758157ec396e5cf4d23df37cd3756e",
+  "run_lock": {
+    "compiled_run_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "graph_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "command_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "status": "SUCCEEDED",
+  "usage": {
+    "input_tokens": 64000,
+    "output_tokens": 10000,
+    "total_tokens": 74000,
+    "compute_units": 18000,
+    "spend_micros": 1800000,
+    "currency": "USD",
+    "metering_receipt_refs": [
+      "artifact:meter-run-example-001"
+    ],
+    "dispatch_reservation_receipt_refs": [
+      "artifact:reserve-run-example-001"
+    ],
+    "budget_stop_dimension": null,
+    "budget_stop_receipt_ref": null
+  },
+  "prompt_cache": {
+    "status": "EVIDENCED",
+    "context_manifest_ref": "artifact:context-manifest-run-example-001",
+    "stable_prefix_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "uncached_input_tokens": 12000,
+    "cache_write_input_tokens": 4000,
+    "cache_read_input_tokens": 48000,
+    "eligible_requests": 4,
+    "hit_requests": 3,
+    "evidence_refs": [
+      "artifact:cache-meter-run-example-001"
+    ],
+    "prompt_content_persisted": false
+  },
+  "accepted_outcomes": {
+    "verifier_owner": "verify-before-claim",
+    "count": 2,
+    "acceptance_receipt_refs": [
+      "artifact:acceptance-001",
+      "artifact:acceptance-002"
+    ],
+    "cost_per_accepted_outcome": {
+      "currency": "USD",
+      "total_spend_micros": 1800000,
+      "accepted_outcome_count": 2,
+      "quotient_micros": 900000,
+      "remainder_micros": 0
+    }
+  },
+  "interaction_to_eval": {
+    "decision": "PROMOTED_TO_EVAL_QUARANTINE",
+    "source_interaction_hashes": [
+      "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    ],
+    "privacy_profile_ref": "artifact:privacy-profile-internal",
+    "opt_in_receipt_ref": "artifact:opt-in-001",
+    "privacy_scan_receipt_ref": "artifact:privacy-scan-001",
+    "redaction_receipt_ref": "artifact:redaction-001",
+    "human_approval_receipt_ref": "artifact:eval-approval-001",
+    "eval_candidate_ref": "artifact:eval-quarantine-case-001",
+    "destination": "eval-quarantine",
+    "retention_days": 30,
+    "automatic_production_mutation": false,
+    "automatic_schema_mutation": false,
+    "automatic_skill_mutation": false
+  },
+  "issued_at": "2026-08-21T01:05:00Z"
+}

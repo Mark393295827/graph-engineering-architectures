@@ -42,9 +42,12 @@ owners. Browser state always treats them as `UNVERIFIED`.
 | What repeats until a finite stop? | Loop Engineering | Trigger, execute, verify, state |
 | Who owns an independent workstream? | Agent Teams Command | Process owner, IPC, isolation, integration |
 | Who dispatches tools and enforces permissions? | Harness Engineering | Scheduler, lease, permission, telemetry |
+| Who reserves and enforces token, compute, and spend caps? | Harness Engineering | Hash-bound runtime policy and usage receipt |
 | Which ready runtime adapter handles a capability request? | Harness Engineering | Probe receipt, route receipt, workspace and permission profile |
 | How does a long run survive compaction? | Context Manager | Checkpoint and payload locator |
+| Who defines a cacheable stable prefix without storing prompt content? | Context Manager | Context manifest, stable-prefix hash, and cache meter evidence |
 | What proves the result? | Verify Before Claim | Fresh evidence and terminal receipt |
+| How can an interaction become a future eval? | Human DRI plus Verify Before Claim | Opt-in, privacy scan, redaction, quarantine, and promotion receipt |
 | When should autonomy use a graph? | Agentic Engineering | Admission and macro-action boundary |
 
 ## Routing Decision
@@ -78,6 +81,27 @@ owners. Browser state always treats them as `UNVERIFIED`.
   canonical Agent Teams IPC envelope.
 - Verification must check node evidence, join evidence, terminal evidence, and
   checkpoint identity. Green nodes alone do not prove graph success.
+
+## Runtime Governance Boundary
+
+`runtime-governance/1.0` is a supporting contract, not a new architecture.
+Graph carries only the compiled `policy_ref`, its hash, and generic finite
+bounds. Harness reserves and meters token, compute, spend, wall-time, and tool
+budgets. Context Manager produces the bounded context manifest and stable
+prefix hash. Verify Before Claim supplies the accepted-outcome denominator.
+Loop Engineering alone owns any bounded repair attempt.
+
+The visual control path `INPUT -> PLAN -> DISPATCH -> EXECUTE -> KNOWLEDGE ->
+OUTPUT -> FEEDBACK` spans those owners. `DISPATCH` may select among predeclared
+capability routes, but it cannot change topology. `FEEDBACK` may create a
+redacted candidate in `eval-quarantine` for a future run, but it cannot write
+production, a schema, policy, prompt, or skill. A semantic change is
+`SUPERSEDE_AND_RECOMPILE`, never an edge back into the active Graph.
+
+The canonical Graph also treats cleanup as evidence. A Harness-owned cleanup
+node emits a typed receipt, and terminal verification joins that receipt with
+the integrated artifact. Decorative status labels or model prose cannot stand
+in for either dependency.
 
 ## Static V7.1 Boundary
 

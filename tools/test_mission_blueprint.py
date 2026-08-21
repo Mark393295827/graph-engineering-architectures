@@ -430,6 +430,54 @@ process.stdout.write(JSON.stringify(candidates));
         integration_node = nodes[team["integration"]["graph_node_id"]]
         self.assertEqual(team["integration_owner"], integration_node["owner"])
 
+    def test_canonical_inputs_are_typed_and_cleanup_gates_terminal_claims(self) -> None:
+        nodes = {node["id"]: node for node in self.contract["nodes"]}
+        delivered = {node_id: set() for node_id in nodes}
+        for edge in self.contract["edges"]:
+            if edge["type"] in {"data", "verification"}:
+                delivered[edge["to"]].add(edge["payload_schema"])
+
+        for node_id, node in nodes.items():
+            for input_name in node["inputs"]:
+                self.assertIn(
+                    input_name,
+                    delivered[node_id],
+                    f"{node_id} has an undeclared ambient input: {input_name}",
+                )
+
+        cleanup = nodes["runtime-cleanup"]
+        self.assertEqual("deterministic", cleanup["kind"])
+        self.assertEqual("harness-runtime", cleanup["owner"])
+        self.assertIn("cleanup_receipt", cleanup["outputs"])
+        self.assertIn(
+            self.contract["team_command"]["integration"]["cleanup_receipt"],
+            cleanup["writes"],
+        )
+
+        terminal = nodes["terminal-verification"]
+        self.assertIn("cleanup_receipt", terminal["inputs"])
+        self.assertIn(
+            self.contract["team_command"]["integration"]["cleanup_receipt"],
+            terminal["reads"],
+        )
+        cleanup_edge = next(
+            edge
+            for edge in self.contract["edges"]
+            if edge["from"] == "runtime-cleanup"
+            and edge["to"] == "terminal-verification"
+        )
+        self.assertEqual("verification", cleanup_edge["type"])
+        self.assertEqual("cleanup_receipt", cleanup_edge["payload_schema"])
+        terminal_join = next(
+            join
+            for join in self.contract["joins"]
+            if join["target"] == "terminal-verification"
+        )
+        self.assertEqual(
+            {"serial-integration", "runtime-cleanup"},
+            set(terminal_join["inputs"]),
+        )
+
     def test_graph_wall_time_covers_the_declared_critical_path(self) -> None:
         nodes = {node["id"]: node for node in self.contract["nodes"]}
         adjacency = {node_id: set() for node_id in nodes}
